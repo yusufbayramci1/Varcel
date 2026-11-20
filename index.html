@@ -274,6 +274,7 @@
       chainIdHex: "0x1237",
       chainName: "Robinhood Chain",
       rpcUrls: [
+        "https://robinhoodchain.blockscout.com/api/eth-rpc",
         "https://rpc.mainnet.chain.robinhood.com",
         "https://4663.rpc.thirdweb.com"
       ],
@@ -500,9 +501,7 @@
     }
 
     function checkWalletNetworkBanner() {
-      if (!account || !walletChainId) {
-        return;
-      }
+      if (!account || !walletChainId) return;
       const chainNum = parseInt(walletChainId, 16);
       if (chainNum !== CHAIN_CONFIG.chainIdDec) {
         setMsg("globalAlert", I18N[currentLang].wrongChain, "warn");
@@ -544,14 +543,20 @@
     }
 
     async function rpcCall(method, params = []) {
-      if (window.ethereum && walletChainId && parseInt(walletChainId, 16) === CHAIN_CONFIG.chainIdDec) {
+      // 1) Try injected wallet if available
+      if (window.ethereum) {
         try {
-          const out = await window.ethereum.request({ method, params });
-          $("diagRpc").textContent = "RPC: Wallet (4663)";
-          return out;
+          const cid = walletChainId || await window.ethereum.request({ method: "eth_chainId" });
+          walletChainId = cid;
+          if (method === "eth_call" && parseInt(cid, 16) === CHAIN_CONFIG.chainIdDec) {
+            const out = await window.ethereum.request({ method, params });
+            $("diagRpc").textContent = "RPC: Wallet (4663)";
+            return out;
+          }
         } catch (_) {}
       }
 
+      // 2) Try public RPC / Blockscout ETH-RPC endpoints
       const errors = [];
       for (const url of CHAIN_CONFIG.rpcUrls) {
         try {
@@ -560,9 +565,7 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params })
           });
-          if (!res.ok) {
-            throw new Error(`HTTP ${res.status}`);
-          }
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
           if (json.error) throw new Error(json.error.message || "RPC error");
           $("diagRpc").textContent = `RPC: ${new URL(url).hostname}`;
@@ -571,6 +574,18 @@
           errors.push(`${new URL(url).hostname}: ${err.message}`);
         }
       }
+
+      // 3) Last fallback: try window.ethereum eth_call even if chain id wasn't checked
+      if (window.ethereum && method === "eth_call") {
+        try {
+          const out = await window.ethereum.request({ method, params });
+          $("diagRpc").textContent = "RPC: Wallet fallback";
+          return out;
+        } catch (err) {
+          errors.push(`Wallet: ${err.message}`);
+        }
+      }
+
       throw new Error(errors.join(" | ") || "All RPC endpoints failed");
     }
 
