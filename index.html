@@ -37,7 +37,7 @@
 
     header {
       display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-      gap: 14px; padding: 16px 20px; background: rgba(14, 17, 26, 0.85);
+      gap: 14px; padding: 16px 20px; background: rgba(14, 17, 26, 0.88);
       border: 1px solid var(--border); border-radius: 16px; backdrop-filter: blur(12px);
       position: sticky; top: 12px; z-index: 20;
     }
@@ -46,7 +46,7 @@
     .brand-badge {
       width: 40px; height: 40px; border-radius: 12px;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      display: grid; place-items: center; font-weight: 800; color: #05060a;
+      display: grid; place-items: center; font-weight: 800; color: #05060a; font-size: 1.1rem;
     }
     .brand h1 { font-size: 1.15rem; letter-spacing: 0.04em; }
     .brand span { font-size: 0.78rem; color: var(--muted); }
@@ -92,11 +92,20 @@
       background: var(--panel-2); border: 1px solid var(--border);
       border-radius: 14px; padding: 16px; margin-bottom: 18px;
     }
-    .countdown-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+    .countdown-head {
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      font-size: 0.8rem; color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.06em; margin-bottom: 10px;
+    }
     .timer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; }
     .time-cell { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 12px 6px; }
     .time-num { font-size: 1.55rem; font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
     .time-unit { font-size: 0.74rem; color: var(--muted); margin-top: 2px; }
+
+    .diag-bar {
+      margin-top: 10px; font-size: 0.76rem; color: var(--muted);
+      display: flex; flex-wrap: wrap; gap: 12px;
+    }
 
     .stats-grid {
       display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 14px;
@@ -127,12 +136,13 @@
     code { color: var(--accent-2); word-break: break-all; }
 
     .msg {
-      margin-top: 12px; padding: 11px 14px; border-radius: 10px; font-size: 0.86rem;
+      margin-top: 12px; padding: 11px 14px; border-radius: 10px; font-size: 0.85rem;
       background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border);
-      display: none;
+      display: none; word-break: break-word;
     }
     .msg.show { display: block; }
     .msg.ok { border-color: rgba(34, 197, 94, 0.45); color: #86efac; }
+    .msg.warn { border-color: rgba(245, 158, 11, 0.45); color: #fcd34d; }
     .msg.err { border-color: rgba(239, 68, 68, 0.45); color: #fca5a5; }
   </style>
 </head>
@@ -164,6 +174,8 @@
       </div>
     </header>
 
+    <div id="globalAlert" class="msg"></div>
+
     <section class="hero">
       <div class="card">
         <div class="status-pill">
@@ -176,12 +188,20 @@
         </p>
 
         <div class="countdown-box">
-          <div class="countdown-label" id="countdownLabel">Presale Countdown</div>
+          <div class="countdown-head">
+            <span id="countdownLabel">Presale Countdown</span>
+            <span id="endTimePreview">End: —</span>
+          </div>
           <div class="timer-grid">
             <div class="time-cell"><div id="dVal" class="time-num">00</div><div id="dLbl" class="time-unit">Days</div></div>
             <div class="time-cell"><div id="hVal" class="time-num">00</div><div id="hLbl" class="time-unit">Hours</div></div>
             <div class="time-cell"><div id="mVal" class="time-num">00</div><div id="mLbl" class="time-unit">Minutes</div></div>
             <div class="time-cell"><div id="sVal" class="time-num">00</div><div id="sLbl" class="time-unit">Seconds</div></div>
+          </div>
+          <div class="diag-bar">
+            <span id="diagStarted">Started: —</span>
+            <span id="diagRemaining">Chain Rem: —</span>
+            <span id="diagRpc">RPC: —</span>
           </div>
         </div>
 
@@ -252,7 +272,10 @@
       chainIdDec: 4663,
       chainIdHex: "0x1237",
       chainName: "Robinhood Chain",
-      rpcUrls: ["https://rpc.robinhoodchain.com"],
+      rpcUrls: [
+        "https://rpc.robinhoodchain.com",
+        "https://robinhoodchain.drpc.org"
+      ],
       blockExplorerUrls: ["https://robinhoodchain.blockscout.com"],
       nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 }
     };
@@ -279,7 +302,8 @@
         claimBtn: "Claim Rewards",
         tlTitle: "Timelock Lookup",
         tlDesc: "Inspect lock details by Timelock ID on contract 0x4454...ec28.",
-        tlId: "Timelock ID", tlBtn: "Check ID"
+        tlId: "Timelock ID", tlBtn: "Check ID",
+        wrongChain: "Connected wallet is not on Robinhood Chain (4663). Click 'Add Robinhood Chain' to switch."
       },
       tr: {
         title: "Robinhood Chain Üzerinde Deflasyonist Güç",
@@ -296,7 +320,8 @@
         claimBtn: "Ödülleri Talep Et",
         tlTitle: "Timelock Sorgulama",
         tlDesc: "0x4454...ec28 kontratındaki kilit detaylarını Timelock ID ile sorgula.",
-        tlId: "Timelock ID", tlBtn: "ID Sorgula"
+        tlId: "Timelock ID", tlBtn: "ID Sorgula",
+        wrongChain: "Bağlı cüzdan Robinhood Chain (4663) ağında değil. Geçiş için 'Robinhood Chain Ekle' butonuna bas."
       },
       de: {
         title: "Deflationäre Stärke auf Robinhood Chain",
@@ -313,7 +338,8 @@
         claimBtn: "Belohnungen Beanspruchen",
         tlTitle: "Timelock-Abfrage",
         tlDesc: "Sperrdetails per Timelock-ID auf Vertrag 0x4454...ec28 prüfen.",
-        tlId: "Timelock-ID", tlBtn: "ID Prüfen"
+        tlId: "Timelock-ID", tlBtn: "ID Prüfen",
+        wrongChain: "Wallet ist nicht mit Robinhood Chain (4663) verbunden. Bitte Netzwerk wechseln."
       },
       es: {
         title: "Potencia Deflacionaria en Robinhood Chain",
@@ -330,7 +356,8 @@
         claimBtn: "Reclamar Recompensas",
         tlTitle: "Consulta Timelock",
         tlDesc: "Consulta los detalles del bloqueo por Timelock ID en 0x4454...ec28.",
-        tlId: "Timelock ID", tlBtn: "Consultar ID"
+        tlId: "Timelock ID", tlBtn: "Consultar ID",
+        wrongChain: "La billetera no está en Robinhood Chain (4663). Cambia de red para continuar."
       },
       fr: {
         title: "Puissance Déflationniste sur Robinhood Chain",
@@ -347,7 +374,8 @@
         claimBtn: "Réclamer Récompenses",
         tlTitle: "Recherche Timelock",
         tlDesc: "Vérifiez un verrouillage par Timelock ID sur 0x4454...ec28.",
-        tlId: "Timelock ID", tlBtn: "Vérifier ID"
+        tlId: "Timelock ID", tlBtn: "Vérifier ID",
+        wrongChain: "Le wallet n'est pas sur Robinhood Chain (4663). Changez de réseau."
       },
       ar: {
         title: "قوة انكماشية على شبكة Robinhood Chain",
@@ -364,7 +392,8 @@
         claimBtn: "المطالبة بالمكافآت",
         tlTitle: "استعلام Timelock",
         tlDesc: "استعلم عن تفاصيل القفل عبر Timelock ID في العقد 0x4454...ec28.",
-        tlId: "معرّف Timelock", tlBtn: "فحص المعرّف"
+        tlId: "معرّف Timelock", tlBtn: "فحص المعرّف",
+        wrongChain: "المحفظة ليست على شبكة Robinhood Chain (4663). يرجى تبديل الشبكة."
       },
       ru: {
         title: "Дефляционная мощь на Robinhood Chain",
@@ -381,7 +410,8 @@
         claimBtn: "Забрать награды",
         tlTitle: "Проверка Timelock",
         tlDesc: "Проверьте блокировку по Timelock ID в контракте 0x4454...ec28.",
-        tlId: "Timelock ID", tlBtn: "Проверить ID"
+        tlId: "Timelock ID", tlBtn: "Проверить ID",
+        wrongChain: "Кошелёк подключён не к Robinhood Chain (4663). Переключите сеть."
       },
       zh: {
         title: "Robinhood Chain 上的通缩引擎",
@@ -398,11 +428,11 @@
         claimBtn: "领取奖励",
         tlTitle: "时间锁查询",
         tlDesc: "通过 Timelock ID 查询合约 0x4454...ec28 的锁定信息。",
-        tlId: "Timelock ID", tlBtn: "查询 ID"
+        tlId: "Timelock ID", tlBtn: "查询 ID",
+        wrongChain: "当前钱包未连接到 Robinhood Chain (4663)，请切换网络。"
       }
     };
 
-    // Function selectors (keccak256 first 4 bytes)
     const SELECTORS = {
       getPresaleSummary: "0xca1ed436",
       buyTokens: "0x0f0bbe4c",
@@ -413,6 +443,7 @@
 
     let currentLang = "en";
     let account = null;
+    let walletChainId = null;
     let targetEndMs = 0;
     let presaleActive = false;
     let presaleFinalized = false;
@@ -421,6 +452,11 @@
 
     function setMsg(id, text, type = "") {
       const el = $(id);
+      if (!text) {
+        el.textContent = "";
+        el.className = "msg";
+        return;
+      }
       el.textContent = text;
       el.className = "msg show" + (type ? " " + type : "");
     }
@@ -459,6 +495,20 @@
       $("checkTimelockBtn").textContent = t.tlBtn;
       if (!account) $("connectBtn").textContent = t.connect;
       renderStatusBadge();
+      checkWalletNetworkBanner();
+    }
+
+    function checkWalletNetworkBanner() {
+      if (!account || !walletChainId) {
+        setMsg("globalAlert", "");
+        return;
+      }
+      const chainNum = parseInt(walletChainId, 16);
+      if (chainNum !== CHAIN_CONFIG.chainIdDec) {
+        setMsg("globalAlert", I18N[currentLang].wrongChain, "warn");
+      } else {
+        setMsg("globalAlert", "");
+      }
     }
 
     function renderStatusBadge() {
@@ -494,19 +544,32 @@
     }
 
     async function rpcCall(method, params = []) {
-      if (window.ethereum) {
+      // Prefer wallet if already on Robinhood Chain (4663)
+      if (window.ethereum && walletChainId && parseInt(walletChainId, 16) === CHAIN_CONFIG.chainIdDec) {
         try {
-          return await window.ethereum.request({ method, params });
+          const out = await window.ethereum.request({ method, params });
+          $("diagRpc").textContent = "RPC: Wallet (4663)";
+          return out;
         } catch (_) {}
       }
-      const res = await fetch(CHAIN_CONFIG.rpcUrls[0], {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params })
-      });
-      const json = await res.json();
-      if (json.error) throw new Error(json.error.message || "RPC error");
-      return json.result;
+
+      let lastErr = null;
+      for (const url of CHAIN_CONFIG.rpcUrls) {
+        try {
+          const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params })
+          });
+          const json = await res.json();
+          if (json.error) throw new Error(json.error.message || "RPC error");
+          $("diagRpc").textContent = `RPC: ${new URL(url).hostname}`;
+          return json.result;
+        } catch (err) {
+          lastErr = err;
+        }
+      }
+      throw lastErr || new Error("All RPC endpoints failed");
     }
 
     async function ethCall(to, data) {
@@ -523,25 +586,19 @@
     }
 
     function parseSummaryWords(words) {
-      // Handles both tuple-wrapped and direct 12-word summary structs:
-      // [totalRaised, softCap, hardCap, minBuy, maxBuy, startTime, endTime, timeRemaining, buyersCount, presaleStarted, finalized, cancelled, ...]
       const list = words.length > 12 && words[0] === 32n ? words.slice(1) : words;
-      const totalRaised = list[0] ?? 0n;
-      const softCap = list[1] ?? 0n;
-      const hardCap = list[2] ?? 0n;
-      const minBuy = list[3] ?? 0n;
-      const maxBuy = list[4] ?? 0n;
-      const startTime = Number(list[5] ?? 0n);
-      const endTime = Number(list[6] ?? 0n);
-      const timeRemaining = Number(list[7] ?? 0n);
-      const buyersCount = (list[8] ?? 0n).toString();
-      const presaleStarted = (list[9] ?? 0n) !== 0n;
-      const finalized = (list[10] ?? 0n) !== 0n;
-
       return {
-        totalRaised, softCap, hardCap, minBuy, maxBuy,
-        startTime, endTime, timeRemaining, buyersCount,
-        presaleStarted, finalized
+        totalRaised: list[0] ?? 0n,
+        softCap: list[1] ?? 0n,
+        hardCap: list[2] ?? 0n,
+        minBuy: list[3] ?? 0n,
+        maxBuy: list[4] ?? 0n,
+        startTime: Number(list[5] ?? 0n),
+        endTime: Number(list[6] ?? 0n),
+        timeRemaining: Number(list[7] ?? 0n),
+        buyersCount: (list[8] ?? 0n).toString(),
+        presaleStarted: (list[9] ?? 0n) !== 0n,
+        finalized: (list[10] ?? 0n) !== 0n
       };
     }
 
@@ -554,14 +611,19 @@
           presaleActive = s.presaleStarted;
           presaleFinalized = s.finalized;
 
-          // Compute exact target end timestamp in milliseconds from seconds
           if (s.endTime > 0) {
             targetEndMs = s.endTime * 1000;
+            $("endTimePreview").textContent = "End: " + new Date(targetEndMs).toISOString().replace("T", " ").slice(0, 19) + " UTC";
           } else if (s.timeRemaining > 0) {
             targetEndMs = Date.now() + s.timeRemaining * 1000;
+            $("endTimePreview").textContent = "End: ~" + s.timeRemaining + "s";
           } else {
             targetEndMs = 0;
+            $("endTimePreview").textContent = "End: —";
           }
+
+          $("diagStarted").textContent = `Started: ${s.presaleStarted ? "true" : "false"}`;
+          $("diagRemaining").textContent = `Chain Rem: ${s.timeRemaining}s`;
 
           $("vSoftCap").textContent = `${formatEth(s.softCap)} ETH`;
           $("vHardCap").textContent = `${formatEth(s.hardCap)} ETH`;
@@ -588,7 +650,7 @@
 
         tickCountdown();
       } catch (err) {
-        setMsg("buyMsg", `Read error: ${err.message}`, "err");
+        setMsg("globalAlert", `Data read error: ${err.message}`, "err");
       }
     }
 
@@ -628,6 +690,9 @@
           }]
         });
       }
+      walletChainId = await window.ethereum.request({ method: "eth_chainId" });
+      checkWalletNetworkBanner();
+      await loadPresaleData();
     }
 
     async function connectWallet() {
@@ -637,9 +702,10 @@
       }
       const accs = await window.ethereum.request({ method: "eth_requestAccounts" });
       account = accs[0] || null;
+      walletChainId = await window.ethereum.request({ method: "eth_chainId" });
       if (account) {
         $("connectBtn").textContent = `${account.slice(0, 6)}...${account.slice(-4)}`;
-        await addOrSwitchChain();
+        checkWalletNetworkBanner();
         await loadPresaleData();
       }
     }
@@ -647,6 +713,9 @@
     async function buyTokens() {
       if (!account) await connectWallet();
       if (!account) return;
+      if (walletChainId && parseInt(walletChainId, 16) !== CHAIN_CONFIG.chainIdDec) {
+        await addOrSwitchChain();
+      }
       const wei = parseEthToWei($("ethInput").value);
       if (!wei) {
         setMsg("buyMsg", "Enter a valid ETH amount greater than 0.", "err");
@@ -672,6 +741,9 @@
     async function claimRewards() {
       if (!account) await connectWallet();
       if (!account) return;
+      if (walletChainId && parseInt(walletChainId, 16) !== CHAIN_CONFIG.chainIdDec) {
+        await addOrSwitchChain();
+      }
       try {
         const txHash = await window.ethereum.request({
           method: "eth_sendTransaction",
@@ -707,6 +779,21 @@
       }
     }
 
+    if (window.ethereum) {
+      window.ethereum.on("chainChanged", async (cid) => {
+        walletChainId = cid;
+        checkWalletNetworkBanner();
+        await loadPresaleData();
+      });
+      window.ethereum.on("accountsChanged", async (accs) => {
+        account = accs[0] || null;
+        $("connectBtn").textContent = account
+          ? `${account.slice(0, 6)}...${account.slice(-4)}`
+          : I18N[currentLang].connect;
+        await loadPresaleData();
+      });
+    }
+
     $("langSelect").addEventListener("change", (e) => applyLang(e.target.value));
     $("addChainBtn").addEventListener("click", addOrSwitchChain);
     $("refreshBtn").addEventListener("click", loadPresaleData);
@@ -718,6 +805,7 @@
     applyLang("en");
     loadPresaleData();
     setInterval(tickCountdown, 1000);
+    setInterval(loadPresaleData, 30000);
   </script>
 </body>
 </html>
