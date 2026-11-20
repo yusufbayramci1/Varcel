@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OBSIDION ($OBS) — Official Presale & Rewards Hub</title>
+  <style>
+    :root {
+      --bg: #07090f;
+      --panel: #0e1320;
+      --panel-2: #141b2d;
+      --border: rgba(255, 255, 255, 0.09);
+      --text: #f3f6fc;
+      --muted: #9aa6bd;
+      --accent: #38bdf8;
+      --accent-2: #a855f7;
+      --success: #22c55e;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.14), transparent 36%),
+        radial-gradient(circle at 85% 15%, rgba(168, 85, 247, 0.14), transparent 38%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 20px 18px 64px;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 18px;
+      background: rgba(14, 19, 32, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      position: sticky;
+      top: 12px;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      font-size: 1.1rem;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .nav-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    select, input, button {
+      font-family: inherit;
+      font-size: 0.92rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      outline: none;
+    }
+
+    select {
+      background: var(--panel-2);
+      color: var(--text);
+      padding: 9px 12px;
+      cursor: pointer;
+    }
+
+    button {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      font-weight: 700;
+      padding: 10px 16px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.12s ease, opacity 0.15s ease;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    button.secondary {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    button.success {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+    }
+
+    .hero {
+      text-align: center;
+      padding: 36px 12px 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.9rem, 4vw, 2.9rem);
+      font-weight: 850;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #ffffff, #7dd3fc, #d8b4fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      color: var(--muted);
+      max-width: 720px;
+      margin: 0 auto 18px;
+      font-size: 1rem;
+    }
+
+    .status-strip {
+      display: inline-flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .pill {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 999px;
+    }
+
+    .pill strong {
+      color: var(--text);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .card h2 {
+      font-size: 1.15rem;
+      margin-bottom: 12px;
+    }
+
+    .countdown {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 14px 0;
+    }
+
+    .time-box {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 6px;
+      text-align: center;
+    }
+
+    .time-box .num {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .time-box .lbl {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .progress-wrap {
+      margin: 14px 0;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      background: var(--panel-2);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 0.3s ease;
+    }
+
+    .field-group {
+      margin-top: 12px;
+    }
+
+    .field-group label {
+      display: block;
+      font-size: 0.84rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      background: var(--panel-2);
+      color: var(--text);
+      padding: 11px 13px;
+    }
+
+    .calc-box {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--panel-2);
+      font-size: 0.88rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .calc-box strong {
+      color: var(--text);
+    }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .stat-box {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .stat-box .k {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .stat-box .v {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-top: 3px;
+    }
+
+    .contract-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 12px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-top: 10px;
+      font-size: 0.84rem;
+    }
+
+    .addr {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      word-break: break-all;
+      color: #cbd5e1;
+    }
+
+    .feedback {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 0.86rem;
+      display: none;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .feedback.ok {
+      background: rgba(34, 197, 94, 0.14);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #86efac;
+    }
+
+    .feedback.err {
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .note {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <span>OBSIDION</span>
+        <span class="brand-badge">$OBS • CHAIN 4663</span>
+      </div>
+
+      <div class="nav-actions">
+        <select id="langSelect" aria-label="Language">
+          <option value="en">English (EN)</option>
+          <option value="tr">Türkçe (TR)</option>
+          <option value="de">Deutsch (DE)</option>
+          <option value="es">Español (ES)</option>
+          <option value="fr">Français (FR)</option>
+          <option value="ar">العربية (AR)</option>
+          <option value="ru">Русский (RU)</option>
+          <option value="zh">中文 (ZH)</option>
+        </select>
+
+        <button class="secondary" id="addChainBtn" data-i18n="addChain">Add Robinhood Chain</button>
+        <button id="connectBtn" data-i18n="connectWallet">Connect Wallet</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <h1 data-i18n="heroTitle">Deflationary Tokenomics on Robinhood Chain</h1>
+      <p data-i18n="heroSubtitle">
+        Fixed 120,000,000 $OBS initial supply with a hard 21,000,000 $OBS burn floor, dynamic presale acceleration, and holder dividend rewards.
+      </p>
+      <div class="status-strip">
+        <div class="pill"><span data-i18n="walletLabel">Wallet</span>: <strong id="walletText" data-i18n="notConnected">Not Connected</strong></div>
+        <div class="pill"><span data-i18n="networkLabel">Network</span>: <strong id="networkText">Robinhood Chain (4663)</strong></div>
+        <div class="pill"><span data-i18n="obsBalanceLabel">$OBS Balance</span>: <strong id="obsBalanceText">0.00</strong></div>
+      </div>
+    </section>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2 data-i18n="presaleTitle">Official $OBS Presale</h2>
+        <p class="note" data-i18n="presaleRule">
+          Rate: 1 ETH = 2,430,000 OBS • Soft Cap: 5 ETH • Hard Cap: 20 ETH • Min: 0.0084 ETH • Max: 1 ETH. Accelerates to 21d at 5 ETH and 48h at 14 ETH.
+        </p>
+
+        <div class="countdown">
+          <div class="time-box"><div class="num" id="cdDays">00</div><div class="lbl" data-i18n="days">Days</div></div>
+          <div class="time-box"><div class="num" id="cdHours">00</div><div class="lbl" data-i18n="hours">Hours</div></div>
+          <div class="time-box"><div class="num" id="cdMins">00</div><div class="lbl" data-i18n="mins">Mins</div></div>
+          <div class="time-box"><div class="num" id="cdSecs">00</div><div class="lbl" data-i18n="secs">Secs</div></div>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress-meta">
+            <span><span data-i18n="raised">Raised</span>: <strong id="raisedText">0.0000 ETH</strong></span>
+            <span><span data-i18n="hardCap">Hard Cap</span>: <strong>20 ETH</strong></span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="ethInput" data-i18n="buyAmountLabel">Contribution Amount (ETH)</label>
+          <input id="ethInput" type="number" step="0.001" min="0.0084" max="1" value="0.01" />
+        </div>
+
+        <div class="calc-box">
+          <span data-i18n="youReceive">Estimated $OBS</span>
+          <strong id="obsCalcText">24,300 OBS</strong>
+        </div>
+
+        <div class="btn-row">
+          <button id="buyBtn" data-i18n="buyBtn">Buy $OBS</button>
+          <button class="success" id="claimTokensBtn" data-i18n="claimTokensBtn">Claim $OBS</button>
+          <button class="secondary" id="claimRefundBtn" data-i18n="claimRefundBtn">Claim Refund</button>
+        </div>
+
+        <div class="note">
+          <span data-i18n="yourContribution">Your Contribution</span>: <strong id="myContribText">0.0000 ETH</strong> •
+          <span data-i18n="claimableObs">Claimable</span>: <strong id="claimableObsText">0 OBS</strong>
+        </div>
+
+        <div class="feedback" id="feedbackBox"></div>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="rewardsTitle">Holder Dividends & Timelock</h2>
+
+        <div class="stat-box">
+          <div class="k" data-i18n="claimableRewards">Claimable Holder Dividends ($OBS)</div>
+          <div class="v" id="pendingRewardsText">0.0000 OBS</div>
+        </div>
+
+        <div class="btn-row">
+          <button class="success" id="claimRewardsBtn" data-i18n="claimRewardsBtn">Claim Rewards</button>
+          <button class="secondary" id="refreshBtn" data-i18n="refreshBtn">Refresh Data</button>
+        </div>
+
+        <div class="field-group" style="margin-top: 20px;">
+          <label for="lockIdInput" data-i18n="timelockLookupLabel">Inspect Timelock ID</label>
+          <div style="display:flex; gap:8px;">
+            <input id="lockIdInput" type="number" min="1" value="1" />
+            <button class="secondary" id="checkLockBtn" data-i18n="checkLockBtn">Check</button>
+          </div>
+        </div>
+
+        <div class="stat-box" style="margin-top: 10px;" id="lockResultBox">
+          <div class="k" data-i18n="lockStatus">Lock Details</div>
+          <div class="v" id="lockResultText" style="font-size:0.88rem; font-weight:500;">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="stat-box">
+        <div class="k" data-i18n="initialSupply">Initial / Floor Supply</div>
+        <div class="v">120M / 21M $OBS</div>
+      </div>
+      <div class="stat-box">
+        <div class="k" data-i18n="taxStructure">Buy / Sell / Transfer Tax</div>
+        <div class="v">3% / 7% / 0%</div>
+      </div>
+      <div class="stat-box">
+        <div class="k" data-i18n="taxSplit">Tax Split (Dev/Div/Burn/NFT)</div>
+        <div class="v">48% / 35% / 12% / 5%</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 18px;">
+      <h2 data-i18n="verifiedContracts">Verified Smart Contracts</h2>
+
+      <div class="contract-row">
+        <div>
+          <strong>ObsidionToken ($OBS)</strong><br />
+          <span class="addr">0xe3A58EeB751aCa0c8f158EcF93328fe94DE909F6</span>
+        </div>
+        <div>
+          <button class="secondary" onclick="copyText('0xe3A58EeB751aCa0c8f158EcF93328fe94DE909F6')" data-i18n="copy">Copy</button>
+          <a href="https://robinhoodchain.blockscout.com/address/0xe3A58EeB751aCa0c8f158EcF93328fe94DE909F6" target="_blank" rel="noopener">Blockscout ↗</a>
+        </div>
+      </div>
+
+      <div class="contract-row">
+        <div>
+          <strong>ObsidionPresale</strong><br />
+          <span class="addr">0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32</span>
+        </div>
+        <div>
+          <button class="secondary" onclick="copyText('0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32')" data-i18n="copy">Copy</button>
+          <a href="https://robinhoodchain.blockscout.com/address/0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32" target="_blank" rel="noopener">Blockscout ↗</a>
+        </div>
+      </div>
+
+      <div class="contract-row">
+        <div>
+          <strong>ObsidionTimelock</strong><br />
+          <span class="addr">0x445452FEb661880D0EDbF04Fe6249e1A33C2ec28</span>
+        </div>
+        <div>
+          <button class="secondary" onclick="copyText('0x445452FEb661880D0EDbF04Fe6249e1A33C2ec28')" data-i18n="copy">Copy</button>
+          <a href="https://robinhoodchain.blockscout.com/address/0x445452FEb661880D0EDbF04Fe6249e1A33C2ec28" target="_blank" rel="noopener">Blockscout ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CHAIN_ID_HEX = "0x1237";
+    const CHAIN_PARAMS = {
+      chainId: CHAIN_ID_HEX,
+      chainName: "Robinhood Chain",
+      nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
+      rpcUrls: ["https://rpc.robinhoodchain.com"],
+      blockExplorerUrls: ["https://robinhoodchain.blockscout.com"]
+    };
+
+    const CONTRACTS = {
+      token: "0xe3A58EeB751aCa0c8f158EcF93328fe94DE909F6",
+      presale: "0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32",
+      timelock: "0x445452FEb661880D0EDbF04Fe6249e1A33C2ec28"
+    };
+
+    const RATE = 2430000;
+
+    const I18N = {
+      en: {
+        addChain: "Add Robinhood Chain",
+        connectWallet: "Connect Wallet",
+        heroTitle: "Deflationary Tokenomics on Robinhood Chain",
+        heroSubtitle: "Fixed 120,000,000 $OBS initial supply with a hard 21,000,000 $OBS burn floor, dynamic presale acceleration, and holder dividend rewards.",
+        walletLabel: "Wallet",
+        notConnected: "Not Connected",
+        networkLabel: "Network",
+        obsBalanceLabel: "$OBS Balance",
+        presaleTitle: "Official $OBS Presale",
+        presaleRule: "Rate: 1 ETH = 2,430,000 OBS • Soft Cap: 5 ETH • Hard Cap: 20 ETH • Min: 0.0084 ETH • Max: 1 ETH. Accelerates to 21d at 5 ETH and 48h at 14 ETH.",
+        days: "Days", hours: "Hours", mins: "Mins", secs: "Secs",
+        raised: "Raised", hardCap: "Hard Cap",
+        buyAmountLabel: "Contribution Amount (ETH)",
+        youReceive: "Estimated $OBS",
+        buyBtn: "Buy $OBS",
+        claimTokensBtn: "Claim $OBS",
+        claimRefundBtn: "Claim Refund",
+        yourContribution: "Your Contribution",
+        claimableObs: "Claimable",
+        rewardsTitle: "Holder Dividends & Timelock",
+        claimableRewards: "Claimable Holder Dividends ($OBS)",
+        claimRewardsBtn: "Claim Rewards",
+        refreshBtn: "Refresh Data",
+        timelockLookupLabel: "Inspect Timelock ID",
+        checkLockBtn: "Check",
+        lockStatus: "Lock Details",
+        initialSupply: "Initial / Floor Supply",
+        taxStructure: "Buy / Sell / Transfer Tax",
+        taxSplit: "Tax Split (Dev/Div/Burn/NFT)",
+        verifiedContracts: "Verified Smart Contracts",
+        copy: "Copy",
+        copied: "Copied to clipboard.",
+        installWallet: "Please install MetaMask or an EVM wallet.",
+        txSent: "Transaction submitted.",
+        invalidAmount: "Enter a valid ETH amount between 0.0084 and 1."
+      },
+      tr: {
+        addChain: "Robinhood Chain Ekle",
+        connectWallet: "Cüzdan Bağla",
+        heroTitle: "Robinhood Chain Üzerinde Deflasyonist Ekonomi",
+        heroSubtitle: "120.000.000 $OBS sabit başlangıç arzı, 21.000.000 $OBS yakım tabanı, dinamik ön satış hızlanması ve holder temettü havuzu.",
+        walletLabel: "Cüzdan",
+        notConnected: "Bağlı Değil",
+        networkLabel: "Ağ",
+        obsBalanceLabel: "$OBS Bakiyesi",
+        presaleTitle: "Resmi $OBS Ön Satışı",
+        presaleRule: "Oran: 1 ETH = 2.430.000 OBS • Soft Cap: 5 ETH • Hard Cap: 20 ETH • Min: 0.0084 ETH • Maks: 1 ETH. 5 ETH'de 21 gün, 14 ETH'de 48 saate iner.",
+        days: "Gün", hours: "Saat", mins: "Dak", secs: "San",
+        raised: "Toplanan", hardCap: "Hard Cap",
+        buyAmountLabel: "Katılım Tutarı (ETH)",
+        youReceive: "Tahmini $OBS",
+        buyBtn: "$OBS Al",
+        claimTokensBtn: "$OBS Çek",
+        claimRefundBtn: "İade Al",
+        yourContribution: "Katılımınız",
+        claimableObs: "Çekilebilir",
+        rewardsTitle: "Holder Temettü ve Zaman Kilidi",
+        claimableRewards: "Çekilebilir Holder Temettüsü ($OBS)",
+        claimRewardsBtn: "Ödülleri Çek",
+        refreshBtn: "Verileri Yenile",
+        timelockLookupLabel: "Zaman Kilidi ID Sorgula",
+        checkLockBtn: "Sorgula",
+        lockStatus: "Kilit Detayı",
+        initialSupply: "Başlangıç / Taban Arz",
+        taxStructure: "Alış / Satış / Transfer Vergisi",
+        taxSplit: "Vergi Dağılımı (Dev/Div/Yakım/NFT)",
+        verifiedContracts: "Doğrulanmış Akıllı Sözleşmeler",
+        copy: "Kopyala",
+        copied: "Panoya kopyalandı.",
+        installWallet: "Lütfen MetaMask veya uyumlu bir cüzdan yükleyin.",
+        txSent: "İşlem gönderildi.",
+        invalidAmount: "0.0084 ile 1 ETH arasında geçerli bir tutar girin."
+      },
+      de: {
+        addChain: "Robinhood Chain hinzufügen",
+        connectWallet: "Wallet verbinden",
+        heroTitle: "Deflationäre Tokenomics auf Robinhood Chain",
+        heroSubtitle: "Fester Anfangsbestand von 120.000.000 $OBS, Burn-Untergrenze bei 21.000.000 $OBS, dynamische Presale-Beschleunigung und Holder-Dividenden.",
+        walletLabel: "Wallet",
+        notConnected: "Nicht verbunden",
+        networkLabel: "Netzwerk",
+        obsBalanceLabel: "$OBS-Guthaben",
+        presaleTitle: "Offizieller $OBS Presale",
+        presaleRule: "Kurs: 1 ETH = 2.430.000 OBS • Soft Cap: 5 ETH • Hard Cap: 20 ETH • Min: 0,0084 ETH • Max: 1 ETH. Verkürzt auf 21T bei 5 ETH und 48h bei 14 ETH.",
+        days: "Tage", hours: "Std", mins: "Min", secs: "Sek",
+        raised: "Gesammelt", hardCap: "Hard Cap",
+        buyAmountLabel: "Beitrag (ETH)",
+        youReceive: "Geschätzte $OBS",
+        buyBtn: "$OBS kaufen",
+        claimTokensBtn: "$OBS beanspruchen",
+        claimRefundBtn: "Rückerstattung",
+        yourContribution: "Dein Beitrag",
+        claimableObs: "Verfügbar",
+        rewardsTitle: "Holder-Dividenden & Timelock",
+        claimableRewards: "Verfügbare Holder-Dividenden ($OBS)",
+        claimRewardsBtn: "Dividenden abholen",
+        refreshBtn: "Aktualisieren",
+        timelockLookupLabel: "Timelock-ID prüfen",
+        checkLockBtn: "Prüfen",
+        lockStatus: "Sperrdetails",
+        initialSupply: "Start- / Mindestbestand",
+        taxStructure: "Kauf / Verkauf / Transfer",
+        taxSplit: "Steuerverteilung",
+        verifiedContracts: "Verifizierte Smart Contracts",
+        copy: "Kopieren",
+        copied: "In die Zwischenablage kopiert.",
+        installWallet: "Bitte installiere MetaMask oder ein EVM-Wallet.",
+        txSent: "Transaktion gesendet.",
+        invalidAmount: "Bitte einen Betrag zwischen 0,0084 und 1 ETH eingeben."
+      },
+      es: {
+        addChain: "Añadir Robinhood Chain",
+        connectWallet: "Conectar billetera",
+        heroTitle: "Tokenomics deflacionario en Robinhood Chain",
+        heroSubtitle: "Suministro inicial fijo de 120.000.000 $OBS, suelo de quema de 21.000.000 $OBS y dividendos para holders.",
+        walletLabel: "Billetera", notConnected: "No conectada", networkLabel: "Red", obsBalanceLabel: "Saldo $OBS",
+        presaleTitle: "Preventa oficial de $OBS",
+        presaleRule: "Tasa: 1 ETH = 2.430.000 OBS • Soft Cap: 5 ETH • Hard Cap: 20 ETH • Mín: 0.0084 ETH • Máx: 1 ETH.",
+        days: "Días", hours: "Hrs", mins: "Min", secs: "Seg",
+        raised: "Recaudado", hardCap: "Hard Cap", buyAmountLabel: "Monto (ETH)", youReceive: "$OBS estimados",
+        buyBtn: "Comprar $OBS", claimTokensBtn: "Reclamar $OBS", claimRefundBtn: "Reembolso",
+        yourContribution: "Tu aporte", claimableObs: "Reclamable", rewardsTitle: "Dividendos y Timelock",
+        claimableRewards: "Dividendos reclamables ($OBS)", claimRewardsBtn: "Reclamar premios", refreshBtn: "Actualizar",
+        timelockLookupLabel: "Consultar ID de Timelock", checkLockBtn: "Consultar", lockStatus: "Detalles del bloqueo",
+        initialSupply: "Suministro inicial / piso", taxStructure: "Compra / Venta / Transf.", taxSplit: "Reparto de impuestos",
+        verifiedContracts: "Contratos verificados", copy: "Copiar", copied: "Copiado.",
+        installWallet: "Instala MetaMask o una billetera EVM.", txSent: "Transacción enviada.",
+        invalidAmount: "Ingresa un monto entre 0.0084 y 1 ETH."
+      },
+      fr: {
+        addChain: "Ajouter Robinhood Chain",
+        connectWallet: "Connecter le wallet",
+        heroTitle: "Tokenomics déflationniste sur Robinhood Chain",
+        heroSubtitle: "Offre initiale fixe de 120 000 000 $OBS, plancher de burn de 21 000 000 $OBS et dividendes holders.",
+        walletLabel: "Wallet", notConnected: "Non connecté", networkLabel: "Réseau", obsBalanceLabel: "Solde $OBS",
+        presaleTitle: "Prévente officielle $OBS",
+        presaleRule: "Taux : 1 ETH = 2 430 000 OBS • Soft Cap : 5 ETH • Hard Cap : 20 ETH • Min : 0,0084 ETH • Max : 1 ETH.",
+        days: "Jours", hours: "Heures", mins: "Min", secs: "Sec",
+        raised: "Collecté", hardCap: "Hard Cap", buyAmountLabel: "Montant (ETH)", youReceive: "$OBS estimés",
+        buyBtn: "Acheter $OBS", claimTokensBtn: "Réclamer $OBS", claimRefundBtn: "Remboursement",
+        yourContribution: "Votre contribution", claimableObs: "Réclamable", rewardsTitle: "Dividendes & Timelock",
+        claimableRewards: "Dividendes réclamables ($OBS)", claimRewardsBtn: "Réclamer", refreshBtn: "Actualiser",
+        timelockLookupLabel: "Vérifier l'ID Timelock", checkLockBtn: "Vérifier", lockStatus: "Détails du verrou",
+        initialSupply: "Offre initiale / plancher", taxStructure: "Achat / Vente / Transfert", taxSplit: "Répartition des taxes",
+        verifiedContracts: "Contrats vérifiés", copy: "Copier", copied: "Copié.",
+        installWallet: "Veuillez installer MetaMask ou un wallet EVM.", txSent: "Transaction envoyée.",
+        invalidAmount: "Entrez un montant entre 0,0084 et 1 ETH."
+      },
+      ar: {
+        addChain: "إضافة Robinhood Chain",
+        connectWallet: "ربط المحفظة",
+        heroTitle: "اقتصاد رمزي انكماشي على Robinhood Chain",
+        heroSubtitle: "معروض أولي ثابت 120,000,000 $OBS وحد أدنى للحرق 21,000,000 $OBS وتوزيعات أرباح للحاملين.",
+        walletLabel: "المحفظة", notConnected: "غير متصل", networkLabel: "الشبكة", obsBalanceLabel: "رصيد $OBS",
+        presaleTitle: "البيع المسبق الرسمي لـ $OBS",
+        presaleRule: "السعر: 1 ETH = 2,430,000 OBS • الحد الأدنى: 5 ETH • الحد الأقصى: 20 ETH.",
+        days: "أيام", hours: "ساعات", mins: "دقائق", secs: "ثوانٍ",
+        raised: "المجموع", hardCap: "الحد الأقصى", buyAmountLabel: "المبلغ (ETH)", youReceive: "التقدير بـ $OBS",
+        buyBtn: "شراء $OBS", claimTokensBtn: "استلام $OBS", claimRefundBtn: "استرداد",
+        yourContribution: "مساهمتك", claimableObs: "قابل للاستلام", rewardsTitle: "أرباح الحاملين والقفل الزمني",
+        claimableRewards: "الأرباح القابلة للاستلام ($OBS)", claimRewardsBtn: "استلام الأرباح", refreshBtn: "تحديث",
+        timelockLookupLabel: "فحص رقم القفل الزمني", checkLockBtn: "فحص", lockStatus: "تفاصيل القفل",
+        initialSupply: "المعروض الأولي / الأدنى", taxStructure: "شراء / بيع / تحويل", taxSplit: "توزيع الضرائب",
+        verifiedContracts: "العقود الموثقة", copy: "نسخ", copied: "تم النسخ.",
+        installWallet: "يرجى تثبيت MetaMask أو محفظة EVM.", txSent: "تم إرسال المعاملة.",
+        invalidAmount: "أدخل مبلغاً بين 0.0084 و 1 ETH."
+      },
+      ru: {
+        addChain: "Добавить Robinhood Chain",
+        connectWallet: "Подключить кошелёк",
+        heroTitle: "Дефляционная токеномика в Robinhood Chain",
+        heroSubtitle: "Фиксированный старт 120 000 000 $OBS, порог сжигания 21 000 000 $OBS и дивиденды холдерам.",
+        walletLabel: "Кошелёк", notConnected: "Не подключён", networkLabel: "Сеть", obsBalanceLabel: "Баланс $OBS",
+        presaleTitle: "Официальный пресейл $OBS",
+        presaleRule: "Курс: 1 ETH = 2 430 000 OBS • Soft Cap: 5 ETH • Hard Cap: 20 ETH • Мин: 0.0084 ETH • Макс: 1 ETH.",
+        days: "Дн", hours: "Ч", mins: "Мин", secs: "Сек",
+        raised: "Собрано", hardCap: "Hard Cap", buyAmountLabel: "Сумма (ETH)", youReceive: "Оценка $OBS",
+        buyBtn: "Купить $OBS", claimTokensBtn: "Забрать $OBS", claimRefundBtn: "Возврат",
+        yourContribution: "Ваш вклад", claimableObs: "Доступно", rewardsTitle: "Дивиденды и Timelock",
+        claimableRewards: "Доступные дивиденды ($OBS)", claimRewardsBtn: "Забрать награды", refreshBtn: "Обновить",
+        timelockLookupLabel: "Проверить ID блокировки", checkLockBtn: "Проверить", lockStatus: "Детали блокировки",
+        initialSupply: "Начальный / мин. запас", taxStructure: "Покупка / Продажа / Перевод", taxSplit: "Распределение налога",
+        verifiedContracts: "Проверенные контракты", copy: "Копировать", copied: "Скопировано.",
+        installWallet: "Установите MetaMask или EVM-кошелёк.", txSent: "Транзакция отправлена.",
+        invalidAmount: "Введите сумму от 0.0084 до 1 ETH."
+      },
+      zh: {
+        addChain: "添加 Robinhood Chain",
+        connectWallet: "连接钱包",
+        heroTitle: "Robinhood Chain 通缩代币经济模型",
+        heroSubtitle: "初始供应量固定为 120,000,000 $OBS，销毁下限为 21,000,000 $OBS，支持动态加速与持币分红。",
+        walletLabel: "钱包", notConnected: "未连接", networkLabel: "网络", obsBalanceLabel: "$OBS 余额",
+        presaleTitle: "官方 $OBS 预售",
+        presaleRule: "兑换比例：1 ETH = 2,430,000 OBS • 软顶：5 ETH • 硬顶：20 ETH • 最低：0.0084 ETH • 最高：1 ETH。",
+        days: "天", hours: "时", mins: "分", secs: "秒",
+        raised: "已筹集", hardCap: "硬顶", buyAmountLabel: "参与金额 (ETH)", youReceive: "预计获得 $OBS",
+        buyBtn: "购买 $OBS", claimTokensBtn: "领取 $OBS", claimRefundBtn: "申请退款",
+        yourContribution: "您的参与", claimableObs: "可领取", rewardsTitle: "持币分红与时间锁",
+        claimableRewards: "可领取持币分红 ($OBS)", claimRewardsBtn: "领取奖励", refreshBtn: "刷新数据",
+        timelockLookupLabel: "查询时间锁 ID", checkLockBtn: "查询", lockStatus: "锁定详情",
+        initialSupply: "初始 / 下限供应量", taxStructure: "买入 / 卖出 / 转账税", taxSplit: "税收分配比例",
+        verifiedContracts: "已验证智能合约", copy: "复制", copied: "已复制。",
+        installWallet: "请安装 MetaMask 或 EVM 钱包。", txSent: "交易已发送。",
+        invalidAmount: "请输入 0.0084 至 1 ETH 之间的有效金额。"
+      }
+    };
+
+    let currentLang = "en";
+    let account = null;
+    let endTimestamp = 0;
+
+    function t(key) {
+      return (I18N[currentLang] && I18N[currentLang][key]) || I18N.en[key] || key;
+    }
+
+    function applyLanguage(lang) {
+      currentLang = I18N[lang] ? lang : "en";
+      document.documentElement.lang = currentLang;
+      document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const k = el.getAttribute("data-i18n");
+        el.textContent = t(k);
+      });
+      if (!account) {
+        document.getElementById("walletText").textContent = t("notConnected");
+      }
+    }
+
+    function showFeedback(msg, isOk = true) {
+      const box = document.getElementById("feedbackBox");
+      box.textContent = msg;
+      box.className = "feedback show " + (isOk ? "ok" : "err");
+    }
+
+    function copyText(str) {
+      navigator.clipboard?.writeText(str);
+      showFeedback(t("copied"), true);
+    }
+
+    function updateCalc() {
+      const val = parseFloat(document.getElementById("ethInput").value || "0");
+      const obs = val > 0 ? Math.floor(val * RATE) : 0;
+      document.getElementById("obsCalcText").textContent = obs.toLocaleString("en-US") + " OBS";
+    }
+
+    function updateCountdown() {
+      const now = Math.floor(Date.now() / 1000);
+      const diff = Math.max(0, endTimestamp - now);
+      const d = Math.floor(diff / 86400);
+      const h = Math.floor((diff % 86400) / 3600);
+      const m = Math.floor((diff % 3600) / 60);
+      const s = diff % 60;
+      document.getElementById("cdDays").textContent = String(d).padStart(2, "0");
+      document.getElementById("cdHours").textContent = String(h).padStart(2, "0");
+      document.getElementById("cdMins").textContent = String(m).padStart(2, "0");
+      document.getElementById("cdSecs").textContent = String(s).padStart(2, "0");
+    }
+
+    function encodeAddress(addr) {
+      return addr.toLowerCase().replace(/^0x/, "").padStart(64, "0");
+    }
+
+    function encodeUint256(numStrOrBigInt) {
+      return BigInt(numStrOrBigInt).toString(16).padStart(64, "0");
+    }
+
+    async function rpcCall(to, data) {
+      const provider = window.ethereum;
+      if (!provider) return null;
+      return await provider.request({
+        method: "eth_call",
+        params: [{ to, data }, "latest"]
+      });
+    }
+
+    async function addOrSwitchChain() {
+      if (!window.ethereum) {
+        showFeedback(t("installWallet"), false);
+        return;
+      }
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: CHAIN_ID_HEX }]
+        });
+      } catch (err) {
+        if (err.code === 4902) {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [CHAIN_PARAMS]
+          });
+        } else {
+          showFeedback(err.message || "Network switch error", false);
+        }
+      }
+    }
+
+    async function connectWallet() {
+      if (!window.ethereum) {
+        showFeedback(t("installWallet"), false);
+        return;
+      }
+      await addOrSwitchChain();
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      account = accounts[0] || null;
+      if (account) {
+        document.getElementById("walletText").textContent = account.slice(0, 6) + "..." + account.slice(-4);
+        await refreshChainData();
+      }
+    }
+
+    async function refreshChainData() {
+      if (!window.ethereum) return;
+      try {
+        const totalRaisedHex = await rpcCall(CONTRACTS.presale, "0x36659315");
+        if (totalRaisedHex && totalRaisedHex !== "0x") {
+          const wei = BigInt(totalRaisedHex);
+          const eth = Number(wei) / 1e18;
+          document.getElementById("raisedText").textContent = eth.toFixed(4) + " ETH";
+          const pct = Math.min(100, (eth / 20) * 100);
+          document.getElementById("progressFill").style.width = pct + "%";
+        }
+
+        const endTimeHex = await rpcCall(CONTRACTS.presale, "0x3197cbb6");
+        if (endTimeHex && endTimeHex !== "0x") {
+          endTimestamp = Number(BigInt(endTimeHex));
+          updateCountdown();
+        }
+
+        if (account) {
+          const balHex = await rpcCall(CONTRACTS.token, "0x70a08231" + encodeAddress(account));
+          if (balHex && balHex !== "0x") {
+            const obsBal = Number(BigInt(balHex)) / 1e18;
+            document.getElementById("obsBalanceText").textContent = obsBal.toLocaleString("en-US", { maximumFractionDigits: 2 });
+          }
+
+          const contribHex = await rpcCall(CONTRACTS.presale, "0x30972d1b" + encodeAddress(account));
+          if (contribHex && contribHex !== "0x") {
+            const cEth = Number(BigInt(contribHex)) / 1e18;
+            document.getElementById("myContribText").textContent = cEth.toFixed(4) + " ETH";
+            document.getElementById("claimableObsText").textContent = Math.floor(cEth * RATE).toLocaleString("en-US") + " OBS";
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    async function sendTx(to, data, valueHex = "0x0") {
+      if (!window.ethereum) {
+        showFeedback(t("installWallet"), false);
+        return;
+      }
+      if (!account) {
+        await connectWallet();
+        if (!account) return;
+      }
+      try {
+        const hash = await window.ethereum.request({
+          method: "eth_sendTransaction",
+          params: [{ from: account, to, data, value: valueHex }]
+        });
+        showFeedback(t("txSent") + " (" + hash.slice(0, 10) + "...)", true);
+        setTimeout(refreshChainData, 3000);
+      } catch (err) {
+        showFeedback(err.message || "Transaction failed", false);
+      }
+    }
+
+    async function buyObs() {
+      const val = parseFloat(document.getElementById("ethInput").value || "0");
+      if (isNaN(val) || val < 0.0084 || val > 1) {
+        showFeedback(t("invalidAmount"), false);
+        return;
+      }
+      const wei = BigInt(Math.round(val * 1e18));
+      const valueHex = "0x" + wei.toString(16);
+      await sendTx(CONTRACTS.presale, "0xd96a0943", valueHex);
+    }
+
+    async function claimTokens() {
+      await sendTx(CONTRACTS.presale, "0x4e71d92d", "0x0");
+    }
+
+    async function claimRefund() {
+      await sendTx(CONTRACTS.presale, "0xfa89401a", "0x0");
+    }
+
+    async function claimRewards() {
+      await sendTx(CONTRACTS.token, "0xe6f1dc2e", "0x0");
+    }
+
+    async function checkLock() {
+      const id = document.getElementById("lockIdInput").value || "1";
+      const resEl = document.getElementById("lockResultText");
+      if (!window.ethereum) {
+        resEl.textContent = "Lock ID #" + id + " • Contract: " + CONTRACTS.timelock;
+        return;
+      }
+      try {
+        const raw = await rpcCall(CONTRACTS.timelock, "0xdd467064" + encodeUint256(id));
+        if (!raw || raw === "0x" || raw.length < 260) {
+          resEl.textContent = "No active lock found for ID #" + id;
+          return;
+        }
+        const hex = raw.slice(2);
+        const beneficiary = "0x" + hex.slice(64 + 24, 128);
+        const amountWei = BigInt("0x" + hex.slice(128, 192));
+        const unlockTs = Number(BigInt("0x" + hex.slice(192, 256)));
+        const withdrawn = BigInt("0x" + hex.slice(256, 320)) !== 0n;
+        const amtObs = (Number(amountWei) / 1e18).toLocaleString("en-US", { maximumFractionDigits: 2 });
+        const unlockDate = unlockTs > 0 ? new Date(unlockTs * 1000).toUTCString() : "—";
+        resEl.textContent = `#${id} • ${amtObs} OBS • Beneficiary: ${beneficiary.slice(0, 6)}...${beneficiary.slice(-4)} • Unlock: ${unlockDate} • Withdrawn: ${withdrawn}`;
+      } catch (e) {
+        resEl.textContent = "Unable to read lock #" + id;
+      }
+    }
+
+    document.getElementById("langSelect").addEventListener("change", (e) => applyLanguage(e.target.value));
+    document.getElementById("addChainBtn").addEventListener("click", addOrSwitchChain);
+    document.getElementById("connectBtn").addEventListener("click", connectWallet);
+    document.getElementById("ethInput").addEventListener("input", updateCalc);
+    document.getElementById("buyBtn").addEventListener("click", buyObs);
+    document.getElementById("claimTokensBtn").addEventListener("click", claimTokens);
+    document.getElementById("claimRefundBtn").addEventListener("click", claimRefund);
+    document.getElementById("claimRewardsBtn").addEventListener("click", claimRewards);
+    document.getElementById("refreshBtn").addEventListener("click", refreshChainData);
+    document.getElementById("checkLockBtn").addEventListener("click", checkLock);
+
+    applyLanguage("en");
+    updateCalc();
+    setInterval(updateCountdown, 1000);
+    refreshChainData();
+  </script>
+</body>
+</html>
