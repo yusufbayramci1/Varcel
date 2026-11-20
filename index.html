@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en" dir="ltr" translate="no">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google" content="notranslate" />
   <title>OBSIDION ($OBS) — Presale & Governance</title>
   <style>
     :root {
@@ -273,8 +274,8 @@
       chainIdHex: "0x1237",
       chainName: "Robinhood Chain",
       rpcUrls: [
-        "https://rpc.robinhoodchain.com",
-        "https://robinhoodchain.drpc.org"
+        "https://rpc.mainnet.chain.robinhood.com",
+        "https://4663.rpc.thirdweb.com"
       ],
       blockExplorerUrls: ["https://robinhoodchain.blockscout.com"],
       nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 }
@@ -500,13 +501,12 @@
 
     function checkWalletNetworkBanner() {
       if (!account || !walletChainId) {
-        setMsg("globalAlert", "");
         return;
       }
       const chainNum = parseInt(walletChainId, 16);
       if (chainNum !== CHAIN_CONFIG.chainIdDec) {
         setMsg("globalAlert", I18N[currentLang].wrongChain, "warn");
-      } else {
+      } else if ($("globalAlert").classList.contains("warn")) {
         setMsg("globalAlert", "");
       }
     }
@@ -544,7 +544,6 @@
     }
 
     async function rpcCall(method, params = []) {
-      // Prefer wallet if already on Robinhood Chain (4663)
       if (window.ethereum && walletChainId && parseInt(walletChainId, 16) === CHAIN_CONFIG.chainIdDec) {
         try {
           const out = await window.ethereum.request({ method, params });
@@ -553,7 +552,7 @@
         } catch (_) {}
       }
 
-      let lastErr = null;
+      const errors = [];
       for (const url of CHAIN_CONFIG.rpcUrls) {
         try {
           const res = await fetch(url, {
@@ -561,15 +560,18 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params })
           });
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+          }
           const json = await res.json();
           if (json.error) throw new Error(json.error.message || "RPC error");
           $("diagRpc").textContent = `RPC: ${new URL(url).hostname}`;
           return json.result;
         } catch (err) {
-          lastErr = err;
+          errors.push(`${new URL(url).hostname}: ${err.message}`);
         }
       }
-      throw lastErr || new Error("All RPC endpoints failed");
+      throw new Error(errors.join(" | ") || "All RPC endpoints failed");
     }
 
     async function ethCall(to, data) {
@@ -607,6 +609,7 @@
         const raw = await ethCall(ADDRESSES.presale, SELECTORS.getPresaleSummary);
         const words = decodeWords(raw);
         if (words.length >= 10) {
+          setMsg("globalAlert", "");
           const s = parseSummaryWords(words);
           presaleActive = s.presaleStarted;
           presaleFinalized = s.finalized;
