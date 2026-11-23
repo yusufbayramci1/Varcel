@@ -1,1254 +1,1159 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" translate="no">
+<html lang="tr" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="google" content="notranslate" />
-  <meta name="theme-color" content="#050507" />
-  <title>OBSIDION ($OBS) — Deflationary DeFi on Robinhood Chain</title>
-  <meta name="description" content="OBSIDION ($OBS) is a strictly deflationary DeFi asset on Robinhood Chain (Chain ID: 4663). 120M initial supply, immutable 21M hard burn floor, Timelock transparency, presale live from 0.0084 ETH." />
-
-  <!-- Open Graph / X & Telegram Preview -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://obsidion.pages.dev/" />
-  <meta property="og:title" content="OBSIDION ($OBS) — Presale Live on Robinhood Chain" />
-  <meta property="og:description" content="120M → 21M Hard Burn Floor · 100% Timelock Protected · Accessible presale entry from 0.0084 ETH." />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="@ObsidionT" />
-  <meta name="twitter:title" content="OBSIDION ($OBS) — Deflationary DeFi on Robinhood Chain" />
-  <meta name="twitter:description" content="Fixed 120M supply burning toward an immutable 21M floor. Presale live now from 0.0084 ETH." />
-
-  <!-- Instant Inline SVG Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23f5d061'/%3E%3Cstop offset='1' stop-color='%23b58d22'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='%230b0c10' stroke='%23d4af37' stroke-width='3'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='900' font-size='36' fill='url(%23g)'%3E%CE%A9%3C/text%3E%3C/svg%3E" />
-
+  <title>OBSIDION ($OBS) | Kurucu Geçiş & Deploy Kontrol Paneli</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.2/ethers.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Cinzel', 'serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            obsidian: {
+              950: '#050508',
+              900: '#09090F',
+              850: '#10121B',
+              800: '#171A26',
+            }
+          }
+        }
+      }
+    }
+  </script>
   <style>
-    :root {
-      --bg: #050507;
-      --surface: #0b0c10;
-      --surface-2: #12141c;
-      --surface-3: #181b26;
-      --border: rgba(212, 175, 55, 0.18);
-      --border-strong: rgba(245, 208, 97, 0.48);
-      --text: #f5f2e9;
-      --muted: #9c988d;
-      --gold: #d4af37;
-      --gold-bright: #f5d061;
-      --gold-dark: #8c6b16;
-      --ok: #22c55e;
-      --warn: #f59e0b;
-      --err: #ef4444;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
     body {
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background:
-        radial-gradient(circle at 12% 6%, rgba(212, 175, 55, 0.14), transparent 36%),
-        radial-gradient(circle at 88% 12%, rgba(245, 208, 97, 0.08), transparent 34%),
-        var(--bg);
-      color: var(--text);
+      background-color: #050508;
+      color: #F8FAFC;
+      background-image:
+        radial-gradient(circle at 15% 10%, rgba(251, 191, 36, 0.14) 0%, transparent 40%),
+        radial-gradient(circle at 85% 20%, rgba(249, 115, 22, 0.11) 0%, transparent 42%),
+        radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.08) 0%, transparent 48%);
       min-height: 100vh;
-      line-height: 1.55;
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
     }
 
-    a { color: var(--gold-bright); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .container { max-width: 1160px; margin: 0 auto; padding: 16px 16px 76px; }
-
-    /* Animations (GPU Accelerated) */
-    @keyframes pulseRing {
-      0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.65); }
-      70% { box-shadow: 0 0 0 9px rgba(34, 197, 94, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-    }
-    @keyframes shimmerSweep {
-      0% { transform: translateX(-120%) skewX(-20deg); }
-      100% { transform: translateX(220%) skewX(-20deg); }
-    }
-    @keyframes floatSlow {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
+    .obsidian-card {
+      background: linear-gradient(165deg, rgba(22, 25, 38, 0.86) 0%, rgba(10, 11, 18, 0.95) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(251, 191, 36, 0.24);
+      box-shadow: 0 12px 38px -10px rgba(0, 0, 0, 0.85), inset 0 1px 0 0 rgba(253, 230, 138, 0.14);
     }
 
-    .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1); }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    .hero-anim { animation: fadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
-
-    @media (prefers-reduced-motion: reduce) {
-      .reveal, .hero-anim, .brand-badge, .dot.live, button.primary::after { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
+    .obsidian-card-gold {
+      background: linear-gradient(165deg, rgba(30, 26, 20, 0.9) 0%, rgba(11, 11, 17, 0.96) 100%);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(251, 191, 36, 0.55);
+      box-shadow: 0 0 32px rgba(245, 158, 11, 0.18), inset 0 1px 0 0 rgba(253, 230, 138, 0.25);
     }
 
-    /* Header */
-    header {
-      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-      gap: 12px; padding: 12px 16px;
-      background: rgba(14, 16, 22, 0.92);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      backdrop-filter: blur(12px);
-      position: sticky; top: 10px; z-index: 40;
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #FEF08A 0%, #FBBF24 48%, #F97316 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .brand { display: flex; align-items: center; gap: 11px; }
-    .brand-badge {
-      width: 40px; height: 40px; border-radius: 11px;
-      background: linear-gradient(145deg, var(--gold-bright), var(--gold), var(--gold-dark));
-      display: grid; place-items: center; font-weight: 900; color: #09090b; font-size: 1.2rem;
-      box-shadow: 0 0 18px rgba(212, 175, 55, 0.3);
-      animation: floatSlow 4s ease-in-out infinite;
-      flex-shrink: 0;
+    .btn-gold {
+      background: linear-gradient(135deg, #FDE047 0%, #F59E0B 50%, #EA580C 100%);
+      background-size: 200% auto;
+      color: #09090B;
+      font-weight: 800;
+      box-shadow: 0 0 22px rgba(245, 158, 11, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.65);
+      transition: all 0.2s ease;
     }
-    .brand h1 {
-      font-size: 1.08rem; letter-spacing: 0.07em; font-weight: 800;
-      background: linear-gradient(90deg, #fff7d6, var(--gold-bright), var(--gold));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    .btn-gold:hover:not(:disabled) {
+      background-position: right center;
+      box-shadow: 0 0 30px rgba(251, 191, 36, 0.7);
+      transform: translateY(-1px);
     }
-    .brand span { font-size: 0.72rem; color: var(--muted); display: block; }
-
-    nav.desktop-nav { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
-    nav.desktop-nav a { font-size: 0.84rem; color: var(--muted); font-weight: 600; transition: color 0.2s; }
-    nav.desktop-nav a:hover { color: var(--gold-bright); text-decoration: none; }
-
-    .mobile-nav {
-      display: none; gap: 8px; overflow-x: auto; padding: 10px 2px 2px;
-      scrollbar-width: none; -ms-overflow-style: none;
-    }
-    .mobile-nav::-webkit-scrollbar { display: none; }
-    .mobile-nav a {
-      flex: 0 0 auto; font-size: 0.78rem; font-weight: 600; color: var(--muted);
-      padding: 6px 12px; border-radius: 999px; background: var(--surface-2);
-      border: 1px solid var(--border);
-    }
-    .mobile-nav a:hover { color: var(--gold-bright); border-color: var(--gold); text-decoration: none; }
-
-    .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
-
-    select, input, button {
-      font: inherit; border-radius: 10px; border: 1px solid var(--border);
-      background: var(--surface-2); color: var(--text); padding: 8px 12px;
-      outline: none; font-size: 0.85rem;
-    }
-    input:focus, select:focus {
-      border-color: var(--gold-bright);
-      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.14);
+    .btn-gold:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
     }
 
-    button { cursor: pointer; font-weight: 600; transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease; }
-    button:hover { border-color: var(--border-strong); transform: translateY(-1px); }
-    button:active { transform: translateY(0); }
-    button:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
-
-    button.primary {
-      position: relative; overflow: hidden;
-      background: linear-gradient(135deg, var(--gold-bright), var(--gold) 55%, #b58d22);
-      border: 1px solid rgba(255, 236, 179, 0.45);
-      color: #09090b; font-weight: 700;
-      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.22);
+    .btn-emerald {
+      background: linear-gradient(135deg, #34D399 0%, #10B981 55%, #059669 100%);
+      color: #04130D;
+      font-weight: 800;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+      transition: all 0.2s ease;
     }
-    button.primary::after {
-      content: ""; position: absolute; top: 0; left: 0; width: 45%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-      animation: shimmerSweep 3.8s ease-in-out infinite;
-      pointer-events: none;
+    .btn-emerald:hover:not(:disabled) {
+      box-shadow: 0 0 28px rgba(52, 211, 153, 0.65);
+      transform: translateY(-1px);
     }
-    button.primary:hover { box-shadow: 0 8px 26px rgba(212, 175, 55, 0.38); }
-    button.secondary { background: rgba(212, 175, 55, 0.1); border-color: rgba(212, 175, 55, 0.35); color: var(--gold-bright); }
-    button.ghost { background: rgba(255, 255, 255, 0.02); color: var(--text); }
-
-    /* Cards & Layout */
-    .card {
-      background: linear-gradient(165deg, rgba(18, 20, 28, 0.96), rgba(9, 10, 14, 0.98));
-      border: 1px solid var(--border);
-      border-radius: 18px; padding: 22px;
-      transition: border-color 0.25s ease, box-shadow 0.25s ease;
-    }
-    .card:hover { border-color: rgba(212, 175, 55, 0.3); }
-
-    .section { margin-top: 26px; scroll-margin-top: 86px; }
-    .section-head { margin-bottom: 16px; }
-    .section-kicker { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 4px; }
-    .section-title { font-size: clamp(1.3rem, 2.5vw, 1.8rem); font-weight: 800; letter-spacing: -0.02em; }
-    .section-sub { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
-
-    .hero { margin-top: 18px; display: grid; grid-template-columns: 1.28fr 1fr; gap: 18px; }
-    @media (max-width: 900px) {
-      .hero { grid-template-columns: 1fr; }
-      nav.desktop-nav { display: none; }
-      .mobile-nav { display: flex; }
+    .btn-emerald:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
 
-    .top-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
-    .status-pill {
-      display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px;
-      border-radius: 999px; font-size: 0.78rem; font-weight: 700;
-      background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3);
-      color: var(--gold-bright);
+    .btn-danger {
+      background: linear-gradient(135deg, #F87171 0%, #EF4444 55%, #B91C1C 100%);
+      color: #FFF;
+      font-weight: 700;
+      box-shadow: 0 0 18px rgba(239, 68, 68, 0.35);
+      transition: all 0.2s ease;
     }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); }
-    .dot.live { background: var(--ok); animation: pulseRing 2s infinite; }
-    .sync-tag { font-size: 0.71rem; color: var(--muted); padding: 4px 9px; border-radius: 999px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); }
-
-    .hero h2 { font-size: clamp(1.6rem, 3.1vw, 2.35rem); line-height: 1.15; margin-bottom: 10px; letter-spacing: -0.02em; }
-    .hero h2 span { background: linear-gradient(90deg, var(--gold-bright), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .hero p { color: var(--muted); font-size: 0.93rem; margin-bottom: 16px; }
-
-    /* Countdown */
-    .countdown-box { background: var(--surface); border: 1px solid rgba(212, 175, 55, 0.28); border-radius: 14px; padding: 14px; margin-bottom: 16px; }
-    .countdown-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.73rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin-bottom: 9px; }
-    .timer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
-    .time-cell { background: var(--surface-2); border: 1px solid var(--border); border-radius: 11px; padding: 10px 4px; transition: border-color 0.2s; }
-    .time-cell:hover { border-color: var(--gold); }
-    .time-num { font-size: clamp(1.25rem, 2.7vw, 1.7rem); font-weight: 800; color: var(--gold-bright); font-variant-numeric: tabular-nums; }
-    .time-unit { font-size: 0.68rem; color: var(--muted); margin-top: 2px; text-transform: uppercase; }
-
-    /* Progress & Stats */
-    .progress-bar { position: relative; height: 11px; background: var(--surface); border-radius: 999px; overflow: hidden; border: 1px solid var(--border); }
-    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-bright)); transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
-
-    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 14px; }
-    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-    .stat { background: rgba(18, 20, 28, 0.75); border: 1px solid var(--border); border-radius: 12px; padding: 11px; transition: transform 0.2s, border-color 0.2s; }
-    .stat:hover { transform: translateY(-2px); border-color: rgba(212, 175, 55, 0.35); }
-    .stat .k { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
-    .stat .v { font-size: 0.96rem; font-weight: 700; margin-top: 3px; color: var(--text); word-break: break-word; }
-
-    /* Buy Box & Calculator */
-    .card-title { font-size: 1.12rem; font-weight: 700; margin-bottom: 8px; color: var(--gold-bright); }
-    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
-    .field-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--muted); }
-    .bal-tag { color: var(--gold-bright); font-weight: 600; cursor: pointer; }
-    .row { display: flex; gap: 8px; align-items: center; }
-    .row > * { flex: 1; }
-
-    .quick-amts { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 11px; }
-    .quick-btn { padding: 6px 4px; font-size: 0.73rem; border-radius: 8px; background: rgba(212, 175, 55, 0.08); border: 1px solid var(--border); color: var(--gold-bright); }
-    .quick-btn:hover { background: rgba(212, 175, 55, 0.2); }
-
-    .calc-box {
-      background: var(--surface); border: 1px solid rgba(212, 175, 55, 0.25);
-      border-radius: 12px; padding: 11px 13px; margin-bottom: 12px;
-      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    .btn-danger:hover:not(:disabled) {
+      box-shadow: 0 0 26px rgba(248, 113, 113, 0.65);
+      transform: translateY(-1px);
     }
-    .calc-box .lbl { font-size: 0.76rem; color: var(--muted); }
-    .calc-box .val { font-size: 1.05rem; font-weight: 800; color: var(--gold-bright); text-align: right; }
-    .calc-rate { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
-
-    .mobile-wallet-box {
-      display: none; margin-top: 10px; padding: 10px 12px; border-radius: 11px;
-      background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.35);
-      font-size: 0.79rem; color: #fcd34d;
+    .btn-danger:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
-    .mobile-wallet-box a { display: inline-block; margin-top: 6px; padding: 6px 11px; border-radius: 8px; background: var(--gold); color: #09090b; font-weight: 700; text-decoration: none; }
-
-    /* Grids */
-    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-    @media (max-width: 980px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 760px) { .grid-2, .grid-4 { grid-template-columns: 1fr; } }
-
-    /* Tokenomics visual bar */
-    .burn-visual { margin-top: 14px; padding: 14px; border-radius: 13px; background: var(--surface); border: 1px solid var(--border); }
-    .burn-bar { height: 15px; border-radius: 999px; overflow: hidden; display: flex; background: var(--surface-3); border: 1px solid var(--border); margin: 9px 0; }
-    .burn-bar-floor { width: 17.5%; background: linear-gradient(90deg, var(--gold), var(--gold-bright)); }
-    .burn-bar-burnable { width: 82.5%; background: repeating-linear-gradient(45deg, rgba(212,175,55,0.22), rgba(212,175,55,0.22) 8px, rgba(212,175,55,0.08) 8px, rgba(212,175,55,0.08) 16px); }
-    .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.78rem; color: var(--muted); }
-    .legend span { display: inline-flex; align-items: center; gap: 6px; }
-    .swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
-
-    /* Roadmap */
-    .phase-card {
-      background: linear-gradient(170deg, rgba(18, 20, 28, 0.95), rgba(10, 11, 16, 0.98));
-      border: 1px solid var(--border); border-radius: 16px; padding: 18px;
-      display: flex; flex-direction: column; gap: 9px;
-      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-    }
-    .phase-card:hover { transform: translateY(-4px); border-color: var(--border-strong); box-shadow: 0 12px 30px rgba(0,0,0,0.45); }
-    .phase-card.active { border-color: var(--border-strong); box-shadow: 0 0 24px rgba(212, 175, 55, 0.12); }
-    .phase-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-    .phase-num { font-size: 0.72rem; font-weight: 800; color: var(--gold); letter-spacing: 0.08em; text-transform: uppercase; }
-    .phase-badge { font-size: 0.66rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; text-transform: uppercase; }
-    .badge-live { background: rgba(34, 197, 94, 0.14); color: #86efac; border: 1px solid rgba(34, 197, 94, 0.4); }
-    .badge-next { background: rgba(212, 175, 55, 0.14); color: var(--gold-bright); border: 1px solid rgba(212, 175, 55, 0.35); }
-    .badge-plan { background: rgba(255, 255, 255, 0.05); color: var(--muted); border: 1px solid rgba(255, 255, 255, 0.1); }
-    .phase-card h4 { font-size: 0.98rem; font-weight: 700; color: var(--text); }
-    .phase-time { font-size: 0.74rem; color: var(--muted); margin-top: -5px; }
-    .phase-list { list-style: none; display: grid; gap: 6px; font-size: 0.82rem; color: var(--muted); margin-top: 3px; }
-    .phase-list li { padding-left: 15px; position: relative; }
-    .phase-list li::before { content: "◆"; position: absolute; left: 0; top: 1px; font-size: 0.62rem; color: var(--gold); }
-    .phase-list li.done { color: var(--text); }
-    .phase-list li.done::before { content: "✓"; color: var(--ok); font-size: 0.78rem; font-weight: 800; }
-
-    /* Steps & FAQ */
-    .step-card { background: rgba(18, 20, 28, 0.72); border: 1px solid var(--border); border-radius: 15px; padding: 16px; transition: transform 0.2s, border-color 0.2s; }
-    .step-card:hover { transform: translateY(-3px); border-color: var(--border-strong); }
-    .step-num { width: 26px; height: 26px; border-radius: 7px; background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.4); color: var(--gold-bright); font-weight: 800; font-size: 0.8rem; display: grid; place-items: center; margin-bottom: 8px; }
-    .step-card h4 { font-size: 0.93rem; margin-bottom: 4px; }
-    .step-card p { font-size: 0.81rem; color: var(--muted); }
-
-    details.faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 9px; transition: border-color 0.2s; }
-    details.faq-item[open] { border-color: rgba(212, 175, 55, 0.35); }
-    details.faq-item summary { cursor: pointer; font-weight: 700; font-size: 0.88rem; color: var(--text); list-style: none; display: flex; justify-content: space-between; align-items: center; }
-    details.faq-item summary::after { content: "+"; color: var(--gold-bright); font-size: 1.1rem; }
-    details.faq-item[open] summary::after { content: "−"; }
-    details.faq-item p { margin-top: 8px; font-size: 0.82rem; color: var(--muted); }
-
-    /* Contracts */
-    .contracts-list { display: grid; gap: 9px; margin-top: 12px; }
-    .addr-item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; background: var(--surface); border-radius: 11px; border: 1px solid var(--border); }
-    .addr-meta { min-width: 0; flex: 1; }
-    .addr-meta span { display: block; color: var(--muted); font-size: 0.72rem; margin-bottom: 2px; }
-    code { color: var(--gold-bright); word-break: break-all; font-size: 0.76rem; }
-    .addr-actions { display: flex; gap: 6px; }
-    .mini-btn { padding: 5px 9px; font-size: 0.73rem; border-radius: 8px; background: rgba(212, 175, 55, 0.12); color: var(--gold-bright); border: 1px solid rgba(212, 175, 55, 0.3); white-space: nowrap; display: inline-flex; align-items: center; text-decoration: none; }
-    .mini-btn:hover { background: rgba(212, 175, 55, 0.22); text-decoration: none; }
-
-    /* Messages & Toast */
-    .msg { margin-top: 10px; padding: 10px 13px; border-radius: 10px; font-size: 0.82rem; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); display: none; word-break: break-word; }
-    .msg.show { display: block; animation: fadeUp 0.25s ease; }
-    .msg.ok { border-color: rgba(34, 197, 94, 0.45); color: #86efac; }
-    .msg.warn { border-color: rgba(245, 158, 11, 0.45); color: #fcd34d; }
-    .msg.err { border-color: rgba(239, 68, 68, 0.45); color: #fca5a5; }
-    .tx-link { display: inline-block; margin-top: 6px; padding: 4px 10px; border-radius: 7px; background: rgba(34, 197, 94, 0.18); color: #86efac; font-weight: 700; font-size: 0.78rem; }
-
-    .toast {
-      position: fixed; right: 18px; bottom: 18px; z-index: 60;
-      padding: 10px 16px; border-radius: 11px; font-size: 0.82rem; font-weight: 600;
-      background: rgba(18, 20, 28, 0.96); border: 1px solid var(--gold);
-      color: var(--gold-bright); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-      opacity: 0; transform: translateY(12px); pointer-events: none;
-      transition: opacity 0.25s ease, transform 0.25s ease;
-    }
-    .toast.show { opacity: 1; transform: translateY(0); }
-
-    /* Footer */
-    footer { margin-top: 38px; padding-top: 22px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; color: var(--muted); font-size: 0.82rem; }
-    .socials { display: flex; flex-wrap: wrap; gap: 8px; }
-    .social-pill { padding: 7px 12px; border-radius: 9px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); font-weight: 600; font-size: 0.78rem; transition: border-color 0.2s, color 0.2s; }
-    .social-pill:hover { border-color: var(--gold-bright); color: var(--gold-bright); text-decoration: none; }
   </style>
 </head>
-<body>
-  <div class="container">
-    <header>
-      <div class="brand">
-        <div class="brand-badge">Ω</div>
+<body class="selection:bg-amber-500 selection:text-black pb-14">
+
+  <!-- TOP HEADER BAR -->
+  <header class="sticky top-0 z-40 bg-obsidian-950/90 backdrop-blur-xl border-b border-amber-500/25">
+    <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-300 via-amber-500 to-orange-700 p-[2px] shadow-[0_0_20px_rgba(245,158,11,0.45)]">
+          <div class="w-full h-full rounded-full bg-obsidian-950 flex items-center justify-center">
+            <span class="font-display font-black text-lg gold-gradient-text">Ω</span>
+          </div>
+        </div>
         <div>
-          <h1>OBSIDION ($OBS)</h1>
-          <span>Robinhood Chain · Chain ID 4663</span>
+          <div class="flex items-center gap-2">
+            <h1 class="font-display font-extrabold text-base sm:text-lg tracking-wider gold-gradient-text">OBSIDION ($OBS)</h1>
+            <span class="px-2 py-0.5 text-[10px] font-mono font-bold rounded bg-amber-500/20 text-amber-300 border border-amber-400/30">FOUNDER PANEL</span>
+          </div>
+          <p class="text-[11px] text-slate-400">Remix'siz Tek Tıkla Kontrat Geçiş & Deploy Merkezi • Robinhood Chain (4663)</p>
         </div>
       </div>
 
-      <nav class="desktop-nav">
-        <a href="#presale" data-i18n="navPresale">Presale</a>
-        <a href="#tokenomics" data-i18n="navTokenomics">Tokenomics</a>
-        <a href="#roadmap" data-i18n="navRoadmap">Roadmap</a>
-        <a href="#howto" data-i18n="navHowTo">How to Buy</a>
-        <a href="#timelock" data-i18n="navTimelock">Timelock & FAQ</a>
-      </nav>
-
-      <div class="controls">
-        <select id="langSelect" aria-label="Language">
-          <option value="en">EN</option>
-          <option value="tr">TR</option>
-        </select>
-        <button id="addTokenBtn" class="ghost" type="button" data-i18n="addToken">+ Add $OBS</button>
-        <button id="addChainBtn" class="ghost" type="button" data-i18n="addChain">Add Network</button>
-        <button id="connectBtn" class="primary" type="button" data-i18n="connect">Connect Wallet</button>
-      </div>
-    </header>
-
-    <nav class="mobile-nav">
-      <a href="#presale" data-i18n="navPresale">Presale</a>
-      <a href="#tokenomics" data-i18n="navTokenomics">Tokenomics</a>
-      <a href="#roadmap" data-i18n="navRoadmap">Roadmap</a>
-      <a href="#howto" data-i18n="navHowTo">How to Buy</a>
-      <a href="#timelock" data-i18n="navTimelock">Timelock & FAQ</a>
-    </nav>
-
-    <div id="globalAlert" class="msg"></div>
-
-    <!-- HERO & PRESALE -->
-    <section id="presale" class="hero hero-anim">
-      <div class="card">
-        <div class="top-meta">
-          <div class="status-pill">
-            <span id="statusDot" class="dot live"></span>
-            <span id="presaleStatusText">Presale Live</span>
-          </div>
-          <span id="syncTag" class="sync-tag">Verified Schedule</span>
-        </div>
-
-        <h2 id="heroTitle">Deflationary <span>Obsidian</span> Scarcity</h2>
-        <p id="heroSubtitle">
-          Fixed 120,000,000 $OBS initial supply burning on-chain toward an immutable 21,000,000 $OBS hard floor on Robinhood Chain. Accessible presale entry from 0.0084 ETH.
-        </p>
-
-        <div class="countdown-box">
-          <div class="countdown-head">
-            <span data-i18n="countdown">Presale Countdown</span>
-            <span id="endTimePreview">UTC</span>
-          </div>
-          <div class="timer-grid">
-            <div class="time-cell"><div id="dVal" class="time-num">00</div><div class="time-unit" data-i18n="days">Days</div></div>
-            <div class="time-cell"><div id="hVal" class="time-num">00</div><div class="time-unit" data-i18n="hours">Hours</div></div>
-            <div class="time-cell"><div id="mVal" class="time-num">00</div><div class="time-unit" data-i18n="minutes">Minutes</div></div>
-            <div class="time-cell"><div id="sVal" class="time-num">00</div><div class="time-unit" data-i18n="seconds">Seconds</div></div>
-          </div>
-        </div>
-
-        <div>
-          <div class="row" style="font-size:0.82rem; color:var(--muted); margin-bottom:6px;">
-            <span data-i18n="raised">Total Raised</span>
-            <span id="capRatioText" style="text-align:right; color:var(--gold-bright); font-weight:700;">0 / 200 ETH</span>
-          </div>
-          <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
-        </div>
-
-        <div class="stats-grid">
-          <div class="stat"><div class="k" data-i18n="softCap">Soft Cap</div><div id="vSoftCap" class="v">50 ETH</div></div>
-          <div class="stat"><div class="k" data-i18n="hardCap">Hard Cap</div><div id="vHardCap" class="v">200 ETH</div></div>
-          <div class="stat"><div class="k" data-i18n="minBuy">Min Buy</div><div id="vMinBuy" class="v" style="color:var(--gold-bright);">0.0084 ETH</div></div>
-          <div class="stat"><div class="k" data-i18n="maxBuy">Max Buy</div><div id="vMaxBuy" class="v">10 ETH</div></div>
-          <div class="stat"><div class="k" data-i18n="buyers">Buyers</div><div id="vBuyers" class="v">0</div></div>
-          <div class="stat"><div class="k" data-i18n="bal">Your $OBS</div><div id="vObsBal" class="v">—</div></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="top-meta" style="margin-bottom:6px;">
-          <h3 class="card-title" style="margin:0;" data-i18n="buyTitle">Participate in Presale</h3>
-          <button id="refreshBtn" class="mini-btn" type="button" data-i18n="refresh">Refresh</button>
-        </div>
-        <p style="font-size:0.81rem; color:var(--muted); margin-bottom:12px;" data-i18n="buySub">
-          Enter 0.0084 – 10 ETH. Presale allocation (48.6M $OBS) & Soft Cap refund protection are enforced on-chain.
-        </p>
-
-        <div class="field">
-          <div class="field-top">
-            <label for="ethInput" data-i18n="ethAmt">Contribution Amount (ETH)</label>
-            <span id="ethBalTag" class="bal-tag" title="Click to fill max">—</span>
-          </div>
-          <input id="ethInput" type="number" step="any" min="0.0084" max="10" placeholder="0.05" value="0.05" />
-        </div>
-
-        <div class="quick-amts">
-          <button class="quick-btn" type="button" data-amt="0.0084">Min</button>
-          <button class="quick-btn" type="button" data-amt="0.05">0.05</button>
-          <button class="quick-btn" type="button" data-amt="0.1">0.1</button>
-          <button class="quick-btn" type="button" data-amt="0.5">0.5</button>
-          <button class="quick-btn" type="button" data-amt="1">1 ETH</button>
-        </div>
-
-        <div class="calc-box">
+      <!-- Wallet & Balances -->
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div id="walletBalancesBox" class="hidden sm:flex items-center gap-3 px-3 py-1.5 rounded-xl bg-obsidian-900 border border-amber-500/25 text-xs font-mono">
           <div>
-            <div class="lbl" data-i18n="estReceive">Estimated Allocation</div>
-            <div class="calc-rate">1 ETH = 243,000 $OBS</div>
+            <span class="text-slate-400">ETH:</span>
+            <span id="ownerEthBalance" class="text-white font-bold">0.0000</span>
           </div>
-          <div id="estObsVal" class="val">12,150 $OBS</div>
+          <span class="text-slate-600">|</span>
+          <div>
+            <span class="text-slate-400">$OBS:</span>
+            <span id="ownerObsBalance" class="text-amber-300 font-bold">0</span>
+          </div>
         </div>
 
-        <button id="buyBtn" class="primary" style="width:100%; padding:11px;" type="button" data-i18n="buyBtn">Buy $OBS Now</button>
-        <div id="buyMsg" class="msg"></div>
+        <button onclick="refreshAllStates()" title="Verileri Yenile" class="p-2.5 rounded-xl bg-obsidian-850 border border-amber-500/25 text-amber-300 hover:border-amber-400 transition-colors cursor-pointer">
+          🔄
+        </button>
 
-        <div id="mobileWalletBox" class="mobile-wallet-box">
-          <div data-i18n="noWalletHint">No Web3 wallet detected in this browser. Open this dApp inside MetaMask to connect and buy:</div>
-          <a href="https://metamask.app.link/dapp/obsidion.pages.dev" target="_blank" rel="noopener">Open in MetaMask →</a>
+        <button id="connectWalletBtn" onclick="connectWallet()" class="btn-gold px-4 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-2 cursor-pointer">
+          <span>🦊</span>
+          <span id="connectBtnText">Kurucu Cüzdanı Bağla</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-6xl mx-auto px-4 pt-6 space-y-6">
+
+    <!-- PRE-CONFIGURED SYSTEM ADDRESSES BAR -->
+    <section class="obsidian-card rounded-2xl p-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono">
+      <div class="bg-obsidian-950/90 p-3 rounded-xl border border-white/10">
+        <span class="text-[10px] uppercase text-slate-400 block mb-1">Ağ Bilgisi (Auto-Switch)</span>
+        <div class="flex items-center justify-between">
+          <span class="text-emerald-400 font-bold flex items-center gap-1.5">
+            <span id="networkDot" class="w-2 h-2 rounded-full bg-slate-500"></span>
+            <span id="networkNameText">Robinhood Chain (4663 / 0x1237)</span>
+          </span>
         </div>
+      </div>
 
-        <div class="contracts-list">
-          <div class="addr-item">
-            <div class="addr-meta"><span>Token Contract ($OBS)</span><code>0xe3A58EeB751aCa0c8f158EcF93328fe94DE909F6</code></div>
-            <div class="addr-actions">
-              <button class="mini-btn copy-btn" type="button" data-copy="0xe3A58EeB751aCa0c8f158EcF93328fe94DE909F6">Copy</button>
-              <a class="mini-btn" href="https://robinhoodchain.blockscout.com/address/0xe3A58EeB751aCa0c8f158EcF93328fe94DE909F6" target="_blank" rel="noopener">Explorer</a>
-            </div>
-          </div>
-          <div class="addr-item">
-            <div class="addr-meta"><span>Presale Contract</span><code>0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32</code></div>
-            <div class="addr-actions">
-              <button class="mini-btn copy-btn" type="button" data-copy="0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32">Copy</button>
-              <a class="mini-btn" href="https://robinhoodchain.blockscout.com/address/0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32" target="_blank" rel="noopener">Explorer</a>
-            </div>
-          </div>
-          <div class="addr-item">
-            <div class="addr-meta"><span>Timelock Contract</span><code>0x445452FEb661880D0EDbF04Fe6249e1A33C2ec28</code></div>
-            <div class="addr-actions">
-              <button class="mini-btn copy-btn" type="button" data-copy="0x445452FEb661880D0EDbF04Fe6249e1A33C2ec28">Copy</button>
-              <a class="mini-btn" href="https://robinhoodchain.blockscout.com/address/0x445452FEb661880D0EDbF04Fe6249e1A33C2ec28" target="_blank" rel="noopener">Explorer</a>
-            </div>
-          </div>
+      <div class="bg-obsidian-950/90 p-3 rounded-xl border border-white/10">
+        <span class="text-[10px] uppercase text-slate-400 block mb-1">$OBS Token Kontratı (Sabit)</span>
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-amber-300 truncate">0xe3A58EeB751aCa0c8f158EcF93328fe94DE909F6</span>
+          <button onclick="copyText('0xe3A58EeB751aCa0c8f158EcF93328fe94DE909F6', 'Token adresi kopyalandı')" class="text-slate-400 hover:text-white shrink-0 cursor-pointer">📋</button>
+        </div>
+      </div>
+
+      <div class="bg-obsidian-950/90 p-3 rounded-xl border border-white/10">
+        <span class="text-[10px] uppercase text-slate-400 block mb-1">Eski Ön Satış Kontratı (Kapatılacak)</span>
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-rose-300 truncate">0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32</span>
+          <button onclick="copyText('0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32', 'Eski kontrat adresi kopyalandı')" class="text-slate-400 hover:text-white shrink-0 cursor-pointer">📋</button>
         </div>
       </div>
     </section>
 
-    <!-- TOKENOMICS & BURN FLOOR -->
-    <section id="tokenomics" class="section reveal">
-      <div class="card">
-        <div class="section-head">
-          <div class="section-kicker" data-i18n="tokKicker">On-Chain Supply Mechanics</div>
-          <h3 class="section-title" data-i18n="tokTitle">Engineered Scarcity: 120M → 21M Hard Burn Floor</h3>
-          <p class="section-sub" data-i18n="tokSub">
-            OBSIDION is strictly deflationary—no reflection gimmicks or hidden holder-tax promises. Burns execute on-chain until total supply hits 21,000,000 $OBS, where the contract automatically halts further burning.
+    <!-- STEP 1: CANCEL OLD PRESALE & RECOVER 48.6M OBS -->
+    <section class="obsidian-card rounded-3xl p-5 sm:p-6 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-3">
+          <span class="w-8 h-8 rounded-xl bg-rose-500/20 border border-rose-400/40 text-rose-300 font-mono font-extrabold flex items-center justify-center text-sm">1</span>
+          <div>
+            <h2 class="text-base sm:text-lg font-extrabold text-white">Eski Ön Satışı Kapat & 48.6M $OBS Kurtar</h2>
+            <p class="text-xs text-slate-400">Hedef Kontrat: <span class="font-mono text-rose-300">0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32</span></p>
+          </div>
+        </div>
+        <a href="https://robinhoodchain.blockscout.com/address/0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32" target="_blank" rel="noopener noreferrer" class="text-xs font-mono text-amber-300 hover:underline">
+          Blockscout'ta Gör ↗
+        </a>
+      </div>
+
+      <!-- Live Status Pills for Old Presale -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
+        <div class="bg-obsidian-950/80 p-3 rounded-xl border border-white/10 flex items-center justify-between">
+          <span class="text-slate-400">presaleStarted:</span>
+          <span id="oldPresaleStarted" class="font-bold text-slate-300">Bilinmiyor</span>
+        </div>
+        <div class="bg-obsidian-950/80 p-3 rounded-xl border border-white/10 flex items-center justify-between">
+          <span class="text-slate-400">cancelled:</span>
+          <span id="oldPresaleCancelled" class="font-bold text-slate-300">Bilinmiyor</span>
+        </div>
+        <div class="bg-obsidian-950/80 p-3 rounded-xl border border-white/10 flex items-center justify-between">
+          <span class="text-slate-400">İçerideki $OBS:</span>
+          <span id="oldPresaleObsBal" class="font-bold text-amber-300">0 $OBS</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons for Step 1 -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+        <button id="btnCancelOld" onclick="cancelOldPresale()" class="btn-danger py-3 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer">
+          <span>🛑 1A. Eski Ön Satışı İptal Et</span>
+          <span class="text-[10px] font-mono opacity-80">(cancelPresale)</span>
+        </button>
+
+        <button id="btnWithdrawFailure" onclick="withdrawOldFailure()" class="btn-gold py-3 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer">
+          <span>💰 1B. 48.6M $OBS Geri Çek</span>
+          <span class="text-[10px] font-mono opacity-80">(OnFailure)</span>
+        </button>
+
+        <button id="btnWithdrawBeforeStart" onclick="withdrawOldBeforeStart()" class="py-3 px-4 rounded-xl text-xs font-semibold bg-obsidian-850 text-slate-200 border border-amber-500/30 hover:border-amber-400 transition-colors flex items-center justify-center gap-2 cursor-pointer">
+          <span>↩️ Alternatif: Başlamadıysa Çek</span>
+          <span class="text-[10px] font-mono text-slate-400">(BeforeStart)</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 2: IN-BROWSER SOLIDITY 0.8.24 COMPILER & ONE-CLICK DEPLOY -->
+    <section class="obsidian-card-gold rounded-3xl p-5 sm:p-6 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-500/20 pb-3">
+        <div class="flex items-center gap-3">
+          <span class="w-8 h-8 rounded-xl bg-amber-400 text-black font-mono font-extrabold flex items-center justify-center text-sm">2</span>
+          <div>
+            <h2 class="text-base sm:text-lg font-extrabold text-white">Yeni Düşük Limitli Kontratı Derle & Yayınla (Deploy)</h2>
+            <p class="text-xs text-slate-300">
+              Minimum Alım: <strong class="text-emerald-400">0.00001 ETH (~$0.03)</strong> • Esnek Alt Sınır: <strong class="text-amber-300">0.000001 ETH (~$0.003)</strong>
+            </p>
+          </div>
+        </div>
+
+        <!-- Compiler Status Badge -->
+        <div id="compilerStatusBadge" class="px-3 py-1.5 rounded-xl bg-obsidian-950 border border-amber-400/40 text-xs font-mono flex items-center gap-2">
+          <span id="compilerSpinner" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
+          <span id="compilerStatusText" class="text-amber-300">Solidity 0.8.24 Motoru Yükleniyor...</span>
+        </div>
+      </div>
+
+      <!-- Deploy Action & Newly Deployed Address Box -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+        <div class="lg:col-span-5">
+          <button id="btnDeployNew" onclick="deployNewPresaleContract()" disabled class="w-full btn-gold py-4 px-5 rounded-2xl text-sm sm:text-base uppercase tracking-wide flex items-center justify-center gap-2 cursor-pointer">
+            <span>🚀 Yeni Kontratı Robinhood Chain'e Deploy Et</span>
+          </button>
+          <p class="text-[11px] text-slate-400 mt-2 text-center">
+            Constructor parametresi (<code class="text-amber-300">0xe3A5...09F6</code>) otomatik gönderilir.
           </p>
         </div>
 
-        <div class="stats-grid">
-          <div class="stat">
-            <div class="k" data-i18n="tInit">Initial Fixed Supply</div>
-            <div class="v">120,000,000 $OBS</div>
+        <div class="lg:col-span-7 bg-obsidian-950/90 p-4 rounded-2xl border border-amber-500/30 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <label for="newPresaleAddressInput" class="text-xs font-bold text-amber-300">Yeni Ön Satış Kontrat Adresi (Otomatik Kaydedilir):</label>
+            <a id="newPresaleExplorerLink" href="https://robinhoodchain.blockscout.com" target="_blank" rel="noopener noreferrer" class="text-[11px] font-mono text-emerald-400 hover:underline hidden">
+              Blockscout'ta Aç ↗
+            </a>
           </div>
-          <div class="stat">
-            <div class="k" data-i18n="tFloor">Immutable Burn Floor</div>
-            <div class="v" style="color:var(--gold-bright);">21,000,000 $OBS</div>
-          </div>
-          <div class="stat">
-            <div class="k" data-i18n="tPresaleAlloc">Presale Pool (40.5%)</div>
-            <div class="v">48,600,000 $OBS</div>
-          </div>
-        </div>
-
-        <div class="burn-visual">
-          <div class="row" style="font-size:0.79rem; color:var(--text); font-weight:600;">
-            <span>21,000,000 $OBS (17.5%)</span>
-            <span style="text-align:right; color:var(--gold-bright);">99,000,000 $OBS Burnable (82.5%)</span>
-          </div>
-          <div class="burn-bar">
-            <div class="burn-bar-floor"></div>
-            <div class="burn-bar-burnable"></div>
-          </div>
-          <div class="legend">
-            <span><i class="swatch" style="background:var(--gold-bright);"></i> <em style="font-style:normal;" data-i18n="legFloor">Permanent Hard Floor (Never Burned)</em></span>
-            <span><i class="swatch" style="background:rgba(212,175,55,0.35);"></i> <em style="font-style:normal;" data-i18n="legBurn">Deflationary On-Chain Burn Corridor</em></span>
+          <div class="flex items-center gap-2">
+            <input id="newPresaleAddressInput" type="text" oninput="onManualNewAddressChange(this.value)" placeholder="Deploy sonrası otomatik dolacak (veya 0x... yapıştırın)" class="w-full bg-obsidian-900 border border-amber-500/30 rounded-xl px-3 py-2.5 font-mono text-xs sm:text-sm text-emerald-300 focus:outline-none focus:border-amber-400" />
+            <button onclick="copyNewAddress()" class="px-3.5 py-2.5 rounded-xl bg-obsidian-800 hover:bg-amber-400 hover:text-black text-xs font-bold text-amber-300 border border-amber-500/30 transition-colors shrink-0 cursor-pointer">
+              Kopyala
+            </button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- COMPREHENSIVE ROADMAP -->
-    <section id="roadmap" class="section reveal">
-      <div class="section-head">
-        <div class="section-kicker" data-i18n="rmKicker">Strategic Execution Plan</div>
-        <h3 class="section-title" data-i18n="rmTitle">OBSIDION ($OBS) Comprehensive Roadmap</h3>
-        <p class="section-sub" data-i18n="rmSub">Transparent, milestone-driven growth on Robinhood Chain from fair presale to long-term deflationary ecosystem.</p>
+    <!-- STEP 3: CONFIGURE EXEMPTIONS, FUND 48.6M OBS & START PRESALE -->
+    <section class="obsidian-card rounded-3xl p-5 sm:p-6 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-3">
+          <span class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-mono font-extrabold flex items-center justify-center text-sm">3</span>
+          <div>
+            <h2 class="text-base sm:text-lg font-extrabold text-white">Muafiyet Tanımla, 48.6M $OBS Yükle & Ön Satışı Başlat</h2>
+            <p class="text-xs text-slate-400">Yeni kontratın <code class="text-amber-300">startPresale()</code> şartlarını sırayla tamamlayın</p>
+          </div>
+        </div>
       </div>
 
-      <div class="grid-4">
-        <div class="phase-card active">
-          <div class="phase-top">
-            <span class="phase-num">Phase 01</span>
-            <span class="phase-badge badge-live" data-i18n="bLive">In Progress</span>
-          </div>
-          <h4 data-i18n="p1Title">Foundation & Fair Presale</h4>
-          <div class="phase-time">Q4 2026</div>
-          <ul class="phase-list">
-            <li class="done" data-i18n="p1i1">Token, Presale & Timelock contracts deployed on Robinhood Chain</li>
-            <li class="done" data-i18n="p1i2">Presale live (0.0084 ETH min entry, 10 ETH anti-whale cap)</li>
-            <li class="done" data-i18n="p1i3">Official dApp v2 launch with Timelock lookup & live calculator</li>
-            <li data-i18n="p1i4">Organic community growth & CoinVote / tracker listings</li>
-          </ul>
+      <!-- Live Verification Status of New Contract -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+        <div class="bg-obsidian-950/80 p-3 rounded-xl border border-white/10">
+          <span class="text-[10px] text-slate-400 block">Vergi/Limit Muafiyeti</span>
+          <span id="newExemptStatus" class="font-bold text-slate-400 mt-0.5 block">Bekleniyor</span>
         </div>
+        <div class="bg-obsidian-950/80 p-3 rounded-xl border border-white/10">
+          <span class="text-[10px] text-slate-400 block">Yeni Kontrat $OBS</span>
+          <span id="newPresaleObsBal" class="font-bold text-amber-300 mt-0.5 block">0 / 48.6M</span>
+        </div>
+        <div class="bg-obsidian-950/80 p-3 rounded-xl border border-white/10">
+          <span class="text-[10px] text-slate-400 block">Minimum Alım (minBuy)</span>
+          <span id="newPresaleMinBuy" class="font-bold text-emerald-400 mt-0.5 block">0.00001 ETH</span>
+        </div>
+        <div class="bg-obsidian-950/80 p-3 rounded-xl border border-white/10">
+          <span class="text-[10px] text-slate-400 block">Ön Satış Durumu</span>
+          <span id="newPresaleStartedStatus" class="font-bold text-slate-400 mt-0.5 block">Başlatılmadı</span>
+        </div>
+      </div>
 
-        <div class="phase-card">
-          <div class="phase-top">
-            <span class="phase-num">Phase 02</span>
-            <span class="phase-badge badge-next" data-i18n="bNext">Up Next</span>
-          </div>
-          <h4 data-i18n="p2Title">DEX Launch & Active Burns</h4>
-          <div class="phase-time">Q1 2027</div>
-          <ul class="phase-list">
-            <li data-i18n="p2i1">Presale completion (50 ETH Soft Cap / 200 ETH Hard Cap)</li>
-            <li data-i18n="p2i2">DEX liquidity launch on Robinhood Chain</li>
-            <li data-i18n="p2i3">Public LP lock & Timelock verification proof</li>
-            <li data-i18n="p2i4">CoinGecko & CoinMarketCap tracking applications</li>
-            <li data-i18n="p2i5">Activation of on-chain deflationary burns toward 21M floor</li>
-          </ul>
-        </div>
+      <!-- 3 Sequential Action Buttons -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+        <button id="btnSetExempt" onclick="grantSystemExempt()" class="py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold bg-obsidian-850 text-amber-300 border border-amber-400/50 hover:bg-amber-400 hover:text-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer">
+          <span>🛡️ 3A. Muafiyet Ver</span>
+          <span class="text-[10px] font-mono opacity-80">setSystemExempt(newPresale, true)</span>
+        </button>
 
-        <div class="phase-card">
-          <div class="phase-top">
-            <span class="phase-num">Phase 03</span>
-            <span class="phase-badge badge-plan" data-i18n="bPlan">Planned</span>
-          </div>
-          <h4 data-i18n="p3Title">DeFi Utility & Transparency</h4>
-          <div class="phase-time">Q2 – Q3 2027</div>
-          <ul class="phase-list">
-            <li data-i18n="p3i1">Real-time Burn & Supply Analytics Dashboard</li>
-            <li data-i18n="p3i2">Independent smart contract security audit publication</li>
-            <li data-i18n="p3i3">Robinhood Chain DeFi integrations & ecosystem partnerships</li>
-            <li data-i18n="p3i4">Community governance proposals & voting framework</li>
-          </ul>
-        </div>
+        <button id="btnTransferObs" onclick="transferPresaleTokens()" class="py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold bg-obsidian-850 text-amber-300 border border-amber-400/50 hover:bg-amber-400 hover:text-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer">
+          <span>📦 3B. 48.600.000 $OBS Gönder</span>
+          <span class="text-[10px] font-mono opacity-80">transfer(newPresale, 48.6M)</span>
+        </button>
 
-        <div class="phase-card">
-          <div class="phase-top">
-            <span class="phase-num">Phase 04</span>
-            <span class="phase-badge badge-plan" data-i18n="bVision">Expansion</span>
-          </div>
-          <h4 data-i18n="p4Title">Scarcity & Global Reach</h4>
-          <div class="phase-time">Q4 2027+</div>
-          <ul class="phase-list">
-            <li data-i18n="p4i1">Organic volume-driven CEX listing evaluations</li>
-            <li data-i18n="p4i2">Cross-chain bridge research & multi-chain visibility</li>
-            <li data-i18n="p4i3">Periodic Timelock treasury transparency reports</li>
-            <li data-i18n="p4i4">Long-term progression toward the immutable 21M $OBS floor</li>
-          </ul>
-        </div>
+        <button id="btnStartNew" onclick="startNewPresale()" class="btn-emerald py-3.5 px-4 rounded-xl text-xs sm:text-sm flex flex-col items-center justify-center gap-0.5 cursor-pointer">
+          <span>⚡ 3C. Ön Satışı Başlat</span>
+          <span class="text-[10px] font-mono opacity-80">startPresale() • 60 Gün</span>
+        </button>
       </div>
     </section>
 
-    <!-- HOW TO BUY -->
-    <section id="howto" class="section reveal">
-      <div class="section-head">
-        <div class="section-kicker" data-i18n="htKicker">Quick Start Guide</div>
-        <h3 class="section-title" data-i18n="htTitle">How to Participate in 4 Steps</h3>
-      </div>
-      <div class="grid-4">
-        <div class="step-card">
-          <div class="step-num">1</div>
-          <h4 data-i18n="s1t">Open Web3 Wallet</h4>
-          <p data-i18n="s1d">Use MetaMask, Rabby, or your preferred EVM wallet browser and open obsidion.pages.dev.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">2</div>
-          <h4 data-i18n="s2t">Add Robinhood Chain</h4>
-          <p data-i18n="s2d">Click "Add Network" in the header to automatically configure Chain ID 4663.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">3</div>
-          <h4 data-i18n="s3t">Enter ETH Amount</h4>
-          <p data-i18n="s3d">Choose any amount from 0.0084 ETH up to 10 ETH per wallet and preview your $OBS allocation.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">4</div>
-          <h4 data-i18n="s4t">Confirm & Import $OBS</h4>
-          <p data-i18n="s4d">Approve the transaction, then click "+ Add $OBS" in the header to view your token in MetaMask.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- TIMELOCK & FAQ -->
-    <section id="timelock" class="section reveal">
-      <div class="grid-2">
-        <div class="card">
-          <h3 class="card-title" data-i18n="tlTitle">On-Chain Timelock Lookup</h3>
-          <p style="color:var(--muted); font-size:0.86rem; margin-bottom:12px;" data-i18n="tlDesc">
-            Verify lock entries directly from the OBSIDION Timelock smart contract (0x4454...ec28) by entering a Timelock ID.
-          </p>
-          <div class="field">
-            <label for="timelockIdInput" style="font-size:0.8rem; color:var(--muted);" data-i18n="tlId">Timelock ID</label>
-            <div class="row">
-              <input id="timelockIdInput" type="number" min="0" step="1" placeholder="1" />
-              <button id="checkTimelockBtn" class="secondary" type="button" style="flex:0 0 auto;" data-i18n="tlBtn">Check ID</button>
-            </div>
-          </div>
-          <div id="timelockMsg" class="msg"></div>
-
-          <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--border);">
-            <h4 style="font-size:0.94rem; color:var(--gold-bright); margin-bottom:8px;" data-i18n="secTitle">Security & Investor Protection</h4>
-            <ul class="phase-list" style="font-size:0.82rem;">
-              <li class="done" data-i18n="sec1">100% On-Chain Timelock governance architecture</li>
-              <li class="done" data-i18n="sec2">Built-in Soft Cap (50 ETH) refund protection in presale contract</li>
-              <li class="done" data-i18n="sec3">Anti-whale wallet cap strictly limited to 10 ETH maximum</li>
-              <li class="done" data-i18n="sec4">Zero hidden minting: 120M fixed supply with 21M immutable floor</li>
-            </ul>
+    <!-- STEP 4: BLOCKSCOUT VERIFICATION & SOURCE CODE -->
+    <section class="obsidian-card rounded-3xl p-5 sm:p-6 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <span class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-300 font-mono font-extrabold flex items-center justify-center text-sm">4</span>
+          <div>
+            <h2 class="text-base sm:text-lg font-extrabold text-white">Blockscout Kaynak Kodu Doğrulama (Verify Contract)</h2>
+            <p class="text-xs text-slate-400">Derleyici: <code class="text-emerald-400">v0.8.24+commit.e11b9ed9</code> • Optimization: <code class="text-emerald-400">Yes (200 runs)</code></p>
           </div>
         </div>
 
-        <div class="card">
-          <h3 class="card-title" data-i18n="faqTitle">Frequently Asked Questions</h3>
-          <details class="faq-item" open>
-            <summary data-i18n="fq1">What happens if the 50 ETH Soft Cap is not reached?</summary>
-            <p data-i18n="fa1">The presale smart contract includes built-in soft cap protection. If the 50 ETH soft cap is not met by the presale end date, participants can reclaim their contributed ETH directly from the verified presale contract.</p>
-          </details>
-          <details class="faq-item">
-            <summary data-i18n="fq2">How does the 21M Hard Burn Floor work?</summary>
-            <p data-i18n="fa2">OBSIDION launches with 120,000,000 $OBS. On-chain burns permanently reduce supply until it reaches 21,000,000 $OBS—at which point the smart contract automatically stops burning forever.</p>
-          </details>
-          <details class="faq-item">
-            <summary data-i18n="fq3">How do I view $OBS in my MetaMask wallet?</summary>
-            <p data-i18n="fa3">Make sure you are connected to Robinhood Chain (Chain ID: 4663) and click the "+ Add $OBS" button in the top navigation bar to automatically import the verified token contract.</p>
-          </details>
-          <details class="faq-item">
-            <summary data-i18n="fq4">Where can I verify all smart contracts?</summary>
-            <p data-i18n="fa4">Every contract (Token, Presale, and Timelock) is publicly deployed on Robinhood Chain and linked directly to Blockscout in the presale panel above.</p>
-          </details>
+        <div class="flex items-center gap-2">
+          <button onclick="copySoliditySource()" class="btn-gold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer">
+            <span>📋 Solidity Kodunu Kopyala</span>
+          </button>
+          <button onclick="toggleSourceCode()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-obsidian-850 text-slate-300 border border-white/15 hover:border-amber-400/50 cursor-pointer">
+            Kodu Göster / Gizle
+          </button>
         </div>
+      </div>
+
+      <div id="sourceCodeContainer" class="hidden">
+        <pre id="solidityCodeBlock" class="bg-obsidian-950 border border-amber-500/20 rounded-2xl p-4 text-[11px] font-mono text-slate-300 overflow-x-auto max-h-80 leading-relaxed"></pre>
       </div>
     </section>
 
-    <footer>
-      <div><strong style="color:var(--gold-bright);">OBSIDION ($OBS)</strong> · Robinhood Chain (ID: 4663)</div>
-      <div class="socials">
-        <a class="social-pill" href="https://x.com/ObsidionT" target="_blank" rel="noopener">X · @ObsidionT</a>
-        <a class="social-pill" href="https://t.me/ObsidionCommunity" target="_blank" rel="noopener">Telegram Community</a>
-        <a class="social-pill" href="https://t.me/ObsidionNews" target="_blank" rel="noopener">Official News</a>
-        <a class="social-pill" href="https://robinhoodchain.blockscout.com/address/0xe3A58EeB751aCa0c8f158EcF93328fe94DE909F6" target="_blank" rel="noopener">Blockscout</a>
+    <!-- LIVE TRANSACTION & COMPILER CONSOLE LOG -->
+    <section class="obsidian-card rounded-3xl p-5 space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-amber-300">Canlı İşlem & Derleyici Konsolu</h3>
+        </div>
+        <button onclick="clearLogs()" class="text-[11px] font-mono text-slate-400 hover:text-white cursor-pointer">Temizle</button>
       </div>
-    </footer>
-  </div>
+      <div id="consoleLogBox" class="bg-obsidian-950 rounded-2xl p-3.5 border border-white/10 font-mono text-xs space-y-1.5 max-h-56 overflow-y-auto">
+        <div class="text-slate-400">[Sistem] OBSIDION Kurucu Kontrol Paneli başlatıldı. Lütfen kurucu cüzdanınızı bağlayın...</div>
+      </div>
+    </section>
 
-  <div id="toast" class="toast">Copied to clipboard</div>
+  </main>
 
   <script>
-    const CHAIN_CONFIG = {
-      chainIdDec: 4663,
-      chainIdHex: "0x1237",
-      chainName: "Robinhood Chain",
-      rpcUrls: [
-        "https://robinhoodchain.blockscout.com/api/eth-rpc",
-        "https://rpc.mainnet.chain.robinhood.com",
-        "https://4663.rpc.thirdweb.com"
-      ],
-      blockExplorerUrls: ["https://robinhoodchain.blockscout.com"],
-      nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 }
-    };
+    // ==================== EXACT PRE-CONFIGURED CONSTANTS ====================
+    const OBS_TOKEN_ADDRESS = "0xe3A58EeB751aCa0c8f158EcF93328fe94DE909F6";
+    const OLD_PRESALE_ADDRESS = "0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32";
+    const ROBINHOOD_CHAIN_ID_DEC = 4663;
+    const ROBINHOOD_CHAIN_ID_HEX = "0x1237";
+    const REQUIRED_OBS_AMOUNT = ethers.parseUnits("48600000", 18); // 48,600,000 OBS
 
-    const ADDRESSES = {
-      token: "0xe3A58EeB751aCa0c8f158EcF93328fe94DE909F6",
-      presale: "0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32",
-      timelock: "0x445452FEb661880D0EDbF04Fe6249e1A33C2ec28"
-    };
+    // ==================== EXACT UPDATED SOLIDITY 0.8.24 SOURCE CODE ====================
+    const OBSIDION_PRESALE_SOL = `// SPDX-License-Identifier: MIT
+pragma solidity 0.8.24;
 
-    const RATE_OBS_PER_ETH = 243000;
+interface IObsidionToken {
+    function balanceOf(address account) external view returns (uint256);
+    function transfer(address to, uint256 value) external returns (bool);
+    function burn(uint256 amount) external;
+    function remainingBurnableSupply() external view returns (uint256);
+    function isTaxExempt(address account) external view returns (bool);
+    function isLimitExempt(address account) external view returns (bool);
+    function isDividendExempt(address account) external view returns (bool);
+}
 
-    const VERIFIED_BASELINE = {
-      totalRaised: 0n,
-      softCap: 50000000000000000000n,
-      hardCap: 200000000000000000000n,
-      minBuy: 8400000000000000n,
-      maxBuy: 10000000000000000000n,
-      startTime: 1795145838,
-      endTime: 1800329838,
-      buyersCount: "0",
-      presaleStarted: true,
-      finalized: false
-    };
+interface IExternalERC20 {
+    function transfer(address to, uint256 value) external returns (bool);
+}
 
-    const SELECTORS = {
-      getPresaleSummary: "0xca1ed436",
-      buyTokens: "0x0f0bbe4c",
-      balanceOf: "0x70a08231",
-      locks: "0xdd467064"
-    };
+contract ObsidionPresale {
+    IObsidionToken public immutable token;
+    address public immutable owner;
 
-    const I18N = {
-      en: {
-        navPresale: "Presale", navTokenomics: "Tokenomics", navRoadmap: "Roadmap", navHowTo: "How to Buy", navTimelock: "Timelock & FAQ",
-        addToken: "+ Add $OBS", addChain: "Add Network", connect: "Connect Wallet", refresh: "Refresh",
-        heroTitle: "Deflationary <span>Obsidian</span> Scarcity",
-        heroSubtitle: "Fixed 120,000,000 $OBS initial supply burning on-chain toward an immutable 21,000,000 $OBS hard floor on Robinhood Chain. Accessible presale entry from 0.0084 ETH.",
-        countdown: "Presale Countdown", days: "Days", hours: "Hours", minutes: "Minutes", seconds: "Seconds",
-        active: "Presale Live", inactive: "Presale Not Active", ended: "Presale Ended",
-        raised: "Total Raised", softCap: "Soft Cap", hardCap: "Hard Cap", minBuy: "Min Buy", maxBuy: "Max Buy", buyers: "Buyers", bal: "Your $OBS",
-        buyTitle: "Participate in Presale", buySub: "Enter 0.0084 – 10 ETH. Presale allocation (48.6M $OBS) & Soft Cap refund protection are enforced on-chain.",
-        ethAmt: "Contribution Amount (ETH)", estReceive: "Estimated Allocation", buyBtn: "Buy $OBS Now",
-        noWalletHint: "No Web3 wallet detected in this browser. Open this dApp inside MetaMask to connect and buy:",
-        tokKicker: "On-Chain Supply Mechanics", tokTitle: "Engineered Scarcity: 120M → 21M Hard Burn Floor",
-        tokSub: "OBSIDION is strictly deflationary—no reflection gimmicks or hidden holder-tax promises. Burns execute on-chain until total supply hits 21,000,000 $OBS, where the contract automatically halts further burning.",
-        tInit: "Initial Fixed Supply", tFloor: "Immutable Burn Floor", tPresaleAlloc: "Presale Pool (40.5%)",
-        legFloor: "Permanent Hard Floor (Never Burned)", legBurn: "Deflationary On-Chain Burn Corridor",
-        rmKicker: "Strategic Execution Plan", rmTitle: "OBSIDION ($OBS) Comprehensive Roadmap",
-        rmSub: "Transparent, milestone-driven growth on Robinhood Chain from fair presale to long-term deflationary ecosystem.",
-        bLive: "In Progress", bNext: "Up Next", bPlan: "Planned", bVision: "Expansion",
-        p1Title: "Foundation & Fair Presale",
-        p1i1: "Token, Presale & Timelock contracts deployed on Robinhood Chain",
-        p1i2: "Presale live (0.0084 ETH min entry, 10 ETH anti-whale cap)",
-        p1i3: "Official dApp v2 launch with Timelock lookup & live calculator",
-        p1i4: "Organic community growth & CoinVote / tracker listings",
-        p2Title: "DEX Launch & Active Burns",
-        p2i1: "Presale completion (50 ETH Soft Cap / 200 ETH Hard Cap)",
-        p2i2: "DEX liquidity launch on Robinhood Chain",
-        p2i3: "Public LP lock & Timelock verification proof",
-        p2i4: "CoinGecko & CoinMarketCap tracking applications",
-        p2i5: "Activation of on-chain deflationary burns toward 21M floor",
-        p3Title: "DeFi Utility & Transparency",
-        p3i1: "Real-time Burn & Supply Analytics Dashboard",
-        p3i2: "Independent smart contract security audit publication",
-        p3i3: "Robinhood Chain DeFi integrations & ecosystem partnerships",
-        p3i4: "Community governance proposals & voting framework",
-        p4Title: "Scarcity & Global Reach",
-        p4i1: "Organic volume-driven CEX listing evaluations",
-        p4i2: "Cross-chain bridge research & multi-chain visibility",
-        p4i3: "Periodic Timelock treasury transparency reports",
-        p4i4: "Long-term progression toward the immutable 21M $OBS floor",
-        htKicker: "Quick Start Guide", htTitle: "How to Participate in 4 Steps",
-        s1t: "Open Web3 Wallet", s1d: "Use MetaMask, Rabby, or your preferred EVM wallet browser and open obsidion.pages.dev.",
-        s2t: "Add Robinhood Chain", s2d: "Click 'Add Network' in the header to automatically configure Chain ID 4663.",
-        s3t: "Enter ETH Amount", s3d: "Choose any amount from 0.0084 ETH up to 10 ETH per wallet and preview your $OBS allocation.",
-        s4t: "Confirm & Import $OBS", s4d: "Approve the transaction, then click '+ Add $OBS' in the header to view your token in MetaMask.",
-        tlTitle: "On-Chain Timelock Lookup", tlDesc: "Verify lock entries directly from the OBSIDION Timelock smart contract (0x4454...ec28) by entering a Timelock ID.",
-        tlId: "Timelock ID", tlBtn: "Check ID",
-        secTitle: "Security & Investor Protection",
-        sec1: "100% On-Chain Timelock governance architecture",
-        sec2: "Built-in Soft Cap (50 ETH) refund protection in presale contract",
-        sec3: "Anti-whale wallet cap strictly limited to 10 ETH maximum",
-        sec4: "Zero hidden minting: 120M fixed supply with 21M immutable floor",
-        faqTitle: "Frequently Asked Questions",
-        fq1: "What happens if the 50 ETH Soft Cap is not reached?",
-        fa1: "The presale smart contract includes built-in soft cap protection. If the 50 ETH soft cap is not met by the presale end date, participants can reclaim their contributed ETH directly from the verified presale contract.",
-        fq2: "How does the 21M Hard Burn Floor work?",
-        fa2: "OBSIDION launches with 120,000,000 $OBS. On-chain burns permanently reduce supply until it reaches 21,000,000 $OBS—at which point the smart contract automatically stops burning forever.",
-        fq3: "How do I view $OBS in my MetaMask wallet?",
-        fa3: "Make sure you are connected to Robinhood Chain (Chain ID: 4663) and click the '+ Add $OBS' button in the top navigation bar to automatically import the verified token contract.",
-        fq4: "Where can I verify all smart contracts?",
-        fa4: "Every contract (Token, Presale, and Timelock) is publicly deployed on Robinhood Chain and linked directly to Blockscout in the presale panel above.",
-        wrongChain: "Wallet is on another network. Click 'Add Network' to switch to Robinhood Chain (4663).",
-        liveTag: "Live On-Chain", baselineTag: "Verified Schedule"
-      },
-      tr: {
-        navPresale: "Ön Satış", navTokenomics: "Tokenomics", navRoadmap: "Yol Haritası", navHowTo: "Nasıl Alınır", navTimelock: "Timelock & SSS",
-        addToken: "+ $OBS Ekle", addChain: "Ağı Ekle", connect: "Cüzdan Bağla", refresh: "Yenile",
-        heroTitle: "Deflasyonist <span>Obsidyen</span> Kıtlığı",
-        heroSubtitle: "Robinhood Chain üzerinde 120.000.000 $OBS sabit başlangıç arzı ve değiştirilemez 21.000.000 $OBS sert yakım tabanı. 0.0084 ETH'den başlayan erişilebilir ön satış.",
-        countdown: "Ön Satış Geri Sayımı", days: "Gün", hours: "Saat", minutes: "Dakika", seconds: "Saniye",
-        active: "Ön Satış Aktif", inactive: "Ön Satış Başlamadı", ended: "Ön Satış Bitti",
-        raised: "Toplanan Tutar", softCap: "Soft Cap", hardCap: "Hard Cap", minBuy: "Min Alım", maxBuy: "Max Alım", buyers: "Alıcı", bal: "$OBS Bakiyen",
-        buyTitle: "Ön Satışa Katıl", buySub: "0.0084 – 10 ETH arası tutar girin. 48.6M $OBS ön satış havuzu ve Soft Cap iade koruması kontratta aktiftir.",
-        ethAmt: "Katılım Tutarı (ETH)", estReceive: "Tahmini $OBS Tutarı", buyBtn: "$OBS Satın Al",
-        noWalletHint: "Bu tarayıcıda Web3 cüzdanı bulunamadı. Bağlanıp alım yapmak için sayfayı MetaMask içinde açın:",
-        tokKicker: "Zincir Üstü Arz Mekaniği", tokTitle: "Planlı Kıtlık: 120M → 21M Sert Yakım Tabanı",
-        tokSub: "OBSIDION tamamen deflasyonisttir; gizli vergi veya temettü karmaşası yoktur. Yakımlar toplam arz 21.000.000 $OBS'ye ulaşana kadar zincir üstünde sürer ve tabanda otomatik durur.",
-        tInit: "Sabit Başlangıç Arzı", tFloor: "Değiştirilemez Taban", tPresaleAlloc: "Ön Satış Havuzu (%40.5)",
-        legFloor: "Kalıcı Sert Taban (Asla Yakılmaz)", legBurn: "Deflasyonist Zincir Üstü Yakım Koridoru",
-        rmKicker: "Stratejik Uygulama Planı", rmTitle: "OBSIDION ($OBS) Kapsamlı Yol Haritası",
-        rmSub: "Adil ön satıştan uzun vadeli deflasyonist ekosisteme kadar Robinhood Chain üzerinde şeffaf ve hedef odaklı büyüme.",
-        bLive: "Aktif", bNext: "Sıradaki", bPlan: "Planlandı", bVision: "Genişleme",
-        p1Title: "Temel Kurulum & Adil Ön Satış",
-        p1i1: "Token, Presale ve Timelock kontratlarının Robinhood Chain'de yayına alınması",
-        p1i2: "Ön satışın başlaması (0.0084 ETH min alım, 10 ETH balina koruması)",
-        p1i3: "Timelock sorgulama ve canlı hesaplayıcılı dApp v2 lansmanı",
-        p1i4: "Organik topluluk büyümesi ve CoinVote / takip platformu listelemeleri",
-        p2Title: "DEX Lansmanı & Aktif Yakımlar",
-        p2i1: "Ön satışın tamamlanması (50 ETH Soft Cap / 200 ETH Hard Cap)",
-        p2i2: "Robinhood Chain üzerinde DEX likidite havuzu açılışı",
-        p2i3: "Likidite kilidi ve Timelock doğrulama kanıtının paylaşılması",
-        p2i4: "CoinGecko ve CoinMarketCap listeleme başvuruları",
-        p2i5: "21M tabanına giden zincir üstü deflasyonist yakımların aktifleşmesi",
-        p3Title: "DeFi Kullanımı & Şeffaflık",
-        p3i1: "Canlı Yakım ve Arz Takip Paneli (Burn Dashboard)",
-        p3i2: "Bağımsız akıllı kontrat güvenlik denetimi (Audit) yayını",
-        p3i3: "Robinhood Chain DeFi entegrasyonları ve ekosistem iş birlikleri",
-        p3i4: "Topluluk yönetişim (Governance) ve oylama çerçevesi",
-        p4Title: "Kıtlık Hedefi & Küresel Erişim",
-        p4i1: "Organik hacme dayalı CEX listeleme değerlendirmeleri",
-        p4i2: "Çapraz zincir (Cross-Chain) köprü araştırması ve çoklu ağ görünürlüğü",
-        p4i3: "Periyodik Timelock hazine şeffaflık raporları",
-        p4i4: "Değiştirilemez 21M $OBS arz tabanına doğru kalıcı büyüme",
-        htKicker: "Hızlı Başlangıç Rehberi", htTitle: "4 Adımda Nasıl Katılırsınız?",
-        s1t: "Web3 Cüzdanını Aç", s1d: "MetaMask, Rabby veya EVM uyumlu cüzdan tarayıcısından obsidion.pages.dev adresine girin.",
-        s2t: "Robinhood Chain Ekle", s2d: "Üst menüdeki 'Ağı Ekle' butonuna tıklayarak Chain ID 4663 ağını otomatik tanımlayın.",
-        s3t: "ETH Tutarını Gir", s3d: "0.0084 ETH ile 10 ETH arasında tutar seçin ve alacağınız $OBS miktarını anında görün.",
-        s4t: "Onayla & $OBS Ekle", s4d: "İşlemi onayladıktan sonra üst menüdeki '+ $OBS Ekle' butonuyla tokenı MetaMask'a tanımlayın.",
-        tlTitle: "Zincir Üstü Timelock Sorgulama", tlDesc: "Timelock ID girerek OBSIDION Timelock kontratındaki (0x4454...ec28) kilit kayıtlarını doğrudan inceleyin.",
-        tlId: "Timelock ID", tlBtn: "ID Sorgula",
-        secTitle: "Güvenlik ve Yatırımcı Koruması",
-        sec1: "%100 zincir üstü Timelock yönetişim mimarisi",
-        sec2: "Ön satış kontratına gömülü Soft Cap (50 ETH) iade koruması",
-        sec3: "Cüzdan başına maksimum 10 ETH anti-balina sınırı",
-        sec4: "Gizli basım yok: 120M sabit başlangıç arzı ve 21M değiştirilemez taban",
-        faqTitle: "Sıkça Sorulan Sorular",
-        fq1: "50 ETH Soft Cap dolmazsa ne olur?",
-        fa1: "Ön satış kontratı yerleşik Soft Cap korumasına sahiptir. Bitiş tarihine kadar 50 ETH toplanmazsa katılımcılar yatırdıkları ETH'yi doğrulanmış ön satış kontratından geri çekebilir.",
-        fq2: "21M Sert Yakım Tabanı nasıl çalışır?",
-        fa2: "OBSIDION 120.000.000 $OBS ile başlar. Zincir üstü yakımlar toplam arzı 21.000.000 $OBS seviyesine düşürdüğünde akıllı kontrat yakımı kalıcı olarak durdurur.",
-        fq3: "$OBS tokenını MetaMask cüzdanımda nasıl görürüm?",
-        fa3: "Robinhood Chain (Chain ID: 4663) ağına bağlıyken üst menüdeki '+ $OBS Ekle' butonuna tıklamanız yeterlidir; kontrat cüzdanınıza otomatik eklenir.",
-        fq4: "Tüm akıllı kontratları nereden doğrulayabilirim?",
-        fa4: "Token, Presale ve Timelock kontratlarının tamamı Robinhood Chain üzerinde yayındadır ve yukarıdaki panelden doğrudan Blockscout'ta incelenebilir.",
-        wrongChain: "Cüzdan farklı bir ağda. Robinhood Chain (4663) ağına geçmek için 'Ağı Ekle' butonuna tıklayın.",
-        liveTag: "Canlı Zincir Verisi", baselineTag: "Doğrulanmış Takvim"
+    uint256 public constant INITIAL_DURATION = 60 days;    // Baslangic suresi (2 ay)
+    uint256 public constant SOFT_CAP_WINDOW = 21 days;     // 5 ETH gecilince kalan sure maks 21 gun
+    uint256 public constant MID_CAP_THRESHOLD = 14 ether;  // Hizli satis 2. esigi
+    uint256 public constant MID_CAP_WINDOW = 2 days;       // 14 ETH gecilince kalan sure maks 48 saat
+    uint256 public constant FINALIZE_GRACE_PERIOD = 7 days;// Sure bitiminde kurucu onay payi (7 gun)
+
+    uint256 public constant RATE = 2_430_000;              // 1 ETH = 2.430.000 OBS (20 ETH = 48.600.000 OBS)
+    uint256 public constant SOFT_CAP = 5 ether;            // Yayinlama kilidini acan minimum tutar
+    uint256 public constant HARD_CAP = 20 ether;           // Maksimum hedef
+    uint256 public constant MAX_BUY = 1 ether;             // Kisi basi maksimum alim
+    uint256 public constant REQUIRED_PRESALE_TOKENS = HARD_CAP * RATE; // 48.600.000 * 10**18
+
+    uint256 public minBuy = 0.00001 ether;                 // ~0.03 USD (setMinBuy ile 0.000001 ETH'ye kadar duser)
+
+    uint256 public startTime;
+    uint256 public endTime;
+
+    uint256 public totalRaised;
+    bool public presaleStarted;
+    bool public finalized;
+    bool public cancelled;
+    bool public softCapReached;
+    bool public midCapReached;
+
+    mapping(address => uint256) public contributions;
+    mapping(address => bool) public tokensClaimed;
+    mapping(address => bool) public hasContributed;
+    address[] public buyers;
+
+    uint256 private _locked = 1;
+
+    struct PresaleSummary {
+        uint256 totalRaised;
+        uint256 softCap;
+        uint256 hardCap;
+        uint256 minBuy;
+        uint256 maxBuy;
+        uint256 startTime;
+        uint256 endTime;
+        uint256 timeRemaining;
+        uint256 buyersCount;
+        bool presaleStarted;
+        bool finalized;
+        bool cancelled;
+        bool refundOpen;
+        bool canFinalize;
+    }
+
+    event PresaleStarted(uint256 startTime, uint256 endTime);
+    event PresaleCancelled(uint256 timestamp);
+    event Contributed(address indexed buyer, uint256 ethAmount, uint256 obsAllocated);
+    event EndTimeShortened(uint256 newEndTime, uint256 totalRaisedAtTrigger);
+    event PresaleFinalized(uint256 totalEthRaised, uint256 totalObsSold, uint256 unsoldBurned, uint256 unsoldReturned);
+    event TokensClaimed(address indexed buyer, uint256 obsAmount);
+    event RefundClaimed(address indexed buyer, uint256 ethAmount);
+    event MinBuyUpdated(uint256 newMinBuyWei);
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Sadece kurucu cagirabilir");
+        _;
+    }
+
+    modifier nonReentrant() {
+        require(_locked == 1, "Tekrarli islem engellendi");
+        _locked = 2;
+        _;
+        _locked = 1;
+    }
+
+    constructor(address _tokenAddress) {
+        require(_tokenAddress != address(0), "Gecersiz token adresi");
+        token = IObsidionToken(_tokenAddress);
+        owner = msg.sender;
+    }
+
+    receive() external payable {
+        buyTokens();
+    }
+
+    function startPresale() external onlyOwner {
+        require(!presaleStarted && !cancelled, "On satis baslatilamaz");
+        require(token.balanceOf(address(this)) >= REQUIRED_PRESALE_TOKENS, "Once kontrata 48.600.000 OBS yukleyin");
+        require(
+            token.isTaxExempt(address(this)) &&
+            token.isLimitExempt(address(this)) &&
+            token.isDividendExempt(address(this)),
+            "Once Token uzerinden setSystemExempt(presale, true) yapin"
+        );
+
+        presaleStarted = true;
+        startTime = block.timestamp;
+        endTime = block.timestamp + INITIAL_DURATION;
+
+        emit PresaleStarted(startTime, endTime);
+    }
+
+    function withdrawTokensBeforeStart() external onlyOwner nonReentrant {
+        require(!presaleStarted, "On satis basladiktan sonra geri cekilemez");
+        uint256 bal = token.balanceOf(address(this));
+        require(bal > 0, "Cekilecek OBS yok");
+        require(token.transfer(owner, bal), "OBS transferi basarisiz");
+    }
+
+    function cancelPresale() external onlyOwner {
+        require(presaleStarted && !finalized && !cancelled, "On satis iptal edilemez");
+        cancelled = true;
+        emit PresaleCancelled(block.timestamp);
+    }
+
+    function buyTokens() public payable nonReentrant {
+        require(presaleStarted, "On satis henuz baslatilmadi");
+        require(!finalized && !cancelled, "On satis kapali");
+        require(block.timestamp < endTime, "On satis suresi doldu");
+        require(msg.value > 0, "ETH miktari sifir olamaz");
+        require(totalRaised + msg.value <= HARD_CAP, "20 ETH Hard Cap asiliyor");
+        require(
+            msg.value >= minBuy || totalRaised + msg.value == HARD_CAP,
+            "Minimum alim limitinin altinda"
+        );
+        require(contributions[msg.sender] + msg.value <= MAX_BUY, "Kisi basi 1 ETH limiti asildi");
+
+        uint256 newTotalRaised = totalRaised + msg.value;
+        require(token.balanceOf(address(this)) >= newTotalRaised * RATE, "Kontratta yeterli OBS kilitli degil");
+
+        if (!hasContributed[msg.sender]) {
+            hasContributed[msg.sender] = true;
+            buyers.push(msg.sender);
+        }
+
+        contributions[msg.sender] += msg.value;
+        totalRaised = newTotalRaised;
+
+        if (!softCapReached && newTotalRaised >= SOFT_CAP) {
+            softCapReached = true;
+            uint256 shortenedEnd = block.timestamp + SOFT_CAP_WINDOW;
+            if (shortenedEnd < endTime) {
+                endTime = shortenedEnd;
+                emit EndTimeShortened(endTime, newTotalRaised);
+            }
+        }
+
+        if (!midCapReached && newTotalRaised >= MID_CAP_THRESHOLD) {
+            midCapReached = true;
+            uint256 fastEnd = block.timestamp + MID_CAP_WINDOW;
+            if (fastEnd < endTime) {
+                endTime = fastEnd;
+                emit EndTimeShortened(endTime, newTotalRaised);
+            }
+        }
+
+        if (newTotalRaised == HARD_CAP && block.timestamp < endTime) {
+            endTime = block.timestamp;
+            emit EndTimeShortened(endTime, newTotalRaised);
+        }
+
+        emit Contributed(msg.sender, msg.value, msg.value * RATE);
+    }
+
+    function setMinBuy(uint256 _newMinBuyWei) external onlyOwner {
+        require(_newMinBuyWei >= 0.000001 ether && _newMinBuyWei <= 0.05 ether, "Gecersiz min limit");
+        minBuy = _newMinBuyWei;
+        emit MinBuyUpdated(_newMinBuyWei);
+    }
+
+    function canFinalize() public view returns (bool) {
+        if (!presaleStarted || finalized || cancelled) return false;
+        if (totalRaised < SOFT_CAP) return false;
+        if (block.timestamp > endTime + FINALIZE_GRACE_PERIOD) return false;
+        return true;
+    }
+
+    function finalizePresale(bool burnUnsold) external onlyOwner nonReentrant {
+        require(canFinalize(), "Yayinlama icin en az 5 ETH toplanmali");
+
+        finalized = true;
+
+        uint256 ethToOwner = address(this).balance;
+        uint256 soldTokens = totalRaised * RATE;
+        uint256 contractTokens = token.balanceOf(address(this));
+        uint256 unsoldTokens = contractTokens > soldTokens ? contractTokens - soldTokens : 0;
+
+        (bool ethSent, ) = payable(owner).call{value: ethToOwner}("");
+        require(ethSent, "ETH transferi basarisiz");
+
+        uint256 burnedAmount = 0;
+        uint256 returnedAmount = 0;
+
+        if (unsoldTokens > 0) {
+            if (burnUnsold) {
+                uint256 burnable = token.remainingBurnableSupply();
+                burnedAmount = unsoldTokens <= burnable ? unsoldTokens : burnable;
+                returnedAmount = unsoldTokens - burnedAmount;
+                if (burnedAmount > 0) {
+                    token.burn(burnedAmount);
+                }
+                if (returnedAmount > 0) {
+                    require(token.transfer(owner, returnedAmount), "Artan OBS iadesi basarisiz");
+                }
+            } else {
+                returnedAmount = unsoldTokens;
+                require(token.transfer(owner, returnedAmount), "Satilmayan OBS iadesi basarisiz");
+            }
+        }
+
+        emit PresaleFinalized(totalRaised, soldTokens, burnedAmount, returnedAmount);
+    }
+
+    function claimTokens() external nonReentrant {
+        require(finalized, "On satis henuz yayinlanmadi");
+        require(!tokensClaimed[msg.sender], "Tokenlar zaten cekildi");
+
+        uint256 ethSpent = contributions[msg.sender];
+        require(ethSpent > 0, "Cekilecek token yok");
+
+        tokensClaimed[msg.sender] = true;
+        uint256 obsAmount = ethSpent * RATE;
+
+        require(token.transfer(msg.sender, obsAmount), "OBS transferi basarisiz");
+        emit TokensClaimed(msg.sender, obsAmount);
+    }
+
+    function isRefundOpen() public view returns (bool) {
+        if (!presaleStarted || finalized) return false;
+        if (cancelled) return true;
+        if (block.timestamp < endTime) return false;
+        if (totalRaised < SOFT_CAP) return true;
+        if (block.timestamp > endTime + FINALIZE_GRACE_PERIOD) return true;
+        return false;
+    }
+
+    function claimRefund() external nonReentrant {
+        require(isRefundOpen(), "Sure dolmadan veya hedef tutmussa iade alinamaz");
+
+        uint256 ethSpent = contributions[msg.sender];
+        require(ethSpent > 0, "Iade edilecek bakiye yok");
+
+        contributions[msg.sender] = 0;
+
+        (bool sent, ) = payable(msg.sender).call{value: ethSpent}("");
+        require(sent, "ETH iadesi basarisiz");
+
+        emit RefundClaimed(msg.sender, ethSpent);
+    }
+
+    function withdrawTokensOnFailure() external onlyOwner nonReentrant {
+        require(isRefundOpen(), "On satis henuz basarisiz sonuclanmadi");
+        uint256 bal = token.balanceOf(address(this));
+        require(bal > 0, "Cekilecek OBS yok");
+        require(token.transfer(owner, bal), "OBS cekimi basarisiz");
+    }
+
+    function rescueForeignToken(address foreignToken, uint256 amount) external onlyOwner {
+        require(foreignToken != address(token), "OBS token bu fonksiyonla cekilemez");
+        require(IExternalERC20(foreignToken).transfer(owner, amount), "Kurtarma basarisiz");
+    }
+
+    function timeRemaining() public view returns (uint256) {
+        if (!presaleStarted || cancelled || block.timestamp >= endTime) return 0;
+        return endTime - block.timestamp;
+    }
+
+    function buyersCount() external view returns (uint256) {
+        return buyers.length;
+    }
+
+    function getBuyers() external view returns (address[] memory) {
+        return buyers;
+    }
+
+    function claimableTokensOf(address user) external view returns (uint256) {
+        if (tokensClaimed[user]) return 0;
+        return contributions[user] * RATE;
+    }
+
+    function getPresaleSummary() external view returns (PresaleSummary memory s) {
+        s.totalRaised = totalRaised;
+        s.softCap = SOFT_CAP;
+        s.hardCap = HARD_CAP;
+        s.minBuy = minBuy;
+        s.maxBuy = MAX_BUY;
+        s.startTime = startTime;
+        s.endTime = endTime;
+        s.timeRemaining = timeRemaining();
+        s.buyersCount = buyers.length;
+        s.presaleStarted = presaleStarted;
+        s.finalized = finalized;
+        s.cancelled = cancelled;
+        s.refundOpen = isRefundOpen();
+        s.canFinalize = canFinalize();
+    }
+}`;
+
+    // ==================== MINIMAL ABIs FOR INTERACTIONS ====================
+    const TOKEN_ABI = [
+      "function balanceOf(address account) external view returns (uint256)",
+      "function transfer(address to, uint256 value) external returns (bool)",
+      "function setSystemExempt(address account, bool exempt) external",
+      "function isTaxExempt(address account) external view returns (bool)",
+      "function isLimitExempt(address account) external view returns (bool)",
+      "function isDividendExempt(address account) external view returns (bool)"
+    ];
+
+    const PRESALE_ABI = [
+      "function presaleStarted() external view returns (bool)",
+      "function cancelled() external view returns (bool)",
+      "function minBuy() external view returns (uint256)",
+      "function cancelPresale() external",
+      "function withdrawTokensOnFailure() external",
+      "function withdrawTokensBeforeStart() external",
+      "function startPresale() external"
+    ];
+
+    // ==================== APP STATE ====================
+    let provider = null;
+    let signer = null;
+    let userAddress = null;
+    let compiledArtifact = null; // { abi, bytecode }
+    let newPresaleAddress = localStorage.getItem("obs_new_presale_address") || "";
+
+    // ==================== INIT ON LOAD ====================
+    window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("solidityCodeBlock").textContent = OBSIDION_PRESALE_SOL;
+      if (newPresaleAddress && ethers.isAddress(newPresaleAddress)) {
+        document.getElementById("newPresaleAddressInput").value = newPresaleAddress;
+        updateNewPresaleLink(newPresaleAddress);
       }
-    };
+      initBrowserSolidityCompiler();
+    });
 
-    let currentLang = "en";
-    let account = null;
-    let walletChainId = null;
-    let walletEthBalWei = null;
-    let isLiveSynced = false;
-    let state = { ...VERIFIED_BASELINE };
-    let targetEndMs = VERIFIED_BASELINE.endTime * 1000;
-    let toastTimer = null;
+    // ==================== IN-BROWSER SOLIDITY 0.8.24 WEB WORKER COMPILER ====================
+    function initBrowserSolidityCompiler() {
+      logConsole("Solidity v0.8.24+commit.e11b9ed9 derleyicisi tarayıcı belleğine yükleniyor...", "info");
 
-    const $ = (id) => document.getElementById(id);
+      const workerCode = `
+        importScripts("https://binaries.soliditylang.org/bin/soljson-v0.8.24+commit.e11b9ed9.js");
 
-    function showToast(text) {
-      const el = $("toast");
-      el.textContent = text;
-      el.classList.add("show");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => el.classList.remove("show"), 2000);
-    }
+        self.onmessage = function(e) {
+          try {
+            const sourceCode = e.data.source;
+            const compileFn = Module.cwrap("solidity_compile", "string", ["string", "number"]);
+            const input = JSON.stringify({
+              language: "Solidity",
+              sources: {
+                "ObsidionPresale.sol": { content: sourceCode }
+              },
+              settings: {
+                optimizer: { enabled: true, runs: 200 },
+                evmVersion: "paris",
+                outputSelection: {
+                  "*": {
+                    "*": ["abi", "evm.bytecode.object"]
+                  }
+                }
+              }
+            });
 
-    function setMsg(id, htmlOrText, type = "", isHtml = false) {
-      const el = $(id);
-      if (!htmlOrText) { el.innerHTML = ""; el.className = "msg"; return; }
-      if (isHtml) el.innerHTML = htmlOrText; else el.textContent = htmlOrText;
-      el.className = "msg show" + (type ? " " + type : "");
-    }
-
-    function formatEth(weiBigInt) {
-      const whole = weiBigInt / 1000000000000000000n;
-      const frac = weiBigInt % 1000000000000000000n;
-      const fracStr = frac.toString().padStart(18, "0").slice(0, 4).replace(/0+$/, "");
-      return fracStr ? `${whole.toString()}.${fracStr}` : whole.toString();
-    }
-
-    function parseEthToWei(ethStr) {
-      const cleaned = String(ethStr || "").trim().replace(",", ".");
-      if (!cleaned || isNaN(Number(cleaned)) || Number(cleaned) <= 0) return null;
-      const [intPart, decPart = ""] = cleaned.split(".");
-      const paddedDec = (decPart + "0".repeat(18)).slice(0, 18);
-      return BigInt(intPart || "0") * 1000000000000000000n + BigInt(paddedDec);
-    }
-
-    function updateCalculator() {
-      const val = Number(String($("ethInput").value || "").replace(",", "."));
-      if (!val || val <= 0 || isNaN(val)) { $("estObsVal").textContent = "0 $OBS"; return; }
-      const obs = val * RATE_OBS_PER_ETH;
-      $("estObsVal").textContent = `${obs.toLocaleString("en-US", { maximumFractionDigits: 2 })} $OBS`;
-    }
-
-    function applyLang(lang) {
-      currentLang = I18N[lang] ? lang : "en";
-      const t = I18N[currentLang];
-      document.documentElement.lang = currentLang;
-      $("heroTitle").innerHTML = t.heroTitle;
-      $("heroSubtitle").textContent = t.heroSubtitle;
-
-      document.querySelectorAll("[data-i18n]").forEach((el) => {
-        const key = el.getAttribute("data-i18n");
-        if (t[key] && !(el.id === "connectBtn" && account)) el.textContent = t[key];
-      });
-
-      $("syncTag").textContent = isLiveSynced ? t.liveTag : t.baselineTag;
-      renderStatusBadge();
-      checkWalletNetworkBanner();
-    }
-
-    function checkWalletNetworkBanner() {
-      if (!account || !walletChainId) { setMsg("globalAlert", ""); return; }
-      if (parseInt(walletChainId, 16) !== CHAIN_CONFIG.chainIdDec) {
-        setMsg("globalAlert", I18N[currentLang].wrongChain, "warn");
-      } else {
-        setMsg("globalAlert", "");
-      }
-    }
-
-    function renderState() {
-      targetEndMs = state.endTime > 0 ? state.endTime * 1000 : 0;
-      $("endTimePreview").textContent = targetEndMs > 0
-        ? new Date(targetEndMs).toISOString().replace("T", " ").slice(0, 16) + " UTC"
-        : "—";
-
-      $("vSoftCap").textContent = `${formatEth(state.softCap)} ETH`;
-      $("vHardCap").textContent = `${formatEth(state.hardCap)} ETH`;
-      $("vMinBuy").textContent = `${formatEth(state.minBuy)} ETH`;
-      $("vMaxBuy").textContent = `${formatEth(state.maxBuy)} ETH`;
-      $("vBuyers").textContent = state.buyersCount;
-      $("capRatioText").textContent = `${formatEth(state.totalRaised)} / ${formatEth(state.hardCap)} ETH`;
-
-      const pct = state.hardCap > 0n
-        ? Math.min(100, Number((state.totalRaised * 10000n) / state.hardCap) / 100)
-        : 0;
-      $("progressFill").style.width = `${pct}%`;
-      $("syncTag").textContent = isLiveSynced ? I18N[currentLang].liveTag : I18N[currentLang].baselineTag;
-      tickCountdown();
-    }
-
-    function renderStatusBadge() {
-      const t = I18N[currentLang];
-      const dot = $("statusDot");
-      const txt = $("presaleStatusText");
-      const now = Date.now();
-      dot.className = "dot";
-
-      if (state.finalized || (targetEndMs > 0 && now >= targetEndMs)) {
-        txt.textContent = t.ended;
-      } else if (state.presaleStarted && targetEndMs > now) {
-        dot.classList.add("live");
-        txt.textContent = t.active;
-      } else {
-        txt.textContent = t.inactive;
-      }
-    }
-
-    function tickCountdown() {
-      renderStatusBadge();
-      const diffSec = targetEndMs > 0 ? Math.max(0, Math.floor((targetEndMs - Date.now()) / 1000)) : 0;
-      $("dVal").textContent = String(Math.floor(diffSec / 86400)).padStart(2, "0");
-      $("hVal").textContent = String(Math.floor((diffSec % 86400) / 3600)).padStart(2, "0");
-      $("mVal").textContent = String(Math.floor((diffSec % 3600) / 60)).padStart(2, "0");
-      $("sVal").textContent = String(diffSec % 60).padStart(2, "0");
-    }
-
-    async function rpcFetch(url, method, params, ms = 2500) {
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), ms);
-      try {
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
-          signal: ctrl.signal
-        });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const json = await res.json();
-        if (!json || !json.result || json.result === "0x") throw new Error("Empty");
-        return json.result;
-      } finally {
-        clearTimeout(timer);
-      }
-    }
-
-    async function ethCall(to, data) {
-      if (window.ethereum) {
-        try {
-          const cid = walletChainId || await window.ethereum.request({ method: "eth_chainId" });
-          walletChainId = cid;
-          if (parseInt(cid, 16) === CHAIN_CONFIG.chainIdDec) {
-            return await window.ethereum.request({ method: "eth_call", params: [{ to, data }, "latest"] });
+            const outputRaw = compileFn(input, 0);
+            const output = JSON.parse(outputRaw);
+            self.postMessage({ success: true, output });
+          } catch (err) {
+            self.postMessage({ success: false, error: err.message || String(err) });
           }
-        } catch (_) {}
-      }
+        };
+      `;
+
       try {
-        return await Promise.any(CHAIN_CONFIG.rpcUrls.map((u) => rpcFetch(u, "eth_call", [{ to, data }, "latest"])));
-      } catch (_) {
-        return null;
-      }
-    }
+        const blob = new Blob([workerCode], { type: "application/javascript" });
+        const worker = new Worker(URL.createObjectURL(blob));
 
-    function decodeWords(hex) {
-      const clean = (hex || "").replace(/^0x/, "");
-      const words = [];
-      for (let i = 0; i + 64 <= clean.length; i += 64) {
-        words.push(BigInt("0x" + clean.slice(i, i + 64)));
-      }
-      return words;
-    }
+        worker.onmessage = function(e) {
+          const badge = document.getElementById("compilerStatusBadge");
+          const spinner = document.getElementById("compilerSpinner");
+          const statusText = document.getElementById("compilerStatusText");
 
-    function parseSummaryWords(words) {
-      const list = words.length > 12 && words[0] === 32n ? words.slice(1) : words;
-      return {
-        totalRaised: list[0] ?? 0n,
-        softCap: list[1] ?? VERIFIED_BASELINE.softCap,
-        hardCap: list[2] ?? VERIFIED_BASELINE.hardCap,
-        minBuy: list[3] ?? VERIFIED_BASELINE.minBuy,
-        maxBuy: list[4] ?? VERIFIED_BASELINE.maxBuy,
-        startTime: Number(list[5] ?? 0n),
-        endTime: Number(list[6] ?? 0n),
-        buyersCount: (list[8] ?? 0n).toString(),
-        presaleStarted: (list[9] ?? 0n) !== 0n,
-        finalized: (list[10] ?? 0n) !== 0n
-      };
-    }
-
-    async function loadPresaleData() {
-      try {
-        const tasks = [ethCall(ADDRESSES.presale, SELECTORS.getPresaleSummary)];
-        if (account) {
-          const addrPadded = account.toLowerCase().replace(/^0x/, "").padStart(64, "0");
-          tasks.push(ethCall(ADDRESSES.token, SELECTORS.balanceOf + addrPadded));
-          if (window.ethereum && walletChainId && parseInt(walletChainId, 16) === CHAIN_CONFIG.chainIdDec) {
-            tasks.push(window.ethereum.request({ method: "eth_getBalance", params: [account, "latest"] }).catch(() => null));
+          if (!e.data.success) {
+            spinner.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
+            statusText.className = "text-rose-400";
+            statusText.textContent = "Derleyici Hatası";
+            logConsole("Solidity derleyici hatası: " + e.data.error, "error");
+            return;
           }
-        }
 
-        const [rawSummary, balHex, ethBalHex] = await Promise.all(tasks);
-
-        if (rawSummary) {
-          const words = decodeWords(rawSummary);
-          if (words.length >= 10) {
-            state = parseSummaryWords(words);
-            isLiveSynced = true;
+          const out = e.data.output;
+          if (out.errors) {
+            const fatal = out.errors.filter(err => err.severity === "error");
+            if (fatal.length > 0) {
+              spinner.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
+              statusText.className = "text-rose-400";
+              statusText.textContent = "Derleme Başarısız";
+              logConsole("Solidity sözdizimi hatası: " + fatal[0].formattedMessage, "error");
+              return;
+            }
           }
-        }
 
-        if (account && balHex) {
-          const balWords = decodeWords(balHex);
-          $("vObsBal").textContent = `${formatEth(balWords[0] ?? 0n)} $OBS`;
-        } else if (!account) {
-          $("vObsBal").textContent = "—";
-        }
+          const contractObj = out.contracts["ObsidionPresale.sol"]["ObsidionPresale"];
+          compiledArtifact = {
+            abi: contractObj.abi,
+            bytecode: "0x" + contractObj.evm.bytecode.object
+          };
 
-        if (account && ethBalHex) {
-          walletEthBalWei = BigInt(ethBalHex);
-          $("ethBalTag").textContent = `Bal: ${formatEth(walletEthBalWei)} ETH`;
-        } else {
-          walletEthBalWei = null;
-          $("ethBalTag").textContent = "—";
-        }
-      } catch (_) {}
-      renderState();
-    }
+          spinner.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
+          badge.className = "px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-400/50 text-xs font-mono flex items-center gap-2";
+          statusText.className = "text-emerald-300 font-bold";
+          statusText.textContent = "Solidity 0.8.24 Hazır (Bytecode Üretildi)";
+          document.getElementById("btnDeployNew").disabled = false;
 
-    function showWalletFallback() { $("mobileWalletBox").style.display = "block"; }
+          logConsole("✅ ObsidionPresale.sol başarıyla derlendi (v0.8.24, runs: 200). Deploy etmeye hazır!", "success");
+        };
 
-    async function addOrSwitchChain() {
-      if (!window.ethereum) { showWalletFallback(); return; }
-      try {
-        await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: CHAIN_CONFIG.chainIdHex }] });
-      } catch (_) {
-        await window.ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [{
-            chainId: CHAIN_CONFIG.chainIdHex,
-            chainName: CHAIN_CONFIG.chainName,
-            rpcUrls: CHAIN_CONFIG.rpcUrls,
-            blockExplorerUrls: CHAIN_CONFIG.blockExplorerUrls,
-            nativeCurrency: CHAIN_CONFIG.nativeCurrency
-          }]
-        });
-      }
-      walletChainId = await window.ethereum.request({ method: "eth_chainId" });
-      checkWalletNetworkBanner();
-      showToast("Robinhood Chain active");
-      await loadPresaleData();
-    }
+        worker.onerror = function(err) {
+          logConsole("Web Worker yükleme hatası (CDN erişimini kontrol edin): " + err.message, "error");
+        };
 
-    async function addObsToken() {
-      if (!window.ethereum) { showWalletFallback(); return; }
-      try {
-        if (walletChainId && parseInt(walletChainId, 16) !== CHAIN_CONFIG.chainIdDec) await addOrSwitchChain();
-        await window.ethereum.request({
-          method: "wallet_watchAsset",
-          params: { type: "ERC20", options: { address: ADDRESSES.token, symbol: "OBS", decimals: 18 } }
-        });
-        showToast("$OBS added to wallet");
+        worker.postMessage({ source: OBSIDION_PRESALE_SOL });
       } catch (err) {
-        setMsg("buyMsg", err.message || "Could not add $OBS token.", "warn");
+        logConsole("Derleyici başlatılamadı: " + err.message, "error");
       }
     }
 
+    // ==================== WALLET & ROBINHOOD CHAIN CONNECTION ====================
     async function connectWallet() {
-      if (!window.ethereum) { showWalletFallback(); return; }
+      if (!window.ethereum) {
+        logConsole("❌ Tarayıcıda MetaMask veya Web3 cüzdanı bulunamadı!", "error");
+        return;
+      }
+
       try {
-        const accs = await window.ethereum.request({ method: "eth_requestAccounts" });
-        account = accs[0] || null;
-        walletChainId = await window.ethereum.request({ method: "eth_chainId" });
-        if (account) {
-          $("connectBtn").textContent = `${account.slice(0, 6)}...${account.slice(-4)}`;
-          checkWalletNetworkBanner();
-          showToast("Wallet connected");
-          await loadPresaleData();
+        logConsole("Cüzdan bağlantısı isteniyor...", "info");
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+        await ensureRobinhoodChain();
+
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = await provider.getSigner();
+        userAddress = await signer.getAddress();
+
+        const shortAddr = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+        document.getElementById("connectBtnText").textContent = shortAddr;
+        document.getElementById("walletBalancesBox").classList.remove("hidden");
+        document.getElementById("networkDot").className = "w-2 h-2 rounded-full bg-emerald-400 animate-ping";
+
+        logConsole(`🟢 Kurucu cüzdan bağlandı: ${userAddress}`, "success");
+        await refreshAllStates();
+
+        window.ethereum.on("accountsChanged", () => window.location.reload());
+        window.ethereum.on("chainChanged", () => window.location.reload());
+      } catch (err) {
+        logConsole("Cüzdan bağlantı hatası: " + (err.reason || err.message), "error");
+      }
+    }
+
+    async function ensureRobinhoodChain() {
+      const chainId = await window.ethereum.request({ method: "eth_chainId" });
+      if (chainId.toLowerCase() !== ROBINHOOD_CHAIN_ID_HEX.toLowerCase()) {
+        logConsole("Robinhood Chain (Chain ID: 4663) ağına geçiş yapılıyor...", "info");
+        try {
+          await window.ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: ROBINHOOD_CHAIN_ID_HEX }]
+          });
+        } catch (switchError) {
+          if (switchError.code === 4902) {
+            await window.ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [{
+                chainId: ROBINHOOD_CHAIN_ID_HEX,
+                chainName: "Robinhood Chain",
+                nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
+                rpcUrls: ["https://rpc.robinhoodchain.com"],
+                blockExplorerUrls: ["https://robinhoodchain.blockscout.com"]
+              }]
+            });
+          } else {
+            throw switchError;
+          }
+        }
+      }
+    }
+
+    // ==================== REFRESH ALL ON-CHAIN BALANCES & STATES ====================
+    async function refreshAllStates() {
+      if (!provider || !userAddress) return;
+
+      try {
+        const tokenContract = new ethers.Contract(OBS_TOKEN_ADDRESS, TOKEN_ABI, provider);
+
+        // 1. Owner ETH & OBS Balances
+        const ethBal = await provider.getBalance(userAddress);
+        const obsBal = await tokenContract.balanceOf(userAddress);
+        document.getElementById("ownerEthBalance").textContent = Number(ethers.formatEther(ethBal)).toFixed(4);
+        document.getElementById("ownerObsBalance").textContent = Number(ethers.formatUnits(obsBal, 18)).toLocaleString("tr-TR", { maximumFractionDigits: 0 });
+
+        // 2. Old Presale Status
+        const oldPresale = new ethers.Contract(OLD_PRESALE_ADDRESS, PRESALE_ABI, provider);
+        const [oldStarted, oldCancelled, oldObs] = await Promise.all([
+          oldPresale.presaleStarted(),
+          oldPresale.cancelled(),
+          tokenContract.balanceOf(OLD_PRESALE_ADDRESS)
+        ]);
+
+        document.getElementById("oldPresaleStarted").textContent = oldStarted ? "EVET (Aktif)" : "HAYIR";
+        document.getElementById("oldPresaleStarted").className = oldStarted ? "font-bold text-amber-300" : "font-bold text-slate-400";
+
+        document.getElementById("oldPresaleCancelled").textContent = oldCancelled ? "EVET (İptal Edildi)" : "HAYIR";
+        document.getElementById("oldPresaleCancelled").className = oldCancelled ? "font-bold text-emerald-400" : "font-bold text-rose-400";
+
+        const oldObsFormatted = Number(ethers.formatUnits(oldObs, 18));
+        document.getElementById("oldPresaleObsBal").textContent = `${oldObsFormatted.toLocaleString("tr-TR", { maximumFractionDigits: 0 })} $OBS`;
+
+        // 3. New Presale Status (if set)
+        if (newPresaleAddress && ethers.isAddress(newPresaleAddress)) {
+          const newPresale = new ethers.Contract(newPresaleAddress, PRESALE_ABI, provider);
+          const [taxEx, limitEx, divEx, newObs, newStarted, newMinBuy] = await Promise.all([
+            tokenContract.isTaxExempt(newPresaleAddress),
+            tokenContract.isLimitExempt(newPresaleAddress),
+            tokenContract.isDividendExempt(newPresaleAddress),
+            tokenContract.balanceOf(newPresaleAddress),
+            newPresale.presaleStarted(),
+            newPresale.minBuy()
+          ]);
+
+          const allExempt = taxEx && limitEx && divEx;
+          const exemptEl = document.getElementById("newExemptStatus");
+          exemptEl.textContent = allExempt ? "✅ TAMAMLANDI" : "❌ Eksik (3A'ya Basın)";
+          exemptEl.className = allExempt ? "font-bold text-emerald-400 mt-0.5 block" : "font-bold text-rose-400 mt-0.5 block";
+
+          const newObsNum = Number(ethers.formatUnits(newObs, 18));
+          document.getElementById("newPresaleObsBal").textContent = `${newObsNum.toLocaleString("tr-TR", { maximumFractionDigits: 0 })} / 48.6M`;
+
+          document.getElementById("newPresaleMinBuy").textContent = `${ethers.formatEther(newMinBuy)} ETH`;
+
+          const startedEl = document.getElementById("newPresaleStartedStatus");
+          startedEl.textContent = newStarted ? "🟢 YAYINDA (AKTİF)" : "⏳ Başlatılmadı";
+          startedEl.className = newStarted ? "font-bold text-emerald-400 mt-0.5 block" : "font-bold text-amber-300 mt-0.5 block";
         }
       } catch (err) {
-        setMsg("buyMsg", err.message || "Wallet connection cancelled.", "err");
+        logConsole("Zincir verileri okunurken uyarı: " + (err.reason || err.message), "error");
       }
     }
 
-    async function buyTokens() {
-      if (!window.ethereum) { showWalletFallback(); return; }
-      if (!account) await connectWallet();
-      if (!account) return;
-      if (walletChainId && parseInt(walletChainId, 16) !== CHAIN_CONFIG.chainIdDec) await addOrSwitchChain();
-
-      const wei = parseEthToWei($("ethInput").value);
-      if (!wei) { setMsg("buyMsg", "Enter a valid ETH amount.", "err"); return; }
-      if (wei < state.minBuy) { setMsg("buyMsg", `Minimum buy is ${formatEth(state.minBuy)} ETH.`, "warn"); return; }
-      if (wei > state.maxBuy) { setMsg("buyMsg", `Maximum buy per wallet is ${formatEth(state.maxBuy)} ETH.`, "warn"); return; }
-
-      const btn = $("buyBtn");
-      btn.disabled = true;
+    // ==================== STEP 1 ACTIONS: OLD PRESALE ====================
+    async function cancelOldPresale() {
+      if (!requireWallet()) return;
       try {
-        const txHash = await window.ethereum.request({
-          method: "eth_sendTransaction",
-          params: [{ from: account, to: ADDRESSES.presale, value: "0x" + wei.toString(16), data: SELECTORS.buyTokens }]
-        });
-        const txUrl = `https://robinhoodchain.blockscout.com/tx/${txHash}`;
-        setMsg("buyMsg", `Transaction sent!<br><a class="tx-link" href="${txUrl}" target="_blank" rel="noopener">View on Blockscout ↗</a>`, "ok", true);
-        setTimeout(loadPresaleData, 3500);
+        const oldPresale = new ethers.Contract(OLD_PRESALE_ADDRESS, PRESALE_ABI, signer);
+        logConsole("1A: Eski ön satış iptal ediliyor (cancelPresale)... Lütfen cüzdanınızdan onaylayın.", "info");
+        const tx = await oldPresale.cancelPresale();
+        logConsole(`İşlem gönderildi: ${tx.hash} — Onay bekleniyor...`, "info");
+        await tx.wait();
+        logConsole("✅ Eski ön satış başarıyla iptal edildi! Şimdi 1B butonuna basarak 48.6M $OBS tokenı çekebilirsiniz.", "success");
+        await refreshAllStates();
       } catch (err) {
-        setMsg("buyMsg", err.message || "Transaction rejected.", "err");
-      } finally {
-        btn.disabled = false;
+        logConsole("1A Hatası: " + (err.reason || err.message), "error");
       }
     }
 
-    async function checkTimelockId() {
-      const idVal = Number($("timelockIdInput").value);
-      if (Number.isNaN(idVal) || idVal < 0) { setMsg("timelockMsg", "Enter a valid Timelock ID.", "err"); return; }
+    async function withdrawOldFailure() {
+      if (!requireWallet()) return;
       try {
-        const paddedId = BigInt(idVal).toString(16).padStart(64, "0");
-        const resHex = await ethCall(ADDRESSES.timelock, SELECTORS.locks + paddedId);
-        if (!resHex) { setMsg("timelockMsg", "Connect your wallet on Robinhood Chain (4663) to query Timelock IDs.", "warn"); return; }
-        const words = decodeWords(resHex);
-        if (!words.length || words.every((w) => w === 0n)) { setMsg("timelockMsg", `Timelock #${idVal}: empty or not found.`, ""); return; }
-        setMsg("timelockMsg", `Timelock #${idVal}: ${words.map((w) => w.toString()).join(" | ")}`, "ok");
+        const oldPresale = new ethers.Contract(OLD_PRESALE_ADDRESS, PRESALE_ABI, signer);
+        logConsole("1B: Eski kontrattan 48.600.000 $OBS geri çekiliyor (withdrawTokensOnFailure)...", "info");
+        const tx = await oldPresale.withdrawTokensOnFailure();
+        logConsole(`İşlem gönderildi: ${tx.hash} — Onay bekleniyor...`, "info");
+        await tx.wait();
+        logConsole("✅ 48.600.000 $OBS kurucu cüzdanınıza başarıyla geri aktarıldı!", "success");
+        await refreshAllStates();
       } catch (err) {
-        setMsg("timelockMsg", `Lookup error: ${err.message}`, "err");
+        logConsole("1B Hatası: " + (err.reason || err.message), "error");
       }
     }
 
-    // Scroll Reveal Observer (zero overhead)
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("visible"); io.unobserve(e.target); } });
-    }, { threshold: 0.08 });
-    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
-
-    // Events
-    $("ethInput").addEventListener("input", updateCalculator);
-    $("ethBalTag").addEventListener("click", () => {
-      if (!walletEthBalWei || walletEthBalWei <= 2000000000000000n) return;
-      const safe = walletEthBalWei - 2000000000000000n;
-      const capped = safe > state.maxBuy ? state.maxBuy : safe;
-      $("ethInput").value = formatEth(capped);
-      updateCalculator();
-    });
-
-    document.querySelectorAll(".quick-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        $("ethInput").value = btn.getAttribute("data-amt");
-        updateCalculator();
-      });
-    });
-
-    document.querySelectorAll(".copy-btn").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const val = btn.getAttribute("data-copy");
-        try { await navigator.clipboard.writeText(val); }
-        catch (_) {
-          const ta = document.createElement("textarea");
-          ta.value = val; document.body.appendChild(ta); ta.select();
-          document.execCommand("copy"); ta.remove();
-        }
-        showToast("Contract address copied!");
-      });
-    });
-
-    if (window.ethereum) {
-      window.ethereum.on("chainChanged", async (cid) => {
-        walletChainId = cid; checkWalletNetworkBanner(); await loadPresaleData();
-      });
-      window.ethereum.on("accountsChanged", async (accs) => {
-        account = accs[0] || null;
-        $("connectBtn").textContent = account ? `${account.slice(0, 6)}...${account.slice(-4)}` : I18N[currentLang].connect;
-        await loadPresaleData();
-      });
+    async function withdrawOldBeforeStart() {
+      if (!requireWallet()) return;
+      try {
+        const oldPresale = new ethers.Contract(OLD_PRESALE_ADDRESS, PRESALE_ABI, signer);
+        logConsole("Eski kontrattan token çekiliyor (withdrawTokensBeforeStart)...", "info");
+        const tx = await oldPresale.withdrawTokensBeforeStart();
+        logConsole(`İşlem gönderildi: ${tx.hash} — Onay bekleniyor...`, "info");
+        await tx.wait();
+        logConsole("✅ 48.600.000 $OBS kurucu cüzdanınıza geri aktarıldı!", "success");
+        await refreshAllStates();
+      } catch (err) {
+        logConsole("Geri çekme hatası: " + (err.reason || err.message), "error");
+      }
     }
 
-    $("langSelect").addEventListener("change", (e) => applyLang(e.target.value));
-    $("addTokenBtn").addEventListener("click", addObsToken);
-    $("addChainBtn").addEventListener("click", addOrSwitchChain);
-    $("refreshBtn").addEventListener("click", () => { loadPresaleData(); showToast("Syncing on-chain data..."); });
-    $("connectBtn").addEventListener("click", connectWallet);
-    $("buyBtn").addEventListener("click", buyTokens);
-    $("checkTimelockBtn").addEventListener("click", checkTimelockId);
+    // ==================== STEP 2 ACTION: DEPLOY NEW PRESALE ====================
+    async function deployNewPresaleContract() {
+      if (!requireWallet()) return;
+      if (!compiledArtifact) {
+        logConsole("Solidity derleyicisi henüz hazır değil, lütfen birkaç saniye bekleyin.", "error");
+        return;
+      }
 
-    applyLang("en");
-    renderState();
-    updateCalculator();
-    setInterval(tickCountdown, 1000);
-    setTimeout(loadPresaleData, 50);
-    setInterval(loadPresaleData, 30000);
+      try {
+        logConsole("🚀 Yeni ObsidionPresale kontratı (minBuy = 0.00001 ETH) Robinhood Chain'e deploy ediliyor...", "info");
+        const factory = new ethers.ContractFactory(compiledArtifact.abi, compiledArtifact.bytecode, signer);
+        const contract = await factory.deploy(OBS_TOKEN_ADDRESS);
+
+        const deployTx = contract.deploymentTransaction();
+        logConsole(`Deploy işlemi ağa iletildi! Tx Hash: ${deployTx.hash}`, "info");
+
+        await contract.waitForDeployment();
+        const deployedAddr = await contract.getAddress();
+
+        newPresaleAddress = deployedAddr;
+        localStorage.setItem("obs_new_presale_address", deployedAddr);
+        document.getElementById("newPresaleAddressInput").value = deployedAddr;
+        updateNewPresaleLink(deployedAddr);
+
+        logConsole(`🎉 TEBRİKLER! Yeni Ön Satış Kontratı Yayınlandı: ${deployedAddr}`, "success");
+        await refreshAllStates();
+      } catch (err) {
+        logConsole("Deploy Hatası: " + (err.reason || err.message), "error");
+      }
+    }
+
+    function onManualNewAddressChange(val) {
+      const trimmed = val.trim();
+      if (ethers.isAddress(trimmed)) {
+        newPresaleAddress = trimmed;
+        localStorage.setItem("obs_new_presale_address", trimmed);
+        updateNewPresaleLink(trimmed);
+        refreshAllStates();
+      }
+    }
+
+    function updateNewPresaleLink(addr) {
+      const link = document.getElementById("newPresaleExplorerLink");
+      link.href = `https://robinhoodchain.blockscout.com/address/${addr}`;
+      link.classList.remove("hidden");
+    }
+
+    // ==================== STEP 3 ACTIONS: EXEMPT, TRANSFER, START ====================
+    async function grantSystemExempt() {
+      if (!requireWallet() || !requireNewPresaleAddress()) return;
+      try {
+        const tokenContract = new ethers.Contract(OBS_TOKEN_ADDRESS, TOKEN_ABI, signer);
+        logConsole(`3A: Yeni kontrata sistem muafiyeti tanımlanıyor: setSystemExempt(${newPresaleAddress}, true)...`, "info");
+        const tx = await tokenContract.setSystemExempt(newPresaleAddress, true);
+        logConsole(`İşlem gönderildi: ${tx.hash} — Onay bekleniyor...`, "info");
+        await tx.wait();
+        logConsole("✅ Muafiyet başarıyla tanımlandı! Şimdi 3B ile 48.6M $OBS gönderin.", "success");
+        await refreshAllStates();
+      } catch (err) {
+        logConsole("3A Muafiyet Hatası: " + (err.reason || err.message), "error");
+      }
+    }
+
+    async function transferPresaleTokens() {
+      if (!requireWallet() || !requireNewPresaleAddress()) return;
+      try {
+        const tokenContract = new ethers.Contract(OBS_TOKEN_ADDRESS, TOKEN_ABI, signer);
+        logConsole(`3B: Yeni ön satış kontratına 48.600.000 $OBS aktarılıyor...`, "info");
+        const tx = await tokenContract.transfer(newPresaleAddress, REQUIRED_OBS_AMOUNT);
+        logConsole(`İşlem gönderildi: ${tx.hash} — Onay bekleniyor...`, "info");
+        await tx.wait();
+        logConsole("✅ 48.600.000 $OBS yeni kontrata başarıyla yüklendi! Şimdi 3C ile ön satışı başlatın.", "success");
+        await refreshAllStates();
+      } catch (err) {
+        logConsole("3B Transfer Hatası: " + (err.reason || err.message), "error");
+      }
+    }
+
+    async function startNewPresale() {
+      if (!requireWallet() || !requireNewPresaleAddress()) return;
+      try {
+        const newPresale = new ethers.Contract(newPresaleAddress, PRESALE_ABI, signer);
+        logConsole(`3C: Yeni ön satış başlatılıyor (startPresale)...`, "info");
+        const tx = await newPresale.startPresale();
+        logConsole(`İşlem gönderildi: ${tx.hash} — Onay bekleniyor...`, "info");
+        await tx.wait();
+        logConsole("🚀 YENİ ÖN SATIŞ YAYINDA! Minimum alım artık 0.00001 ETH (~$0.03).", "success");
+        await refreshAllStates();
+      } catch (err) {
+        logConsole("3C Başlatma Hatası: " + (err.reason || err.message), "error");
+      }
+    }
+
+    // ==================== HELPERS & CLIPBOARD ====================
+    function requireWallet() {
+      if (!signer || !userAddress) {
+        logConsole("⚠️ Lütfen önce sağ üstten kurucu cüzdanınızı bağlayın!", "error");
+        connectWallet();
+        return false;
+      }
+      return true;
+    }
+
+    function requireNewPresaleAddress() {
+      if (!newPresaleAddress || !ethers.isAddress(newPresaleAddress)) {
+        logConsole("⚠️ Geçerli bir yeni ön satış kontrat adresi bulunamadı. Önce 2. adımdan deploy edin veya adresi yapıştırın.", "error");
+        return false;
+      }
+      return true;
+    }
+
+    function copyNewAddress() {
+      const val = document.getElementById("newPresaleAddressInput").value.trim();
+      if (!val) {
+        logConsole("Kopyalanacak adres henüz yok.", "error");
+        return;
+      }
+      copyText(val, "Yeni kontrat adresi kopyalandı: " + val);
+    }
+
+    function copySoliditySource() {
+      copyText(OBSIDION_PRESALE_SOL, "Güncel ObsidionPresale.sol kodu Blockscout doğrulaması için panoya kopyalandı!");
+    }
+
+    function copyText(text, successMsg) {
+      const temp = document.createElement("textarea");
+      temp.value = text;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand("copy");
+      document.body.removeChild(temp);
+      logConsole("📋 " + successMsg, "success");
+    }
+
+    function toggleSourceCode() {
+      document.getElementById("sourceCodeContainer").classList.toggle("hidden");
+    }
+
+    function logConsole(message, type = "info") {
+      const box = document.getElementById("consoleLogBox");
+      const time = new Date().toLocaleTimeString("tr-TR");
+      const line = document.createElement("div");
+
+      if (type === "success") line.className = "text-emerald-400 font-semibold";
+      else if (type === "error") line.className = "text-rose-400 font-semibold";
+      else line.className = "text-amber-200";
+
+      line.textContent = `[${time}] ${message}`;
+      box.appendChild(line);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function clearLogs() {
+      document.getElementById("consoleLogBox").innerHTML = "";
+    }
   </script>
 </body>
 </html>
