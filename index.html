@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OBSIDION ($OBS) | Official V2 Presale on Robinhood Chain</title>
+  <title>OBSIDION ($OBS) | V2 Presale, Burn Engine & DeFi Ecosystem</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -93,9 +93,17 @@
       box-shadow: 0 0 28px rgba(52, 211, 153, 0.65);
       transform: translateY(-1px);
     }
-    .btn-emerald:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
+
+    .btn-fire {
+      background: linear-gradient(135deg, #FB7185 0%, #F97316 55%, #DC2626 100%);
+      color: #FFF;
+      font-weight: 800;
+      box-shadow: 0 0 20px rgba(249, 115, 22, 0.35);
+      transition: all 0.2s ease;
+    }
+    .btn-fire:hover:not(:disabled) {
+      box-shadow: 0 0 28px rgba(249, 115, 22, 0.65);
+      transform: translateY(-1px);
     }
 
     .field-input {
@@ -113,9 +121,31 @@
       outline: none;
       border-color: #FBBF24;
     }
+
+    input[type="range"] {
+      accent-color: #FBBF24;
+    }
   </style>
 </head>
 <body class="selection:bg-amber-500 selection:text-black flex flex-col justify-between">
+
+  <!-- LIVE PROTOCOL TICKER BAR -->
+  <div class="bg-obsidian-900 border-b border-amber-500/20 py-1.5 px-4 text-[11px] font-mono text-slate-300">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex flex-wrap items-center gap-3 sm:gap-5">
+        <span class="text-emerald-400 font-bold">● ROBINHOOD CHAIN (4663)</span>
+        <span>Min Entry: <strong class="text-amber-300">0.00001 ETH (~$0.03)</strong></span>
+        <span class="hidden md:inline">Mid-Cap Fast Close: <strong class="text-sky-300">14.0 ETH (48h Trigger)</strong></span>
+        <span class="hidden lg:inline">Burn Floor: <strong class="text-rose-400">21,000,000 $OBS</strong></span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span id="tickerRaised" class="text-white font-bold">Raised: 0.0000 ETH</span>
+        <span id="tickerBuyers" class="text-emerald-300">Buyers: 0</span>
+        <button onclick="openBridgeModal()" class="text-amber-300 hover:underline cursor-pointer">⚡ Bridge ETH</button>
+        <a href="https://x.com/ObsidionT" target="_blank" rel="noopener noreferrer" class="text-amber-300 hover:underline">@ObsidionT ↗</a>
+      </div>
+    </div>
+  </div>
 
   <!-- TOP NAVBAR -->
   <header class="sticky top-0 z-40 bg-obsidian-950/90 backdrop-blur-xl border-b border-amber-500/25">
@@ -136,13 +166,28 @@
       </div>
 
       <!-- Navigation & Wallet -->
-      <div class="flex items-center gap-2 sm:gap-3">
-        <a href="#tokenomics" class="hidden md:inline-block text-xs font-medium text-slate-300 hover:text-amber-300 px-2.5 py-1.5 transition">Tokenomics</a>
-        <a href="#referral" class="hidden md:inline-block text-xs font-medium text-slate-300 hover:text-amber-300 px-2.5 py-1.5 transition">KOL & Referral</a>
+      <div class="flex items-center gap-2 sm:gap-2.5">
+        <a href="#burn-portal" class="hidden xl:inline-block text-xs font-medium text-rose-300 hover:text-rose-200 px-2 py-1.5 transition">🔥 Burn Engine</a>
+        <a href="#leaderboard" class="hidden xl:inline-block text-xs font-medium text-slate-300 hover:text-amber-300 px-2 py-1.5 transition">Leaderboard</a>
+        <a href="#simulator" class="hidden lg:inline-block text-xs font-medium text-slate-300 hover:text-amber-300 px-2 py-1.5 transition">Simulator</a>
+        <a href="#kol-hub" class="hidden lg:inline-block text-xs font-medium text-slate-300 hover:text-amber-300 px-2 py-1.5 transition">KOL Hub</a>
+        <a href="#tokenomics" class="hidden lg:inline-block text-xs font-medium text-slate-300 hover:text-amber-300 px-2 py-1.5 transition">Tokenomics</a>
+
+        <button onclick="openBridgeModal()" class="hidden sm:flex px-3 py-2 rounded-xl bg-obsidian-850 border border-sky-500/30 text-xs font-mono text-sky-300 hover:bg-sky-500 hover:text-black transition items-center gap-1 cursor-pointer">
+          <span>🌉 Bridge</span>
+        </button>
+
+        <button onclick="addObsTokenToWallet()" title="Add $OBS to MetaMask" class="hidden md:flex px-3 py-2 rounded-xl bg-obsidian-850 border border-amber-500/30 text-xs font-mono text-amber-300 hover:bg-amber-400 hover:text-black transition items-center gap-1 cursor-pointer">
+          <span>+ $OBS</span>
+        </button>
 
         <button onclick="switchOrAddRobinhoodChain()" class="px-3 py-2 rounded-xl bg-obsidian-850 border border-emerald-500/30 text-xs font-mono text-emerald-300 hover:border-emerald-400 flex items-center gap-1.5 cursor-pointer">
           <span id="networkDot" class="w-2 h-2 rounded-full bg-slate-500"></span>
-          <span id="networkLabel">Robinhood L2</span>
+          <span id="networkLabel">Chain 4663</span>
+        </button>
+
+        <button onclick="manualRefresh()" title="Sync On-Chain Data" class="p-2 rounded-xl bg-obsidian-850 border border-amber-500/25 text-amber-300 hover:border-amber-400 transition cursor-pointer">
+          🔄
         </button>
 
         <button id="connectWalletBtn" onclick="connectWallet()" class="btn-gold px-4 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-2 cursor-pointer">
@@ -153,16 +198,22 @@
     </div>
   </header>
 
-  <!-- MAIN HERO & PRESALE TERMINAL -->
-  <main class="max-w-7xl mx-auto w-full px-4 pt-8 pb-16 space-y-12">
+  <!-- MAIN CONTENT -->
+  <main class="max-w-7xl mx-auto w-full px-4 pt-8 pb-16 space-y-14">
 
+    <!-- HERO & LIVE PRESALE TERMINAL -->
     <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-      <!-- LEFT COLUMN: VALUE PROPOSITION & PROTOCOL HIGHLIGHTS (7 Cols) -->
+      <!-- LEFT COLUMN (7 Cols) -->
       <div class="lg:col-span-7 space-y-6">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-400/30 text-xs font-mono text-amber-300">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          <span>V2 Presale Live • On-Chain Refund Shield Active</span>
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-400/30 text-xs font-mono text-amber-300">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span>V2 Presale Live • On-Chain Refund Shield Active</span>
+          </div>
+          <button onclick="openBridgeModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sky-500/10 border border-sky-400/30 text-xs font-mono text-sky-300 hover:bg-sky-500/20 transition cursor-pointer">
+            <span>Need Robinhood ETH? Bridge in 15s →</span>
+          </button>
         </div>
 
         <h1 class="font-display text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
@@ -173,32 +224,66 @@
           OBSIDION ($OBS) combines an accessible V2 Presale entry starting from <strong class="text-amber-300">0.00001 ETH (~$0.03)</strong>, programmatic supply burn down to a strict <strong class="text-amber-300">21,000,000 $OBS Hard Burn Floor</strong>, and smart-contract guaranteed refund protection if Soft Cap is not reached.
         </p>
 
-        <!-- Key Stats Cards -->
-        <div id="tokenomics" class="grid grid-cols-2 sm:grid-cols-3 gap-3.5 pt-1">
-          <div class="obsidian-card p-4 rounded-2xl">
-            <span class="text-[11px] font-mono uppercase text-slate-400 block">Initial Supply</span>
-            <span class="text-xl sm:text-2xl font-extrabold text-white mt-1 block">120,000,000</span>
-            <span class="text-xs font-mono text-amber-300 mt-0.5 block">$OBS Genesis</span>
+        <!-- Key Protocol Metrics -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="obsidian-card p-3.5 rounded-2xl">
+            <span class="text-[10px] font-mono uppercase text-slate-400 block">Current Supply</span>
+            <span id="liveCurrentSupply" class="text-lg sm:text-xl font-extrabold text-white mt-1 block">120.00M</span>
+            <span class="text-[11px] font-mono text-amber-300 mt-0.5 block">Genesis: 120M</span>
           </div>
 
-          <div class="obsidian-card p-4 rounded-2xl">
-            <span class="text-[11px] font-mono uppercase text-slate-400 block">Hard Burn Floor</span>
-            <span class="text-xl sm:text-2xl font-extrabold gold-gradient-text mt-1 block">21,000,000</span>
-            <span class="text-xs font-mono text-emerald-400 mt-0.5 block">Immutable Scarcity</span>
+          <div class="obsidian-card p-3.5 rounded-2xl">
+            <span class="text-[10px] font-mono uppercase text-slate-400 block">Hard Burn Floor</span>
+            <span class="text-lg sm:text-xl font-extrabold gold-gradient-text mt-1 block">21.00M</span>
+            <span id="burnableRemainingText" class="text-[11px] font-mono text-emerald-400 mt-0.5 block">99.00M Burnable</span>
           </div>
 
-          <div class="obsidian-card p-4 rounded-2xl col-span-2 sm:col-span-1">
-            <span class="text-[11px] font-mono uppercase text-slate-400 block">Investor Protection</span>
-            <span class="text-xl sm:text-2xl font-extrabold text-emerald-400 mt-1 block">100% Refund</span>
-            <span class="text-xs font-mono text-slate-300 mt-0.5 block">On-Chain Guarantee</span>
+          <div class="obsidian-card p-3.5 rounded-2xl">
+            <span class="text-[10px] font-mono uppercase text-slate-400 block">TGE Unlock</span>
+            <span id="tgeUnlockDisplay" class="text-lg sm:text-xl font-extrabold text-emerald-400 mt-1 block">100%</span>
+            <span id="vestingDurationDisplay" class="text-[11px] font-mono text-slate-300 mt-0.5 block">Instant Unlock</span>
+          </div>
+
+          <div class="obsidian-card p-3.5 rounded-2xl">
+            <span class="text-[10px] font-mono uppercase text-slate-400 block">Investor Shield</span>
+            <span class="text-lg sm:text-xl font-extrabold text-sky-300 mt-1 block">100%</span>
+            <span class="text-[11px] font-mono text-slate-300 mt-0.5 block">ETH Refundable</span>
+          </div>
+        </div>
+
+        <!-- Dynamic Presale Milestones (Soft Cap -> Mid Cap -> Hard Cap) -->
+        <div class="obsidian-card p-4 rounded-2xl space-y-3 font-mono text-xs">
+          <div class="flex items-center justify-between">
+            <span class="text-amber-300 font-bold">🎯 Dynamic Presale Milestones</span>
+            <span id="milestoneStatusLabel" class="text-emerald-400">Stage 1: Building Toward Soft Cap</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 text-[11px]">
+            <div id="milestoneSoftBox" class="p-2.5 rounded-xl bg-obsidian-950/90 border border-white/10">
+              <span class="text-slate-400 block">1. Soft Cap</span>
+              <strong id="milestoneSoftVal" class="text-white block mt-0.5">5.00 ETH</strong>
+              <span class="text-[10px] text-emerald-400">Unlocks Launch</span>
+            </div>
+            <div id="milestoneMidBox" class="p-2.5 rounded-xl bg-obsidian-950/90 border border-white/10">
+              <span class="text-slate-400 block">2. Mid Cap</span>
+              <strong class="text-white block mt-0.5">14.00 ETH</strong>
+              <span class="text-[10px] text-sky-300">Triggers 48h Close</span>
+            </div>
+            <div id="milestoneHardBox" class="p-2.5 rounded-xl bg-obsidian-950/90 border border-white/10">
+              <span class="text-slate-400 block">3. Hard Cap</span>
+              <strong id="milestoneHardVal" class="text-white block mt-0.5">20.00 ETH</strong>
+              <span class="text-[10px] text-amber-300">Instant Sell-Out</span>
+            </div>
           </div>
         </div>
 
         <!-- Verified Contract Addresses -->
         <div class="obsidian-card p-4 rounded-2xl space-y-2.5 text-xs font-mono">
-          <div class="flex items-center justify-between text-slate-400 pb-1 border-b border-white/10">
+          <div class="flex flex-wrap items-center justify-between gap-2 text-slate-400 pb-1.5 border-b border-white/10">
             <span class="uppercase font-bold text-amber-300">Verified Robinhood Chain (4663) Contracts</span>
-            <a href="https://robinhoodchain.blockscout.com/address/0xe968f7D5D4757109497060213759E97e4e513a17" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:underline">Blockscout Explorer ↗</a>
+            <div class="flex items-center gap-3">
+              <button onclick="addObsTokenToWallet()" class="text-amber-300 hover:underline cursor-pointer">+ Add $OBS to Wallet</button>
+              <a href="https://robinhoodchain.blockscout.com/address/0xe968f7D5D4757109497060213759E97e4e513a17" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:underline">Explorer ↗</a>
+            </div>
           </div>
           <div class="flex flex-wrap items-center justify-between gap-2">
             <span class="text-slate-400">$OBS Token:</span>
@@ -216,21 +301,17 @@
           </div>
         </div>
 
-        <!-- Referral & KOL Link Box -->
-        <div id="referral" class="obsidian-card p-5 rounded-2xl space-y-3">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <h3 class="text-sm font-extrabold text-white">🤝 On-Chain Referral & KOL Rewards</h3>
-              <p class="text-xs text-slate-400 mt-0.5">Earn instant ETH + $OBS rewards on every referral purchase + extra bonus for your buyers.</p>
+        <!-- Live On-Chain Buyers & Activity Feed -->
+        <div class="obsidian-card p-5 rounded-2xl space-y-3">
+          <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-amber-300">Live On-Chain Contributions</h3>
             </div>
-            <span id="refRatesBadge" class="px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-400/30 text-[11px] font-mono font-bold text-amber-300">
-              5% ETH + 5% $OBS
-            </span>
+            <span id="liveFeedCountBadge" class="text-xs font-mono text-slate-400">0 Total Buyers</span>
           </div>
-
-          <div class="flex gap-2">
-            <input id="refLinkInput" type="text" readonly value="Connect wallet to generate your referral link..." class="field-input text-xs text-amber-200" />
-            <button onclick="copyRefLink()" class="btn-gold px-4 py-2 rounded-xl text-xs shrink-0 cursor-pointer">Copy Link</button>
+          <div id="recentBuyersList" class="space-y-2 text-xs font-mono max-h-48 overflow-y-auto">
+            <div class="text-slate-400 py-2">Syncing on-chain participant list...</div>
           </div>
         </div>
       </div>
@@ -244,11 +325,11 @@
             <div>
               <h2 class="font-display text-lg sm:text-xl font-extrabold text-white">$OBS V2 Presale</h2>
               <div class="flex items-center gap-2 mt-1">
-                <span id="statusBadge" class="text-xs font-mono font-bold text-emerald-400">● Loading status...</span>
+                <span id="statusBadge" class="text-xs font-mono font-bold text-emerald-400">● Syncing chain...</span>
               </div>
             </div>
             <div class="text-right font-mono">
-              <span class="text-[10px] uppercase text-slate-400 block">Countdown</span>
+              <span class="text-[10px] uppercase text-slate-400 block">Time Remaining</span>
               <span id="countdownDisplay" class="text-sm font-extrabold text-amber-300">--d --h --m</span>
             </div>
           </div>
@@ -282,17 +363,28 @@
 
           <!-- Buy Input Box -->
           <div class="space-y-3">
-            <div class="bg-obsidian-950 border border-amber-500/30 rounded-2xl p-3.5">
-              <div class="flex justify-between text-xs font-mono text-slate-400 mb-1.5">
+            <div class="bg-obsidian-950 border border-amber-500/30 rounded-2xl p-3.5 space-y-2.5">
+              <div class="flex justify-between text-xs font-mono text-slate-400">
                 <span>Pay with ETH (Robinhood L2)</span>
                 <span id="ethBalanceDisplay">Balance: 0.0000</span>
               </div>
+
               <div class="flex items-center justify-between gap-2">
                 <input id="buyAmountInput" type="number" step="0.0001" placeholder="0.05" oninput="calculateReceive()" class="w-full bg-transparent text-2xl font-mono font-extrabold text-white focus:outline-none" />
-                <button onclick="setMaxEth()" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[11px] font-mono font-bold hover:bg-amber-400 hover:text-black transition cursor-pointer">MAX</button>
+                <span id="usdApproxTag" class="text-[11px] font-mono text-slate-400 shrink-0">~$150.00</span>
                 <span class="text-xs font-mono font-bold bg-obsidian-850 px-3 py-1.5 rounded-xl text-slate-200 border border-white/10">ETH</span>
               </div>
-              <div class="flex justify-between text-[11px] font-mono text-slate-400 mt-2 pt-2 border-t border-white/5">
+
+              <!-- Quick Preset Buttons -->
+              <div class="grid grid-cols-5 gap-1.5 pt-1 font-mono text-[11px]">
+                <button onclick="setQuickEth('0.00001')" title="~$0.03 Micro Entry" class="py-1 rounded-lg bg-obsidian-850 hover:bg-amber-400 hover:text-black text-slate-300 border border-white/10 transition cursor-pointer">$0.03</button>
+                <button onclick="setQuickEth('0.01')" class="py-1 rounded-lg bg-obsidian-850 hover:bg-amber-400 hover:text-black text-slate-300 border border-white/10 transition cursor-pointer">0.01</button>
+                <button onclick="setQuickEth('0.05')" class="py-1 rounded-lg bg-obsidian-850 hover:bg-amber-400 hover:text-black text-slate-300 border border-white/10 transition cursor-pointer">0.05</button>
+                <button onclick="setQuickEth('0.1')" class="py-1 rounded-lg bg-obsidian-850 hover:bg-amber-400 hover:text-black text-slate-300 border border-white/10 transition cursor-pointer">0.10</button>
+                <button onclick="setMaxEth()" class="py-1 rounded-lg bg-amber-500/20 hover:bg-amber-400 hover:text-black text-amber-300 border border-amber-400/30 font-bold transition cursor-pointer">MAX</button>
+              </div>
+
+              <div class="flex justify-between text-[11px] font-mono text-slate-400 pt-1.5 border-t border-white/5">
                 <span>Min: <strong id="minBuyDisplay" class="text-slate-200">0.00001 ETH</strong></span>
                 <span>Max: <strong id="maxBuyDisplay" class="text-slate-200">2.0 ETH</strong></span>
               </div>
@@ -305,7 +397,7 @@
             </div>
 
             <!-- Receive Preview -->
-            <div class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-obsidian-900/90 border border-white/10 font-mono text-xs">
+            <div class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-obsidian-900/90 border border-white/10 font-mono text-xs">
               <span class="text-slate-400">You Receive (Est.):</span>
               <span id="receiveDisplay" class="text-sm sm:text-base font-extrabold gold-gradient-text">0 $OBS</span>
             </div>
@@ -315,20 +407,23 @@
             </button>
           </div>
 
-          <!-- User Allocation, Claim & Refund Box -->
+          <!-- User Allocation, VIP Rank, Claim & Refund Box -->
           <div class="border-t border-amber-500/20 pt-4 space-y-3 font-mono text-xs">
             <div class="flex items-center justify-between">
-              <span class="text-slate-400 font-sans font-semibold">Your V2 Position</span>
+              <div class="flex items-center gap-2">
+                <span class="text-slate-300 font-sans font-bold">Your V2 Portfolio</span>
+                <span id="investorRankBadge" class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-400/30 text-[10px]">Unranked</span>
+              </div>
               <span id="userWalletObsBal" class="text-[11px] text-amber-300">Wallet: 0 $OBS</span>
             </div>
 
             <div class="grid grid-cols-2 gap-2.5 bg-obsidian-950/90 p-3 rounded-2xl border border-white/10">
               <div>
                 <span class="text-[10px] text-slate-400 block">Your Contribution</span>
-                <span id="userEthContributed" class="font-bold text-white mt-0.5 block">0.0000 ETH</span>
+                <span id="userEthContributed" class="font-bold text-white mt-0.5 block">0.00000 ETH</span>
               </div>
               <div class="text-right">
-                <span class="text-[10px] text-slate-400 block">Total Allocated</span>
+                <span class="text-[10px] text-slate-400 block">Allocated $OBS</span>
                 <span id="userObsAllocated" class="font-bold text-amber-300 mt-0.5 block">0 $OBS</span>
               </div>
               <div>
@@ -357,19 +452,367 @@
           <p id="txStatusText" class="text-center text-xs font-mono text-slate-400 min-h-[18px]"></p>
         </div>
       </div>
-
     </section>
+
+    <!-- ON-CHAIN BURN ENGINE & WALLET UTILITY PORTAL -->
+    <section id="burn-portal" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Live Supply Deflation & Burn Action -->
+      <div class="lg:col-span-7 obsidian-card rounded-3xl p-6 space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+          <div>
+            <span class="text-xs font-mono uppercase tracking-wider text-rose-400 font-bold">Hyper-Deflationary Engine</span>
+            <h2 class="font-display text-xl sm:text-2xl font-extrabold text-white">Live $OBS Burn Portal (21M Floor)</h2>
+          </div>
+          <span id="supplyBurnPctText" class="px-3 py-1 rounded-xl bg-rose-500/15 border border-rose-500/30 text-xs font-mono font-bold text-rose-300">
+            0.00% Burned
+          </span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-slate-300">
+          Every $OBS token burned is permanently removed from circulation on-chain until the immutable <strong class="text-amber-300">21,000,000 $OBS Hard Burn Floor</strong> is reached.
+        </p>
+
+        <div class="space-y-2 font-mono text-xs">
+          <div class="w-full h-3.5 bg-obsidian-950 rounded-full overflow-hidden border border-rose-500/30 p-0.5">
+            <div id="supplyBurnBar" class="h-full rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-rose-600 transition-all duration-500" style="width: 3%"></div>
+          </div>
+          <div class="flex justify-between text-[11px] text-slate-400">
+            <span>120,000,000 Genesis</span>
+            <span id="burnedTotalDisplay" class="text-rose-300 font-bold">0 $OBS Burned</span>
+            <span>21,000,000 Immutable Floor</span>
+          </div>
+        </div>
+
+        <div class="bg-obsidian-950/90 p-4 rounded-2xl border border-rose-500/25 space-y-2.5 font-mono text-xs">
+          <div class="flex justify-between text-slate-400">
+            <span>Burn $OBS Directly From Your Wallet:</span>
+            <span id="burnWalletAvail" class="text-amber-300">Available: 0 $OBS</span>
+          </div>
+          <div class="flex gap-2">
+            <input id="burnAmountInput" type="number" placeholder="Amount of $OBS to burn..." class="field-input text-xs" />
+            <button onclick="burnObsTokens()" class="btn-fire px-5 py-2.5 rounded-xl text-xs shrink-0 cursor-pointer">🔥 Burn $OBS</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick P2P $OBS Transfer & VIP Investor Card -->
+      <div class="lg:col-span-5 obsidian-card rounded-3xl p-6 flex flex-col justify-between space-y-5">
+        <div class="space-y-3">
+          <span class="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">Holder Utility</span>
+          <h2 class="font-display text-xl sm:text-2xl font-extrabold text-white">Instant $OBS Transfer</h2>
+          <p class="text-xs text-slate-400">Send $OBS tokens directly to any Robinhood Chain wallet address with near-zero L2 gas.</p>
+
+          <div class="space-y-2 font-mono text-xs pt-1">
+            <input id="sendObsToInput" type="text" placeholder="Recipient address (0x...)" class="field-input text-xs" />
+            <div class="flex gap-2">
+              <input id="sendObsAmountInput" type="number" placeholder="Amount ($OBS)" class="field-input text-xs" />
+              <button onclick="transferObsTokens()" class="btn-gold px-5 py-2.5 rounded-xl text-xs shrink-0 cursor-pointer">Send</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-obsidian-950/90 border border-amber-500/25 flex items-center justify-between gap-3">
+          <div>
+            <span class="text-[10px] font-mono uppercase text-slate-400 block">Your Investor Status</span>
+            <strong id="vipCardTitle" class="text-sm font-display text-amber-300 block mt-0.5">Obsidian Explorer</strong>
+            <span id="vipCardSub" class="text-[11px] font-mono text-slate-400">Join V2 Presale to unlock VIP rank</span>
+          </div>
+          <button onclick="shareVipCardOnX()" class="px-3.5 py-2 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-400/40 hover:bg-amber-400 hover:text-black text-xs font-mono font-bold transition shrink-0 cursor-pointer">
+            Flex on 𝕏
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEADERBOARD & WALLET INSPECTOR SECTION -->
+    <section id="leaderboard" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-7 obsidian-card rounded-3xl p-6 space-y-4">
+        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+          <div>
+            <span class="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">On-Chain Ranking</span>
+            <h2 class="font-display text-xl sm:text-2xl font-extrabold text-white">Top V2 Contributors Leaderboard</h2>
+          </div>
+          <span class="text-xs font-mono text-slate-400">Live Contract Data</span>
+        </div>
+
+        <div id="leaderboardList" class="space-y-2.5 font-mono text-xs">
+          <div class="text-slate-400 py-4 text-center">Loading on-chain leaderboard...</div>
+        </div>
+      </div>
+
+      <!-- On-Chain Wallet Lookup Tool -->
+      <div class="lg:col-span-5 obsidian-card rounded-3xl p-6 flex flex-col justify-between space-y-4">
+        <div class="space-y-3">
+          <span class="text-xs font-mono uppercase tracking-wider text-emerald-400 font-bold">Transparency Explorer</span>
+          <h2 class="font-display text-xl sm:text-2xl font-extrabold text-white">Verify Any Wallet</h2>
+          <p class="text-xs text-slate-400">Inspect any wallet's V2 presale contribution, $OBS allocation, and referral volume directly from the smart contract.</p>
+
+          <div class="flex gap-2 pt-1">
+            <input id="lookupWalletInput" type="text" placeholder="Enter wallet address (0x...)" class="field-input text-xs" />
+            <button onclick="inspectAnyWallet()" class="btn-gold px-4 rounded-xl text-xs shrink-0 cursor-pointer">Check</button>
+          </div>
+        </div>
+
+        <div id="lookupWalletResult" class="bg-obsidian-950/90 p-4 rounded-2xl border border-white/10 font-mono text-xs space-y-2">
+          <div class="flex justify-between">
+            <span class="text-slate-400">ETH Contributed:</span>
+            <span id="lookupEthVal" class="text-white font-bold">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">$OBS Allocated:</span>
+            <span id="lookupObsVal" class="text-amber-300 font-bold">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">KOL Referred Volume:</span>
+            <span id="lookupKolVal" class="text-emerald-400 font-bold">-</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE ROI & SCARCITY SIMULATOR -->
+    <section id="simulator" class="obsidian-card-gold rounded-3xl p-6 sm:p-8 space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-amber-500/20 pb-4">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">Interactive Calculator</span>
+          <h2 class="font-display text-2xl font-extrabold text-white">$OBS Allocation & Scarcity Simulator</h2>
+        </div>
+        <span class="text-xs font-mono text-slate-400">Based on current V2 contract rate</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <div class="lg:col-span-6 space-y-4">
+          <div class="space-y-2 font-mono text-xs">
+            <div class="flex justify-between">
+              <span class="text-slate-300">Simulated ETH Contribution:</span>
+              <span id="simEthLabel" class="text-amber-300 font-bold text-sm">0.10 ETH</span>
+            </div>
+            <input id="simEthSlider" type="range" min="0.001" max="2" step="0.005" value="0.10" oninput="updateSimulator()" class="w-full cursor-pointer" />
+            <div class="flex justify-between text-[10px] text-slate-500">
+              <span>0.001 ETH</span>
+              <span>0.50 ETH</span>
+              <span>1.00 ETH</span>
+              <span>2.00 ETH</span>
+            </div>
+          </div>
+
+          <div class="space-y-2 font-mono text-xs">
+            <div class="flex justify-between">
+              <span class="text-slate-300">Target Post-Burn Price Multiplier:</span>
+              <span id="simMultLabel" class="text-emerald-400 font-bold text-sm">5x</span>
+            </div>
+            <input id="simMultSlider" type="range" min="1" max="50" step="1" value="5" oninput="updateSimulator()" class="w-full cursor-pointer" />
+            <div class="flex justify-between text-[10px] text-slate-500">
+              <span>1x (Presale)</span>
+              <span>10x</span>
+              <span>25x</span>
+              <span>50x (21M Floor Target)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-6 grid grid-cols-2 gap-3 font-mono">
+          <div class="bg-obsidian-950/90 p-4 rounded-2xl border border-white/10">
+            <span class="text-[10px] text-slate-400 block">Base $OBS Tokens</span>
+            <span id="simBaseTokens" class="text-lg sm:text-xl font-extrabold text-white mt-1 block">243,000</span>
+            <span class="text-[10px] text-slate-400 mt-0.5 block">Without referral</span>
+          </div>
+          <div class="bg-obsidian-950/90 p-4 rounded-2xl border border-emerald-500/30">
+            <span class="text-[10px] text-slate-400 block">With Referral Bonus</span>
+            <span id="simBonusTokens" class="text-lg sm:text-xl font-extrabold text-emerald-400 mt-1 block">247,860</span>
+            <span class="text-[10px] text-emerald-300 mt-0.5 block">+Extra $OBS included</span>
+          </div>
+          <div class="bg-obsidian-950/90 p-4 rounded-2xl border border-amber-500/30 col-span-2 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] text-slate-400 block">Projected ETH Value at Selected Multiplier</span>
+              <span id="simProjectedEth" class="text-xl sm:text-2xl font-extrabold gold-gradient-text mt-0.5 block">0.5100 ETH</span>
+            </div>
+            <button onclick="applySimulatorToBuy()" class="btn-gold px-4 py-2.5 rounded-xl text-xs cursor-pointer">Use Amount ↑</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEDICATED KOL & REFERRAL DASHBOARD SECTION -->
+    <section id="kol-hub" class="obsidian-card rounded-3xl p-6 sm:p-8 space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">On-Chain Partner Engine</span>
+          <h2 class="font-display text-2xl font-extrabold text-white mt-0.5">KOL & Community Referral Hub</h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">Share your unique link. Earn instant on-chain ETH & $OBS commissions, while your referred buyers receive extra bonus tokens.</p>
+        </div>
+        <span id="refRatesBadge" class="px-3.5 py-2 rounded-xl bg-amber-500/15 border border-amber-400/30 text-xs font-mono font-bold text-amber-300">
+          5% ETH + 5% $OBS Commission
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <div class="lg:col-span-6 space-y-2.5">
+          <label class="text-xs font-mono text-slate-300 block">Your Personal Referral URL:</label>
+          <div class="flex flex-wrap sm:flex-nowrap gap-2">
+            <input id="refLinkInput" type="text" readonly value="Connect wallet to generate your referral link..." class="field-input text-xs text-amber-200" />
+            <button onclick="copyRefLink()" class="btn-gold px-4 py-2.5 rounded-xl text-xs shrink-0 cursor-pointer">Copy</button>
+            <button onclick="shareRefOnX()" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-obsidian-850 text-white border border-white/20 hover:border-amber-400 shrink-0 cursor-pointer">Share on 𝕏</button>
+          </div>
+        </div>
+
+        <div class="lg:col-span-6 grid grid-cols-3 gap-3 font-mono">
+          <div class="bg-obsidian-950/90 p-3.5 rounded-2xl border border-white/10">
+            <span class="text-[10px] text-slate-400 block">Referred Volume</span>
+            <span id="kolVolumeStat" class="text-base font-extrabold text-white mt-1 block">0.0000 ETH</span>
+          </div>
+          <div class="bg-obsidian-950/90 p-3.5 rounded-2xl border border-white/10">
+            <span class="text-[10px] text-slate-400 block">Referred Tx Count</span>
+            <span id="kolCountStat" class="text-base font-extrabold text-amber-300 mt-1 block">0</span>
+          </div>
+          <div class="bg-obsidian-950/90 p-3.5 rounded-2xl border border-white/10">
+            <span class="text-[10px] text-slate-400 block">Your Active Tier</span>
+            <span id="kolTierStat" class="text-sm font-extrabold text-emerald-400 mt-1 block">5% / 5%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOKENOMICS & ROADMAP SECTION -->
+    <section id="tokenomics" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-6 obsidian-card rounded-3xl p-6 space-y-4">
+        <span class="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">Deflationary Economics</span>
+        <h2 class="font-display text-2xl font-extrabold text-white">$OBS Tokenomics Architecture</h2>
+        <p class="text-xs sm:text-sm text-slate-400">Built with an immutable smart contract burn floor so total circulating supply systematically contracts from 120,000,000 down to 21,000,000 $OBS.</p>
+
+        <div class="space-y-3 font-mono text-xs pt-2">
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-slate-300">V2 Presale & KOL Pool</span>
+              <span class="text-amber-300 font-bold">40.5% (48,600,000 $OBS)</span>
+            </div>
+            <div class="w-full h-2 bg-obsidian-950 rounded-full overflow-hidden"><div class="h-full bg-amber-400" style="width: 40.5%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-slate-300">DEX Liquidity & Market Making</span>
+              <span class="text-emerald-400 font-bold">34.5% (41,400,000 $OBS)</span>
+            </div>
+            <div class="w-full h-2 bg-obsidian-950 rounded-full overflow-hidden"><div class="h-full bg-emerald-400" style="width: 34.5%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-slate-300">Ecosystem Staking & Rewards</span>
+              <span class="text-sky-400 font-bold">15.0% (18,000,000 $OBS)</span>
+            </div>
+            <div class="w-full h-2 bg-obsidian-950 rounded-full overflow-hidden"><div class="h-full bg-sky-400" style="width: 15%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-slate-300">Protocol Treasury & Partnerships</span>
+              <span class="text-purple-400 font-bold">10.0% (12,000,000 $OBS)</span>
+            </div>
+            <div class="w-full h-2 bg-obsidian-950 rounded-full overflow-hidden"><div class="h-full bg-purple-400" style="width: 10%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="roadmap" class="lg:col-span-6 obsidian-card rounded-3xl p-6 space-y-4">
+        <span class="text-xs font-mono uppercase tracking-wider text-emerald-400 font-bold">Execution Timeline</span>
+        <h2 class="font-display text-2xl font-extrabold text-white">OBSIDION Roadmap</h2>
+
+        <div class="space-y-3 text-xs">
+          <div class="p-3.5 rounded-2xl bg-obsidian-950/90 border border-emerald-500/30">
+            <div class="flex items-center justify-between font-mono">
+              <span class="font-bold text-emerald-400">PHASE 1 — ACTIVE NOW</span>
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">LIVE</span>
+            </div>
+            <p class="text-slate-300 mt-1">Deployment of $OBS & V2 Presale contracts on Robinhood Chain (4663), On-Chain KOL referral engine launch, and community onboarding.</p>
+          </div>
+
+          <div class="p-3.5 rounded-2xl bg-obsidian-950/90 border border-amber-500/25">
+            <div class="flex items-center justify-between font-mono">
+              <span class="font-bold text-amber-300">PHASE 2 — TGE & DEX LISTING</span>
+              <span class="text-slate-400">NEXT</span>
+            </div>
+            <p class="text-slate-300 mt-1">Presale finalization, automatic burn of unsold presale supply, DEX liquidity pool creation & lock, and instant investor token claim.</p>
+          </div>
+
+          <div class="p-3.5 rounded-2xl bg-obsidian-950/90 border border-white/10">
+            <div class="flex items-center justify-between font-mono">
+              <span class="font-bold text-slate-200">PHASE 3 — DEFI YIELD & BURN ACCELERATION</span>
+              <span class="text-slate-400">UPCOMING</span>
+            </div>
+            <p class="text-slate-300 mt-1">Single-sided $OBS staking vaults, protocol revenue buyback-and-burn cycles toward the 21M floor, and cross-chain liquidity bridges.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ SECTION -->
+    <section id="faq" class="obsidian-card rounded-3xl p-6 sm:p-8 space-y-4">
+      <h2 class="font-display text-2xl font-extrabold text-white">Frequently Asked Questions</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+        <div class="p-4 rounded-2xl bg-obsidian-950/90 border border-white/10 space-y-1.5">
+          <h3 class="font-bold text-amber-300">How do I get ETH onto Robinhood Chain (4663)?</h3>
+          <p class="text-slate-400">Click the "Bridge" button at the top of the page to transfer ETH from Arbitrum or Ethereum Mainnet to Robinhood Chain in ~15 seconds for under $0.25 using Relay.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-obsidian-950/90 border border-white/10 space-y-1.5">
+          <h3 class="font-bold text-amber-300">What happens if Soft Cap is not reached?</h3>
+          <p class="text-slate-400">Our smart contract enforces an automated Refund Shield. If Soft Cap is missed when the timer ends, every contributor can withdraw 100% of their ETH via the "Refund" button.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-obsidian-950/90 border border-white/10 space-y-1.5">
+          <h3 class="font-bold text-amber-300">When can I claim my $OBS tokens?</h3>
+          <p class="text-slate-400">Immediately once the presale reaches its goal and is finalized, you can click "Claim $OBS" in your V2 Portfolio panel to transfer tokens directly to your wallet.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-obsidian-950/90 border border-white/10 space-y-1.5">
+          <h3 class="font-bold text-amber-300">How does the 21M Hard Burn Floor work?</h3>
+          <p class="text-slate-400">The $OBS ERC-20 contract tracks total supply on-chain and allows token burns down to an immutable floor of 21,000,000 $OBS—guaranteeing permanent scarcity.</p>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- FOOTER -->
   <footer class="border-t border-amber-500/15 bg-obsidian-950/80 py-6 px-4 text-center text-xs font-mono text-slate-400">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
       <span>OBSIDION ($OBS) • Scarcity-Engineered DeFi on Robinhood Chain (L2)</span>
-      <span class="text-slate-500">120M Initial Supply → 21M Immutable Hard Burn Floor</span>
+      <div class="flex items-center gap-4">
+        <a href="https://x.com/ObsidionT" target="_blank" rel="noopener noreferrer" class="text-amber-300 hover:underline">X (@ObsidionT)</a>
+        <a href="https://robinhoodchain.blockscout.com/address/0xe968f7D5D4757109497060213759E97e4e513a17" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:underline">Presale Contract</a>
+      </div>
     </div>
   </footer>
 
-  <!-- FLOATING TOAST -->
+  <!-- FAST BRIDGE MODAL -->
+  <div id="bridgeModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="obsidian-card-gold max-w-md w-full rounded-3xl p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-amber-500/20 pb-3">
+        <h3 class="font-display text-lg font-extrabold text-white">🌉 Fast Bridge to Robinhood Chain</h3>
+        <button onclick="closeBridgeModal()" class="text-slate-400 hover:text-white text-lg cursor-pointer">✕</button>
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Transfer ETH from <strong>Arbitrum One</strong> or <strong>Ethereum</strong> to <strong>Robinhood Chain (4663)</strong> in ~15 seconds for ~$0.20 gas:
+      </p>
+      <div class="space-y-2 text-xs font-mono">
+        <a href="https://relay.link" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3.5 rounded-2xl bg-obsidian-950 border border-emerald-500/40 hover:border-emerald-400 transition">
+          <div>
+            <strong class="text-emerald-400 block">1. Relay Bridge (Fastest & Cheapest)</strong>
+            <span class="text-[11px] text-slate-400">~10-15 sec • ~$0.15 fee</span>
+          </div>
+          <span class="text-emerald-300">Open ↗</span>
+        </a>
+        <a href="https://www.orbiter.finance" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3.5 rounded-2xl bg-obsidian-950 border border-white/15 hover:border-amber-400 transition">
+          <div>
+            <strong class="text-amber-300 block">2. Orbiter Finance</strong>
+            <span class="text-[11px] text-slate-400">L2-to-L2 Liquidity Bridge</span>
+          </div>
+          <span class="text-amber-300">Open ↗</span>
+        </a>
+      </div>
+      <button onclick="switchOrAddRobinhoodChain(); closeBridgeModal();" class="w-full btn-gold py-3 rounded-xl text-xs uppercase cursor-pointer">
+        Add / Switch to Robinhood Chain in Wallet
+      </button>
+    </div>
+  </div>
+
+  <!-- FLOATING TOAST (RIGHT) -->
   <div id="toastBox" class="fixed bottom-5 right-5 z-50 hidden max-w-sm obsidian-card-gold rounded-2xl p-4 shadow-2xl">
     <div class="flex items-start gap-3">
       <span id="toastIcon" class="text-xl">⚡</span>
@@ -380,14 +823,33 @@
     </div>
   </div>
 
+  <!-- LIVE RECENT BUY ALERT (LEFT) -->
+  <div id="liveBuyAlertBox" class="fixed bottom-5 left-5 z-40 hidden max-w-xs obsidian-card rounded-2xl p-3.5 border-emerald-500/40 shadow-2xl">
+    <div class="flex items-center gap-2.5 text-xs font-mono">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping shrink-0"></span>
+      <div>
+        <span class="text-emerald-400 font-bold block">Latest V2 Allocation</span>
+        <span id="liveBuyAlertText" class="text-slate-300 text-[11px]">0x... joined with ETH</span>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ==================== VERIFIED CONTRACT CONFIGURATION ====================
     const PRESALE_ADDRESS = "0xe968f7D5D4757109497060213759E97e4e513a17";
     const OBS_TOKEN_ADDRESS = "0xe3A58EeB751aCa0c8f158EcF93328fe94DE909F6";
     const ROBINHOOD_CHAIN_ID_HEX = "0x1237"; // 4663
+    const ROBINHOOD_RPC_URLS = [
+      "https://rpc.testnet.chain.robinhood.com",
+      "https://rpc.robinhoodchain.com"
+    ];
 
     const TOKEN_ABI = [
-      "function balanceOf(address account) external view returns (uint256)"
+      "function balanceOf(address account) external view returns (uint256)",
+      "function totalSupply() external view returns (uint256)",
+      "function remainingBurnableSupply() external view returns (uint256)",
+      "function burn(uint256 amount) external",
+      "function transfer(address to, uint256 value) external returns (bool)"
     ];
 
     const PRESALE_PUBLIC_ABI = [
@@ -396,26 +858,50 @@
       "function claimTokens() external",
       "function claimKolRewards() external",
       "function claimRefund() external",
+      "function getBuyers() external view returns (address[])",
       "function contributions(address) external view returns (uint256)",
       "function obsAllocated(address) external view returns (uint256)",
       "function claimableTokensOf(address user) external view returns (uint256)",
       "function claimableKolRewardsOf(address kol) external view returns (uint256 ethReward, uint256 obsReward)",
+      "function kolReferredVolume(address) external view returns (uint256)",
+      "function kolReferralCount(address) external view returns (uint256)",
+      "function getActiveKolRates(address _kol) external view returns (uint256 ethBps, uint256 tokenBps)",
       "function getPresaleSummary() external view returns (tuple(uint256 totalRaised, uint256 totalTokensAllocated, uint256 contractTokenBalance, uint256 remainingTokensAvailable, uint256 rate, uint256 softCap, uint256 hardCap, uint256 minBuy, uint256 maxBuy, uint256 earlyBirdBonusBps, uint256 referralEthBps, uint256 referralTokenBps, uint256 buyerBonusBps, uint256 tgeUnlockBps, uint256 vestingDuration, uint256 startTime, uint256 endTime, uint256 timeRemaining, uint256 buyersCount, bool presaleStarted, bool paused, bool finalized, bool cancelled, bool refundOpen, bool canFinalize))"
     ];
 
-    let provider = null;
+    let walletProvider = null;
     let signer = null;
     let userAddress = null;
     let activeRate = 2430000n;
     let activeEarlyBps = 0n;
-    let activeBuyerBonusBps = 0n;
+    let activeBuyerBonusBps = 200n;
     let userEthBalWei = 0n;
     let countdownSeconds = 0;
+    let lastKnownBuyersCount = 0;
 
     function getReferrerFromURL() {
       const params = new URLSearchParams(window.location.search);
       const ref = params.get("ref");
       return (ref && ethers.isAddress(ref)) ? ref : ethers.ZeroAddress;
+    }
+
+    async function getBestReadProvider() {
+      if (walletProvider) return walletProvider;
+      if (window.ethereum) {
+        try {
+          const browserProv = new ethers.BrowserProvider(window.ethereum);
+          const net = await browserProv.getNetwork();
+          if (Number(net.chainId) === 4663) return browserProv;
+        } catch (e) {}
+      }
+      for (const url of ROBINHOOD_RPC_URLS) {
+        try {
+          const p = new ethers.JsonRpcProvider(url);
+          const code = await p.getCode(PRESALE_ADDRESS);
+          if (code && code !== "0x") return p;
+        } catch (e) {}
+      }
+      return new ethers.JsonRpcProvider(ROBINHOOD_RPC_URLS[0]);
     }
 
     window.addEventListener("DOMContentLoaded", async () => {
@@ -425,7 +911,22 @@
         document.getElementById("activeReferrerAddr").textContent = `${ref.slice(0, 6)}...${ref.slice(-4)}`;
       }
 
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: "eth_accounts" });
+          if (accounts && accounts.length > 0) {
+            walletProvider = new ethers.BrowserProvider(window.ethereum);
+            signer = await walletProvider.getSigner();
+            userAddress = await signer.getAddress();
+            updateConnectedUI();
+          }
+        } catch (e) {}
+      }
+
+      updateSimulator();
       await loadReadOnlySummary();
+
+      setInterval(() => loadReadOnlySummary(), 15000);
       setInterval(() => {
         if (countdownSeconds > 0) {
           countdownSeconds--;
@@ -434,17 +935,56 @@
       }, 1000);
     });
 
+    function updateConnectedUI() {
+      if (!userAddress) return;
+      document.getElementById("connectBtnText").textContent = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+      document.getElementById("networkDot").className = "w-2 h-2 rounded-full bg-emerald-400 animate-ping";
+      document.getElementById("refLinkInput").value = `${window.location.origin}${window.location.pathname}?ref=${userAddress}`;
+    }
+
+    async function manualRefresh() {
+      showToast("🔄", "Syncing...", "Refreshing on-chain presale data...");
+      await loadReadOnlySummary();
+    }
+
+    function computeInvestorRank(ethFloat) {
+      if (ethFloat >= 1.0) return "👑 Obsidian Sovereign Whale";
+      if (ethFloat >= 0.25) return "⚔️ Aurelia Knight";
+      if (ethFloat >= 0.05) return "🛡️ Shadow Holder";
+      if (ethFloat > 0) return "⚡ Obsidian Spark";
+      return "Obsidian Explorer";
+    }
+
     async function loadReadOnlySummary() {
       try {
-        const readProvider = provider || new ethers.JsonRpcProvider("https://rpc.testnet.chain.robinhood.com");
+        const readProvider = await getBestReadProvider();
         const presale = new ethers.Contract(PRESALE_ADDRESS, PRESALE_PUBLIC_ABI, readProvider);
-        const s = await presale.getPresaleSummary();
+        const token = new ethers.Contract(OBS_TOKEN_ADDRESS, TOKEN_ABI, readProvider);
+
+        const [s, totalSupplyWei, burnableWei] = await Promise.all([
+          presale.getPresaleSummary(),
+          token.totalSupply().catch(() => ethers.parseUnits("120000000", 18)),
+          token.remainingBurnableSupply().catch(() => ethers.parseUnits("99000000", 18))
+        ]);
 
         activeRate = s.rate;
         activeEarlyBps = s.earlyBirdBonusBps;
         activeBuyerBonusBps = s.buyerBonusBps;
         countdownSeconds = Number(s.timeRemaining);
         renderCountdown(countdownSeconds);
+        updateSimulator();
+
+        // Live Supply & Deflation Tracker
+        const curSupplyNum = Number(ethers.formatUnits(totalSupplyWei, 18));
+        const burnableNum = Number(ethers.formatUnits(burnableWei, 18));
+        const burnedSoFar = Math.max(0, 120000000 - curSupplyNum);
+        const burnProgressPct = Math.min(100, (burnedSoFar / 99000000) * 100);
+
+        document.getElementById("liveCurrentSupply").textContent = `${(curSupplyNum / 1e6).toFixed(2)}M`;
+        document.getElementById("burnableRemainingText").textContent = `${(burnableNum / 1e6).toFixed(2)}M Burnable`;
+        document.getElementById("supplyBurnPctText").textContent = `${burnProgressPct.toFixed(2)}% Burned`;
+        document.getElementById("burnedTotalDisplay").textContent = `${burnedSoFar.toLocaleString("en-US", { maximumFractionDigits: 0 })} $OBS Burned`;
+        document.getElementById("supplyBurnBar").style.width = `${Math.max(3, burnProgressPct)}%`;
 
         document.getElementById("rateDisplay").textContent = `1 ETH = ${Number(s.rate).toLocaleString("en-US")} $OBS`;
         const earlyPct = Number(s.earlyBirdBonusBps) / 100;
@@ -453,14 +993,42 @@
 
         const refEthPct = Number(s.referralEthBps) / 100;
         const refObsPct = Number(s.referralTokenBps) / 100;
-        document.getElementById("refRatesBadge").textContent = `${refEthPct}% ETH + ${refObsPct}% $OBS`;
+        document.getElementById("refRatesBadge").textContent = `${refEthPct}% ETH + ${refObsPct}% $OBS Commission`;
 
-        document.getElementById("raisedDisplay").textContent = `${Number(ethers.formatEther(s.totalRaised)).toFixed(4)} ETH`;
-        document.getElementById("hardCapDisplay").textContent = `${Number(ethers.formatEther(s.hardCap)).toFixed(2)} ETH`;
-        document.getElementById("softCapDisplay").textContent = `${Number(ethers.formatEther(s.softCap)).toFixed(2)} ETH`;
+        const raisedFloat = Number(ethers.formatEther(s.totalRaised));
+        const softFloat = Number(ethers.formatEther(s.softCap));
+        const hardFloat = Number(ethers.formatEther(s.hardCap));
+
+        document.getElementById("raisedDisplay").textContent = `${raisedFloat.toFixed(5)} ETH`;
+        document.getElementById("tickerRaised").textContent = `Raised: ${raisedFloat.toFixed(5)} ETH`;
+        document.getElementById("hardCapDisplay").textContent = `${hardFloat.toFixed(2)} ETH`;
+        document.getElementById("softCapDisplay").textContent = `${softFloat.toFixed(2)} ETH`;
+        document.getElementById("milestoneSoftVal").textContent = `${softFloat.toFixed(2)} ETH`;
+        document.getElementById("milestoneHardVal").textContent = `${hardFloat.toFixed(2)} ETH`;
         document.getElementById("minBuyDisplay").textContent = `${ethers.formatEther(s.minBuy)} ETH`;
         document.getElementById("maxBuyDisplay").textContent = `${ethers.formatEther(s.maxBuy)} ETH`;
         document.getElementById("buyersCountDisplay").textContent = s.buyersCount.toString();
+        document.getElementById("tickerBuyers").textContent = `Buyers: ${s.buyersCount.toString()}`;
+        document.getElementById("liveFeedCountBadge").textContent = `${s.buyersCount.toString()} Total Buyers`;
+
+        // Milestone Highlighting
+        if (raisedFloat >= softFloat) {
+          document.getElementById("milestoneSoftBox").className = "p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-400/50";
+          document.getElementById("milestoneStatusLabel").textContent = "Soft Cap Reached! Presale Guaranteed ✓";
+        }
+        if (raisedFloat >= 14.0) {
+          document.getElementById("milestoneMidBox").className = "p-2.5 rounded-xl bg-sky-500/15 border border-sky-400/50";
+          document.getElementById("milestoneStatusLabel").textContent = "Mid-Cap Triggered! 48h Fast Close Active";
+        }
+        if (raisedFloat >= hardFloat && hardFloat > 0) {
+          document.getElementById("milestoneHardBox").className = "p-2.5 rounded-xl bg-amber-500/20 border border-amber-400/60";
+          document.getElementById("milestoneStatusLabel").textContent = "Hard Cap Sold Out!";
+        }
+
+        const tgePct = Number(s.tgeUnlockBps) / 100;
+        const vestDays = Math.round(Number(s.vestingDuration) / 86400);
+        document.getElementById("tgeUnlockDisplay").textContent = `${tgePct}%`;
+        document.getElementById("vestingDurationDisplay").textContent = vestDays === 0 ? "Instant Unlock" : `${vestDays}d Linear`;
 
         const pct = s.hardCap > 0n ? Number((s.totalRaised * 10000n) / s.hardCap) / 100 : 0;
         document.getElementById("progressBar").style.width = `${Math.min(pct, 100)}%`;
@@ -483,24 +1051,98 @@
           statusEl.className = "text-xs font-mono font-bold text-slate-400";
         }
 
+        // Recent Buyers & Leaderboard
+        try {
+          const allBuyers = await presale.getBuyers();
+          const feedEl = document.getElementById("recentBuyersList");
+          const lbEl = document.getElementById("leaderboardList");
+
+          if (!allBuyers || allBuyers.length === 0) {
+            feedEl.innerHTML = `<div class="text-slate-400 py-2">Be the first wallet to join the V2 Presale!</div>`;
+            lbEl.innerHTML = `<div class="text-slate-400 py-4 text-center">No contributions recorded yet.</div>`;
+          } else {
+            const enriched = await Promise.all(allBuyers.map(async (bAddr) => {
+              const [cWei, oWei] = await Promise.all([
+                presale.contributions(bAddr),
+                presale.obsAllocated(bAddr)
+              ]);
+              return { addr: bAddr, ethWei: cWei, obsWei: oWei };
+            }));
+
+            // Show floating live buy alert for latest buyer
+            const latestBuyer = enriched[enriched.length - 1];
+            if (latestBuyer) {
+              const alertBox = document.getElementById("liveBuyAlertBox");
+              document.getElementById("liveBuyAlertText").textContent = `${latestBuyer.addr.slice(0, 6)}...${latestBuyer.addr.slice(-4)} allocated ${Number(ethers.formatUnits(latestBuyer.obsWei, 18)).toLocaleString("en-US", { maximumFractionDigits: 0 })} $OBS`;
+              alertBox.classList.remove("hidden");
+            }
+            lastKnownBuyersCount = allBuyers.length;
+
+            // Recent Feed (Reverse order, top 6)
+            const latest = [...enriched].reverse().slice(0, 6);
+            feedEl.innerHTML = latest.map(item => `
+              <div class="flex items-center justify-between bg-obsidian-950/90 px-3 py-2 rounded-xl border border-white/5">
+                <span class="text-slate-300">${item.addr.slice(0, 6)}...${item.addr.slice(-4)}</span>
+                <span class="text-amber-300 font-bold">${Number(ethers.formatEther(item.ethWei)).toFixed(5)} ETH</span>
+                <span class="text-emerald-400">${Number(ethers.formatUnits(item.obsWei, 18)).toLocaleString("en-US", { maximumFractionDigits: 0 })} $OBS</span>
+              </div>
+            `).join("");
+
+            // Top Contributors Leaderboard (Sorted by ETH descending, top 5)
+            const sorted = [...enriched].sort((a, b) => (b.ethWei > a.ethWei ? 1 : -1)).slice(0, 5);
+            const medals = ["🥇", "🥈", "🥉", "#4", "#5"];
+            lbEl.innerHTML = sorted.map((item, idx) => `
+              <div class="flex items-center justify-between bg-obsidian-950/90 px-3.5 py-2.5 rounded-2xl border ${idx === 0 ? 'border-amber-400/40' : 'border-white/5'}">
+                <div class="flex items-center gap-2.5">
+                  <span class="font-bold text-amber-300 w-6">${medals[idx]}</span>
+                  <span class="text-slate-200">${item.addr.slice(0, 6)}...${item.addr.slice(-4)}</span>
+                </div>
+                <div class="text-right">
+                  <span class="text-amber-300 font-bold block">${Number(ethers.formatEther(item.ethWei)).toFixed(5)} ETH</span>
+                  <span class="text-[10px] text-emerald-400">${Number(ethers.formatUnits(item.obsWei, 18)).toLocaleString("en-US", { maximumFractionDigits: 0 })} $OBS</span>
+                </div>
+              </div>
+            `).join("");
+          }
+        } catch (feedErr) {}
+
+        // Connected User Portfolio & KOL Stats
         if (userAddress) {
-          const token = new ethers.Contract(OBS_TOKEN_ADDRESS, TOKEN_ABI, readProvider);
-          const [ethBal, walletObs, contrib, alloc, claimable, kolRew] = await Promise.all([
+          const [ethBal, walletObs, contrib, alloc, claimable, kolRew, kolVol, kolCnt, kolRates] = await Promise.all([
             readProvider.getBalance(userAddress),
             token.balanceOf(userAddress),
             presale.contributions(userAddress),
             presale.obsAllocated(userAddress),
             presale.claimableTokensOf(userAddress),
-            presale.claimableKolRewardsOf(userAddress)
+            presale.claimableKolRewardsOf(userAddress),
+            presale.kolReferredVolume(userAddress),
+            presale.kolReferralCount(userAddress),
+            presale.getActiveKolRates(userAddress)
           ]);
 
           userEthBalWei = ethBal;
+          const userContribFloat = Number(ethers.formatEther(contrib));
+          const rankName = computeInvestorRank(userContribFloat);
+
           document.getElementById("ethBalanceDisplay").textContent = `Balance: ${Number(ethers.formatEther(ethBal)).toFixed(4)}`;
-          document.getElementById("userWalletObsBal").textContent = `Wallet: ${Number(ethers.formatUnits(walletObs, 18)).toLocaleString("en-US", { maximumFractionDigits: 0 })} $OBS`;
-          document.getElementById("userEthContributed").textContent = `${Number(ethers.formatEther(contrib)).toFixed(5)} ETH`;
+          const walletObsFmt = Number(ethers.formatUnits(walletObs, 18)).toLocaleString("en-US", { maximumFractionDigits: 0 });
+          document.getElementById("userWalletObsBal").textContent = `Wallet: ${walletObsFmt} $OBS`;
+          document.getElementById("burnWalletAvail").textContent = `Available: ${walletObsFmt} $OBS`;
+
+          document.getElementById("userEthContributed").textContent = `${userContribFloat.toFixed(5)} ETH`;
           document.getElementById("userObsAllocated").textContent = `${Number(ethers.formatUnits(alloc, 18)).toLocaleString("en-US", { maximumFractionDigits: 0 })} $OBS`;
           document.getElementById("userObsClaimable").textContent = `${Number(ethers.formatUnits(claimable, 18)).toLocaleString("en-US", { maximumFractionDigits: 0 })} $OBS`;
           document.getElementById("userKolRewards").textContent = `${Number(ethers.formatEther(kolRew.ethReward)).toFixed(4)} ETH / ${Number(ethers.formatUnits(kolRew.obsReward, 18)).toLocaleString("en-US", { maximumFractionDigits: 0 })} $OBS`;
+
+          document.getElementById("investorRankBadge").textContent = rankName;
+          document.getElementById("vipCardTitle").textContent = rankName;
+          document.getElementById("vipCardSub").textContent = userContribFloat > 0
+            ? `Secured ${Number(ethers.formatUnits(alloc, 18)).toLocaleString("en-US", { maximumFractionDigits: 0 })} $OBS on Robinhood L2`
+            : "Join V2 Presale to unlock VIP rank";
+
+          document.getElementById("kolVolumeStat").textContent = `${Number(ethers.formatEther(kolVol)).toFixed(4)} ETH`;
+          document.getElementById("kolCountStat").textContent = kolCnt.toString();
+          document.getElementById("kolTierStat").textContent = `${Number(kolRates.ethBps)/100}% ETH / ${Number(kolRates.tokenBps)/100}% OBS`;
         }
       } catch (err) {
         console.error("Summary load error:", err);
@@ -519,6 +1161,91 @@
       document.getElementById("countdownDisplay").textContent = `${d}d ${h}h ${m}m ${s}s`;
     }
 
+    // ==================== BURN & P2P TRANSFER UTILITY ====================
+    async function burnObsTokens() {
+      if (!signer) return connectWallet();
+      const amtStr = document.getElementById("burnAmountInput").value.trim();
+      if (!amtStr || Number(amtStr) <= 0) return showToast("⚠️", "Invalid Amount", "Enter $OBS amount to burn.");
+      try {
+        const token = new ethers.Contract(OBS_TOKEN_ADDRESS, TOKEN_ABI, signer);
+        const tx = await token.burn(ethers.parseUnits(amtStr, 18));
+        showToast("🔥", "Burning $OBS...", "Confirm burn transaction in wallet...");
+        await tx.wait();
+        showToast("🔥", "Supply Reduced!", `Permanently burned ${amtStr} $OBS!`);
+        document.getElementById("burnAmountInput").value = "";
+        await loadReadOnlySummary();
+      } catch (err) {
+        showToast("❌", "Burn Failed", err.reason || err.shortMessage || err.message);
+      }
+    }
+
+    async function transferObsTokens() {
+      if (!signer) return connectWallet();
+      const toAddr = document.getElementById("sendObsToInput").value.trim();
+      const amtStr = document.getElementById("sendObsAmountInput").value.trim();
+      if (!ethers.isAddress(toAddr) || !amtStr || Number(amtStr) <= 0) {
+        return showToast("⚠️", "Invalid Input", "Enter valid recipient address and $OBS amount.");
+      }
+      try {
+        const token = new ethers.Contract(OBS_TOKEN_ADDRESS, TOKEN_ABI, signer);
+        const tx = await token.transfer(toAddr, ethers.parseUnits(amtStr, 18));
+        showToast("📤", "Sending $OBS...", "Confirm transfer in wallet...");
+        await tx.wait();
+        showToast("✅", "Transfer Complete", `Sent ${amtStr} $OBS to ${toAddr.slice(0, 6)}...${toAddr.slice(-4)}`);
+        document.getElementById("sendObsAmountInput").value = "";
+        await loadReadOnlySummary();
+      } catch (err) {
+        showToast("❌", "Transfer Failed", err.reason || err.shortMessage || err.message);
+      }
+    }
+
+    // ==================== INTERACTIVE SIMULATOR ====================
+    function updateSimulator() {
+      const ethVal = parseFloat(document.getElementById("simEthSlider").value) || 0.1;
+      const mult = parseInt(document.getElementById("simMultSlider").value, 10) || 5;
+
+      document.getElementById("simEthLabel").textContent = `${ethVal.toFixed(3)} ETH`;
+      document.getElementById("simMultLabel").textContent = `${mult}x`;
+
+      const rateNum = Number(activeRate);
+      const bonusPct = (Number(activeEarlyBps) + Number(activeBuyerBonusBps)) / 10000;
+      const baseTokens = ethVal * rateNum;
+      const totalWithBonus = baseTokens * (1 + bonusPct);
+      const projectedEth = ethVal * (1 + bonusPct) * mult;
+
+      document.getElementById("simBaseTokens").textContent = Math.floor(baseTokens).toLocaleString("en-US");
+      document.getElementById("simBonusTokens").textContent = Math.floor(totalWithBonus).toLocaleString("en-US");
+      document.getElementById("simProjectedEth").textContent = `${projectedEth.toFixed(4)} ETH`;
+    }
+
+    function applySimulatorToBuy() {
+      const ethVal = parseFloat(document.getElementById("simEthSlider").value) || 0.1;
+      document.getElementById("buyAmountInput").value = ethVal.toFixed(3);
+      calculateReceive();
+      document.getElementById("buyAmountInput").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    // ==================== WALLET INSPECTOR ====================
+    async function inspectAnyWallet() {
+      const target = document.getElementById("lookupWalletInput").value.trim();
+      if (!ethers.isAddress(target)) return showToast("⚠️", "Invalid Address", "Please enter a valid 0x wallet address.");
+      try {
+        const readProvider = await getBestReadProvider();
+        const presale = new ethers.Contract(PRESALE_ADDRESS, PRESALE_PUBLIC_ABI, readProvider);
+        const [ethWei, obsWei, kolWei] = await Promise.all([
+          presale.contributions(target),
+          presale.obsAllocated(target),
+          presale.kolReferredVolume(target)
+        ]);
+        document.getElementById("lookupEthVal").textContent = `${Number(ethers.formatEther(ethWei)).toFixed(5)} ETH`;
+        document.getElementById("lookupObsVal").textContent = `${Number(ethers.formatUnits(obsWei, 18)).toLocaleString("en-US", { maximumFractionDigits: 0 })} $OBS`;
+        document.getElementById("lookupKolVal").textContent = `${Number(ethers.formatEther(kolWei)).toFixed(5)} ETH`;
+      } catch (err) {
+        showToast("❌", "Lookup Failed", "Unable to fetch wallet stats.");
+      }
+    }
+
+    // ==================== WALLET & TRANSACTIONS ====================
     async function connectWallet() {
       if (!window.ethereum) {
         showToast("🦊", "Wallet Required", "Please install MetaMask or Rabby Wallet.");
@@ -528,14 +1255,11 @@
         await window.ethereum.request({ method: "eth_requestAccounts" });
         await switchOrAddRobinhoodChain();
 
-        provider = new ethers.BrowserProvider(window.ethereum);
-        signer = await provider.getSigner();
+        walletProvider = new ethers.BrowserProvider(window.ethereum);
+        signer = await walletProvider.getSigner();
         userAddress = await signer.getAddress();
 
-        document.getElementById("connectBtnText").textContent = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
-        document.getElementById("networkDot").className = "w-2 h-2 rounded-full bg-emerald-400 animate-ping";
-        document.getElementById("refLinkInput").value = `${window.location.origin}${window.location.pathname}?ref=${userAddress}`;
-
+        updateConnectedUI();
         showToast("🟢", "Wallet Connected", `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`);
         await loadReadOnlySummary();
 
@@ -563,7 +1287,7 @@
               chainId: ROBINHOOD_CHAIN_ID_HEX,
               chainName: "Robinhood Chain",
               nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
-              rpcUrls: ["https://rpc.testnet.chain.robinhood.com", "https://rpc.robinhoodchain.com"],
+              rpcUrls: ROBINHOOD_RPC_URLS,
               blockExplorerUrls: ["https://robinhoodchain.blockscout.com"]
             }]
           });
@@ -571,13 +1295,39 @@
       }
     }
 
+    async function addObsTokenToWallet() {
+      if (!window.ethereum) return showToast("🦊", "Wallet Required", "Connect your wallet first.");
+      try {
+        await window.ethereum.request({
+          method: "wallet_watchAsset",
+          params: {
+            type: "ERC20",
+            options: {
+              address: OBS_TOKEN_ADDRESS,
+              symbol: "OBS",
+              decimals: 18
+            }
+          }
+        });
+      } catch (err) {}
+    }
+
+    function setQuickEth(val) {
+      document.getElementById("buyAmountInput").value = val;
+      calculateReceive();
+    }
+
     function calculateReceive() {
       const val = document.getElementById("buyAmountInput").value;
+      const usdEl = document.getElementById("usdApproxTag");
       if (!val || Number(val) <= 0) {
         document.getElementById("receiveDisplay").textContent = "0 $OBS";
+        usdEl.textContent = "~$0.00";
         return;
       }
       try {
+        const ethFloat = parseFloat(val);
+        usdEl.textContent = `~$${(ethFloat * 3000).toFixed(2)}`;
         const wei = ethers.parseEther(val.toString());
         const base = wei * activeRate;
         const early = (base * activeEarlyBps) / 10000n;
@@ -614,14 +1364,16 @@
           ? await presale.buyTokensWithRef(ref, { value: valueWei })
           : await presale.buyTokens({ value: valueWei });
 
-        document.getElementById("txStatusText").textContent = "Transaction submitted... Waiting for confirmation.";
+        document.getElementById("txStatusText").textContent = "Transaction submitted... Waiting for block confirmation.";
         await tx.wait();
 
-        document.getElementById("txStatusText").textContent = "✅ Purchase confirmed! Welcome to OBSIDION.";
+        document.getElementById("txStatusText").textContent = "✅ Purchase confirmed! Syncing balances...";
         showToast("🎉", "Purchase Successful!", "Your $OBS allocation is secured on-chain.");
         document.getElementById("buyAmountInput").value = "";
         calculateReceive();
+
         await loadReadOnlySummary();
+        setTimeout(() => loadReadOnlySummary(), 2000);
       } catch (err) {
         const msg = err.reason || err.shortMessage || err.message || "Transaction failed";
         document.getElementById("txStatusText").textContent = `❌ ${msg}`;
@@ -678,9 +1430,31 @@
     }
 
     function copyRefLink() {
-      const val = document.getElementById("refLinkInput").value;
       if (!userAddress) return connectWallet();
+      const val = document.getElementById("refLinkInput").value;
       copyText(val, "Referral link copied to clipboard!");
+    }
+
+    function shareRefOnX() {
+      if (!userAddress) return connectWallet();
+      const refUrl = document.getElementById("refLinkInput").value;
+      const text = encodeURIComponent(`I just joined the @ObsidionT ($OBS) V2 Presale on Robinhood Chain! 🔥\n\n120M Genesis → 21M Hard Burn Floor + On-Chain Refund Shield.\n\nUse my link for extra bonus $OBS:\n${refUrl}`);
+      window.open(`https://x.com/intent/tweet?text=${text}`, "_blank", "noopener,noreferrer");
+    }
+
+    function shareVipCardOnX() {
+      const rank = document.getElementById("vipCardTitle").textContent;
+      const refUrl = userAddress ? `${window.location.origin}${window.location.pathname}?ref=${userAddress}` : window.location.href;
+      const text = encodeURIComponent(`Unlocked [${rank}] status in the @ObsidionT ($OBS) V2 Presale on Robinhood Chain! 🏆\n\nDeflationary supply down to 21M Hard Burn Floor.\n\nJoin now:\n${refUrl}`);
+      window.open(`https://x.com/intent/tweet?text=${text}`, "_blank", "noopener,noreferrer");
+    }
+
+    function openBridgeModal() {
+      document.getElementById("bridgeModal").classList.remove("hidden");
+    }
+
+    function closeBridgeModal() {
+      document.getElementById("bridgeModal").classList.add("hidden");
     }
 
     function copyText(text, successMsg) {
