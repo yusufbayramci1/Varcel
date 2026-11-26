@@ -1,134 +1,1919 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OBSIDION ($OBS) — System Upgrade & Maintenance</title>
+  <title>OBSIDION ($OBS) | Kurucu Deploy & Canlı Yönetim Paneli</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Cinzel', 'serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            obsidian: {
+              950: '#07070B',
+              900: '#0C0D14',
+              850: '#12141F',
+              800: '#1A1D2D',
+            }
+          }
+        }
+      }
+    }
+  </script>
   <style>
-    :root {
-      --bg: #050508;
-      --card: rgba(16, 16, 24, 0.78);
-      --border: rgba(251, 191, 36, 0.25);
-      --gold-1: #FDE68A;
-      --gold-2: #FBBF24;
-      --gold-3: #D97706;
-      --text: #F8FAFC;
-      --muted: #94A3B8;
-      --emerald: #10B981;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
+      background-color: #07070B;
+      color: #F8FAFC;
+      background-image:
+        radial-gradient(circle at 12% 8%, rgba(251, 191, 36, 0.14) 0%, transparent 38%),
+        radial-gradient(circle at 88% 18%, rgba(245, 158, 11, 0.10) 0%, transparent 42%),
+        radial-gradient(circle at 50% 92%, rgba(16, 185, 129, 0.08) 0%, transparent 45%);
       min-height: 100vh;
-      background-color: var(--bg);
-      background-image:
-        radial-gradient(circle at 50% 15%, rgba(251, 191, 36, 0.14) 0%, transparent 52%),
-        radial-gradient(circle at 15% 85%, rgba(217, 119, 6, 0.08) 0%, transparent 45%),
-        radial-gradient(circle at 85% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 45%);
-      color: var(--text);
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      overflow-x: hidden;
     }
 
-    .grid-bg {
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-      background-size: 42px 42px;
-      mask-image: radial-gradient(circle at center, black 40%, transparent 88%);
-      pointer-events: none;
-      z-index: 0;
+    .obsidian-card {
+      background: linear-gradient(165deg, rgba(20, 22, 34, 0.88) 0%, rgba(10, 11, 18, 0.96) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(251, 191, 36, 0.22);
+      box-shadow: 0 12px 36px -10px rgba(0, 0, 0, 0.85), inset 0 1px 0 0 rgba(253, 230, 138, 0.12);
     }
 
-    .container {
-      position: relative;
-      z-index: 1;
+    .obsidian-card-gold {
+      background: linear-gradient(165deg, rgba(32, 26, 18, 0.92) 0%, rgba(11, 12, 19, 0.97) 100%);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(251, 191, 36, 0.55);
+      box-shadow: 0 0 32px rgba(245, 158, 11, 0.18), inset 0 1px 0 0 rgba(253, 230, 138, 0.24);
+    }
+
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #FEF08A 0%, #FBBF24 48%, #F97316 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #FDE047 0%, #F59E0B 50%, #EA580C 100%);
+      background-size: 200% auto;
+      color: #09090B;
+      font-weight: 800;
+      box-shadow: 0 0 22px rgba(245, 158, 11, 0.38), inset 0 1px 1px rgba(255, 255, 255, 0.65);
+      transition: all 0.2s ease;
+    }
+    .btn-gold:hover:not(:disabled) {
+      background-position: right center;
+      box-shadow: 0 0 30px rgba(251, 191, 36, 0.72);
+      transform: translateY(-1px);
+    }
+    .btn-gold:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-emerald {
+      background: linear-gradient(135deg, #34D399 0%, #10B981 55%, #059669 100%);
+      color: #04130D;
+      font-weight: 800;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+      transition: all 0.2s ease;
+    }
+    .btn-emerald:hover:not(:disabled) {
+      box-shadow: 0 0 28px rgba(52, 211, 153, 0.65);
+      transform: translateY(-1px);
+    }
+    .btn-emerald:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #F87171 0%, #EF4444 55%, #B91C1C 100%);
+      color: #FFF;
+      font-weight: 700;
+      box-shadow: 0 0 18px rgba(239, 68, 68, 0.35);
+      transition: all 0.2s ease;
+    }
+    .btn-danger:hover:not(:disabled) {
+      box-shadow: 0 0 26px rgba(248, 113, 113, 0.65);
+      transform: translateY(-1px);
+    }
+
+    .field-input {
+      background-color: #07070B;
+      border: 1px solid rgba(251, 191, 36, 0.26);
+      border-radius: 0.75rem;
+      padding: 0.6rem 0.85rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8125rem;
+      color: #F8FAFC;
       width: 100%;
-      max-width: 560px;
-      background: var(--card);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid var(--border);
-      border-radius: 28px;
-      padding: 44px 32px;
-      text-align: center;
-      box-shadow:
-        0 25px 60px rgba(0, 0, 0, 0.75),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: border-color 0.2s;
+    }
+    .field-input:focus {
+      outline: none;
+      border-color: #FBBF24;
+    }
+  </style>
+</head>
+<body class="selection:bg-amber-500 selection:text-black pb-20">
+
+  <!-- TOP STICKY HEADER -->
+  <header class="sticky top-0 z-40 bg-obsidian-950/90 backdrop-blur-xl border-b border-amber-500/25">
+    <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-300 via-amber-500 to-orange-700 p-[2px] shadow-[0_0_20px_rgba(245,158,11,0.45)]">
+          <div class="w-full h-full rounded-full bg-obsidian-950 flex items-center justify-center">
+            <span class="font-display font-black text-lg gold-gradient-text">Ω</span>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-display font-extrabold text-base sm:text-lg tracking-wider gold-gradient-text">OBSIDION ($OBS)</h1>
+            <span class="px-2 py-0.5 text-[10px] font-mono font-bold rounded bg-amber-500/20 text-amber-300 border border-amber-400/30">FOUNDER COMMAND</span>
+          </div>
+          <p class="text-[11px] text-slate-400">Remix'siz Deploy, Token Kurtarma & Canlı Ön Satış Yönetim Merkezi • Robinhood Chain (4663)</p>
+        </div>
+      </div>
+
+      <!-- Right Wallet & Network Controls -->
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div id="walletBalancesBox" class="hidden md:flex items-center gap-3 px-3.5 py-2 rounded-xl bg-obsidian-900 border border-amber-500/25 text-xs font-mono">
+          <div>
+            <span class="text-slate-400">ETH:</span>
+            <span id="ownerEthBalance" class="text-white font-bold">0.0000</span>
+          </div>
+          <span class="text-slate-600">|</span>
+          <div>
+            <span class="text-slate-400">$OBS:</span>
+            <span id="ownerObsBalance" class="text-amber-300 font-bold">0</span>
+          </div>
+        </div>
+
+        <button onclick="switchOrAddRobinhoodChain()" class="px-3 py-2 rounded-xl bg-obsidian-850 border border-emerald-500/30 text-xs font-mono text-emerald-300 hover:border-emerald-400 flex items-center gap-1.5 cursor-pointer">
+          <span id="networkDot" class="w-2 h-2 rounded-full bg-slate-500"></span>
+          <span id="networkLabel">Ağ: 4663</span>
+        </button>
+
+        <button onclick="refreshAllStates()" title="Verileri Yenile" class="p-2.5 rounded-xl bg-obsidian-850 border border-amber-500/25 text-amber-300 hover:border-amber-400 transition-colors cursor-pointer">
+          🔄
+        </button>
+
+        <button id="connectWalletBtn" onclick="connectWallet()" class="btn-gold px-4 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-2 cursor-pointer">
+          <span>🦊</span>
+          <span id="connectBtnText">Kurucu Cüzdanı Bağla</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="max-w-7xl mx-auto px-4 pt-6 space-y-6">
+
+    <!-- SYSTEM ADDRESSES & COMPILER STATUS OVERVIEW -->
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs font-mono">
+      <div class="obsidian-card p-3.5 rounded-2xl">
+        <span class="text-[10px] uppercase text-slate-400 block mb-1">$OBS Token Kontratı (Sabit)</span>
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-amber-300 truncate">0xe3A58EeB751aCa0c8f158EcF93328fe94DE909F6</span>
+          <button onclick="copyText('0xe3A58EeB751aCa0c8f158EcF93328fe94DE909F6', 'Token adresi kopyalandı')" class="text-slate-400 hover:text-white shrink-0 cursor-pointer">📋</button>
+        </div>
+      </div>
+
+      <div class="obsidian-card p-3.5 rounded-2xl">
+        <span class="text-[10px] uppercase text-slate-400 block mb-1">Eski İptal Edilen Kontrat</span>
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-rose-300 truncate">0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32</span>
+          <button onclick="copyText('0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32', 'Eski kontrat adresi kopyalandı')" class="text-slate-400 hover:text-white shrink-0 cursor-pointer">📋</button>
+        </div>
+      </div>
+
+      <div class="obsidian-card p-3.5 rounded-2xl">
+        <span class="text-[10px] uppercase text-slate-400 block mb-1">Solidity 0.8.24 Derleyici</span>
+        <div id="compilerStatusBadge" class="flex items-center gap-2 mt-0.5">
+          <span id="compilerSpinner" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
+          <span id="compilerStatusText" class="text-amber-300 font-bold">Motor Yükleniyor...</span>
+        </div>
+      </div>
+
+      <div class="obsidian-card p-3.5 rounded-2xl">
+        <span class="text-[10px] uppercase text-slate-400 block mb-1">Hızlı Dışa Aktarım</span>
+        <div class="flex items-center gap-1.5 mt-0.5">
+          <button onclick="copySoliditySource()" class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-400/30 hover:bg-amber-400 hover:text-black transition-colors cursor-pointer">Solidity</button>
+          <button onclick="copyArtifactJson('abi')" class="px-2 py-1 rounded bg-obsidian-800 text-slate-200 border border-white/15 hover:border-amber-400 transition-colors cursor-pointer">ABI</button>
+          <button onclick="copyArtifactJson('bytecode')" class="px-2 py-1 rounded bg-obsidian-800 text-slate-200 border border-white/15 hover:border-amber-400 transition-colors cursor-pointer">Bytecode</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== MIGRATION WORKFLOW (STEPS 1, 2, 3) ==================== -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- STEP 1: RECOVER 48.6M OBS FROM OLD CANCELLED CONTRACT (5 Cols) -->
+      <section class="lg:col-span-5 obsidian-card rounded-3xl p-5 sm:p-6 flex flex-col justify-between space-y-4">
+        <div class="space-y-4">
+          <div class="flex items-center justify-between border-b border-white/10 pb-3">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-xl bg-rose-500/20 border border-rose-400/40 text-rose-300 font-mono font-extrabold flex items-center justify-center text-sm">1</span>
+              <div>
+                <h2 class="text-base font-extrabold text-white">Eski Kontrattan 48.6M $OBS Kurtar</h2>
+                <p class="text-[11px] text-slate-400">İptal edilen <code class="text-rose-300">0x8DF6...2f32</code> bakiyesini geri alın</p>
+              </div>
+            </div>
+            <a href="https://robinhoodchain.blockscout.com/address/0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32" target="_blank" rel="noopener noreferrer" class="text-xs font-mono text-amber-300 hover:underline">Explorer ↗</a>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5 text-xs font-mono">
+            <div class="bg-obsidian-950/90 p-3 rounded-xl border border-white/10">
+              <span class="text-[10px] text-slate-400 block">İptal Durumu (cancelled)</span>
+              <span id="oldPresaleCancelled" class="font-bold text-slate-300 mt-0.5 block">Kontrol Ediliyor...</span>
+            </div>
+            <div class="bg-obsidian-950/90 p-3 rounded-xl border border-white/10">
+              <span class="text-[10px] text-slate-400 block">İçerideki $OBS Bakiyesi</span>
+              <span id="oldPresaleObsBal" class="font-bold text-amber-300 mt-0.5 block">0 $OBS</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-2.5 pt-2">
+          <button onclick="withdrawOldFailure()" class="w-full btn-gold py-3.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer">
+            <span>💰 48.6M $OBS Geri Çek (withdrawTokensOnFailure)</span>
+          </button>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="cancelOldPresale()" class="py-2 px-3 rounded-xl text-[11px] font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/30 hover:bg-rose-500 hover:text-white transition-colors cursor-pointer">
+              🛑 İptal Et (cancelPresale)
+            </button>
+            <button onclick="withdrawOldBeforeStart()" class="py-2 px-3 rounded-xl text-[11px] font-semibold bg-obsidian-850 text-slate-300 border border-white/15 hover:border-amber-400 transition-colors cursor-pointer">
+              ↩️ BeforeStart Çek
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 2: DEPLOY NEW FLEXIBLE CONTRACT (7 Cols) -->
+      <section class="lg:col-span-7 obsidian-card-gold rounded-3xl p-5 sm:p-6 flex flex-col justify-between space-y-4">
+        <div class="space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-500/20 pb-3">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-xl bg-amber-400 text-black font-mono font-extrabold flex items-center justify-center text-sm">2</span>
+              <div>
+                <h2 class="text-base font-extrabold text-white">Yeni Esnek ObsidionPresale Kontratını Deploy Et</h2>
+                <p class="text-[11px] text-slate-300">
+                  Min: <strong class="text-emerald-400">0.00001 ETH (~$0.03)</strong> • Dinamik Fiyat, Cap, KOL Yüzdeleri & Vesting
+                </p>
+              </div>
+            </div>
+            <button onclick="toggleSourceCode()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-obsidian-950 text-amber-300 border border-amber-500/30 hover:border-amber-400 cursor-pointer">
+              📄 Solidity Kodunu Gör
+            </button>
+          </div>
+
+          <div class="bg-obsidian-950/90 p-3.5 rounded-2xl border border-amber-500/30 space-y-2">
+            <div class="flex items-center justify-between">
+              <label for="activePresaleAddressInput" class="text-xs font-bold text-amber-300">Aktif Ön Satış Kontrat Adresi (Deploy Sonrası Otomatik Kaydedilir):</label>
+              <a id="newPresaleExplorerLink" href="https://robinhoodchain.blockscout.com" target="_blank" rel="noopener noreferrer" class="text-[11px] font-mono text-emerald-400 hover:underline hidden">
+                Blockscout'ta Aç ↗
+              </a>
+            </div>
+            <div class="flex items-center gap-2">
+              <input id="activePresaleAddressInput" type="text" oninput="onActiveAddressChange(this.value)" placeholder="Deploy sonrası otomatik dolacak (veya mevcut adresinizi yapıştırın 0x...)" class="field-input text-emerald-300 font-semibold" />
+              <button onclick="copyActiveAddress()" class="px-3.5 py-2.5 rounded-xl bg-obsidian-800 hover:bg-amber-400 hover:text-black text-xs font-bold text-amber-300 border border-amber-500/30 transition-colors shrink-0 cursor-pointer">
+                Kopyala
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-1">
+          <button id="btnDeployNew" onclick="deployNewPresaleContract()" disabled class="w-full btn-gold py-4 px-5 rounded-2xl text-sm sm:text-base uppercase tracking-wide flex items-center justify-center gap-2 cursor-pointer">
+            <span>🚀 Yeni Kontratı Robinhood Chain'e Deploy Et (0xe3A5...09F6)</span>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- COLLAPSIBLE SOLIDITY SOURCE CODE BOX -->
+    <section id="sourceCodeContainer" class="hidden obsidian-card rounded-3xl p-5 space-y-3">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-mono font-bold text-amber-300">ObsidionPresale.sol (Solidity 0.8.24 • Optimizer: Yes, 200 runs • EVM: paris)</span>
+        <button onclick="copySoliditySource()" class="btn-gold px-3.5 py-1.5 rounded-xl text-xs cursor-pointer">📋 Kodu Kopyala</button>
+      </div>
+      <pre id="solidityCodeBlock" class="bg-obsidian-950 border border-amber-500/20 rounded-2xl p-4 text-[11px] font-mono text-slate-300 overflow-x-auto max-h-80 leading-relaxed"></pre>
+    </section>
+
+    <!-- STEP 3: LAUNCH CHECKLIST (3A, 3B, 3C) -->
+    <section class="obsidian-card rounded-3xl p-5 sm:p-6 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-3">
+          <span class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-mono font-extrabold flex items-center justify-center text-sm">3</span>
+          <div>
+            <h2 class="text-base font-extrabold text-white">Kurulum & Başlatma Kontrol Listesi (3A → 3B → 3C)</h2>
+            <p class="text-xs text-slate-400">Yeni deploy edilen kontratı muaf tutup 48.6M $OBS yükleyin ve ön satışı aktif edin</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 text-xs font-mono">
+          <span>Muafiyet: <strong id="checklistExemptStatus" class="text-slate-400">Bekleniyor</strong></span>
+          <span>|</span>
+          <span>Kontrat $OBS: <strong id="checklistObsStatus" class="text-amber-300">0</strong></span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <button onclick="grantSystemExempt()" class="py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold bg-obsidian-850 text-amber-300 border border-amber-400/50 hover:bg-amber-400 hover:text-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer">
+          <span>🛡️ 3A. Muafiyet Tanımla</span>
+          <span class="text-[10px] font-mono opacity-80">Token.setSystemExempt(newPresale, true)</span>
+        </button>
+
+        <button onclick="transferPresaleTokens()" class="py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold bg-obsidian-850 text-amber-300 border border-amber-400/50 hover:bg-amber-400 hover:text-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer">
+          <span>📦 3B. 48.600.000 $OBS Gönder</span>
+          <span class="text-[10px] font-mono opacity-80">Token.transfer(newPresale, 48.6M)</span>
+        </button>
+
+        <button onclick="startNewPresale()" class="btn-emerald py-3.5 px-4 rounded-xl text-xs sm:text-sm flex flex-col items-center justify-center gap-0.5 cursor-pointer">
+          <span>⚡ 3C. Ön Satışı Başlat</span>
+          <span class="text-[10px] font-mono opacity-80">Presale.startPresale()</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== STEP 4: LIVE PRESALE CONTROL DASHBOARD ==================== -->
+    <section class="space-y-4 pt-2">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">Canlı Yönetim Merkezi</span>
+          <h2 class="font-display text-xl sm:text-2xl font-extrabold text-white">Aktif Ön Satış Kontrat Kontrol Paneli</h2>
+        </div>
+
+        <!-- Live Status Badges -->
+        <div class="flex flex-wrap items-center gap-2 text-xs font-mono font-bold">
+          <span id="badgePresaleState" class="px-3 py-1.5 rounded-xl bg-obsidian-850 text-slate-400 border border-white/10">Durum: Bekleniyor</span>
+          <span id="badgePauseState" class="px-3 py-1.5 rounded-xl bg-obsidian-850 text-slate-400 border border-white/10">Akış: -</span>
+          <span id="badgeTimeLeft" class="px-3 py-1.5 rounded-xl bg-obsidian-850 text-amber-300 border border-amber-500/30">Kalan Süre: -</span>
+        </div>
+      </div>
+
+      <!-- LIVE METRICS GRID -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 font-mono">
+        <div class="obsidian-card p-4 rounded-2xl">
+          <span class="text-[10px] uppercase text-slate-400 block">Toplanan ETH</span>
+          <span id="metricTotalRaised" class="text-base sm:text-lg font-extrabold text-white mt-1 block">0.0000 ETH</span>
+          <span id="metricBuyersCount" class="text-[11px] text-emerald-400">0 Yatırımcı</span>
+        </div>
+
+        <div class="obsidian-card p-4 rounded-2xl">
+          <span class="text-[10px] uppercase text-slate-400 block">Ayrılan / Kalan $OBS</span>
+          <span id="metricAllocatedObs" class="text-base sm:text-lg font-extrabold text-amber-300 mt-1 block">0</span>
+          <span id="metricRemainingObs" class="text-[11px] text-slate-400">Kalan: 0</span>
+        </div>
+
+        <div class="obsidian-card p-4 rounded-2xl">
+          <span class="text-[10px] uppercase text-slate-400 block">Güncel Oran (Rate)</span>
+          <span id="metricCurrentRate" class="text-base sm:text-lg font-extrabold text-white mt-1 block">2,430,000</span>
+          <span class="text-[11px] text-amber-300">$OBS / 1 ETH</span>
+        </div>
+
+        <div class="obsidian-card p-4 rounded-2xl">
+          <span class="text-[10px] uppercase text-slate-400 block">Soft / Hard Cap</span>
+          <span id="metricCaps" class="text-base sm:text-lg font-extrabold text-emerald-400 mt-1 block">5 / 20 ETH</span>
+          <span id="metricEarlyBonus" class="text-[11px] text-slate-400">Erken Bonus: %0</span>
+        </div>
+
+        <div class="obsidian-card p-4 rounded-2xl">
+          <span class="text-[10px] uppercase text-slate-400 block">Min / Max Alım</span>
+          <span id="metricLimits" class="text-sm sm:text-base font-extrabold text-white mt-1 block">0.00001 / 2</span>
+          <span class="text-[11px] text-slate-400">ETH Limiti</span>
+        </div>
+
+        <div class="obsidian-card p-4 rounded-2xl">
+          <span class="text-[10px] uppercase text-slate-400 block">KOL & Vesting</span>
+          <span id="metricRefRates" class="text-sm sm:text-base font-extrabold text-amber-300 mt-1 block">%5 ETH / %5 OBS</span>
+          <span id="metricVestingInfo" class="text-[11px] text-emerald-400">TGE: %100 Açık</span>
+        </div>
+      </div>
+
+      <!-- CONTROL CARDS GRID (3 COLUMNS) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- CARD A: DYNAMIC PRICE, CAPS, LIMITS & EARLY BIRD BONUS -->
+        <div class="obsidian-card rounded-3xl p-5 space-y-4">
+          <h3 class="text-sm font-extrabold uppercase tracking-wider text-amber-300 border-b border-white/10 pb-2.5">
+            💎 Fiyat, Hedef & Limit Ayarları
+          </h3>
+
+          <!-- Set Rate -->
+          <div class="space-y-1.5">
+            <label class="text-xs text-slate-300 font-semibold">1 ETH Karşılığı $OBS Oranı (setRate)</label>
+            <div class="flex gap-2">
+              <input id="inputNewRate" type="number" placeholder="Örn: 2430000" class="field-input" />
+              <button onclick="updateRate()" class="btn-gold px-4 rounded-xl text-xs shrink-0 cursor-pointer">Güncelle</button>
+            </div>
+          </div>
+
+          <!-- Set Caps -->
+          <div class="space-y-1.5">
+            <label class="text-xs text-slate-300 font-semibold">Soft Cap & Hard Cap (ETH) (setCaps)</label>
+            <div class="grid grid-cols-2 gap-2">
+              <input id="inputSoftCap" type="number" step="0.1" placeholder="Soft (Örn: 5)" class="field-input" />
+              <input id="inputHardCap" type="number" step="0.1" placeholder="Hard (Örn: 20)" class="field-input" />
+            </div>
+            <button onclick="updateCaps()" class="w-full py-2 rounded-xl text-xs font-bold bg-obsidian-850 text-amber-300 border border-amber-500/35 hover:bg-amber-400 hover:text-black transition-colors cursor-pointer">
+              Hedefleri Kaydet (setCaps)
+            </button>
+          </div>
+
+          <!-- Set Limits -->
+          <div class="space-y-1.5">
+            <label class="text-xs text-slate-300 font-semibold">Min & Max Alım Limiti (ETH) (setLimits)</label>
+            <div class="grid grid-cols-2 gap-2">
+              <input id="inputMinBuy" type="number" step="0.000001" placeholder="Min (0.00001)" class="field-input" />
+              <input id="inputMaxBuy" type="number" step="0.1" placeholder="Max (2)" class="field-input" />
+            </div>
+            <button onclick="updateLimits()" class="w-full py-2 rounded-xl text-xs font-bold bg-obsidian-850 text-amber-300 border border-amber-500/35 hover:bg-amber-400 hover:text-black transition-colors cursor-pointer">
+              Limitleri Kaydet (setLimits)
+            </button>
+          </div>
+
+          <!-- Set Early Bird Bonus -->
+          <div class="space-y-1.5">
+            <label class="text-xs text-slate-300 font-semibold">Erken Katılım Bonusu % (0 - 30 arası)</label>
+            <div class="flex gap-2">
+              <input id="inputEarlyBonusPct" type="number" step="0.5" min="0" max="30" placeholder="Örn: 10 (%10)" class="field-input" />
+              <button onclick="updateEarlyBirdBonus()" class="btn-gold px-4 rounded-xl text-xs shrink-0 cursor-pointer">Ayarla</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD B: KOL & REFERRAL MANAGER -->
+        <div class="obsidian-card rounded-3xl p-5 space-y-4">
+          <h3 class="text-sm font-extrabold uppercase tracking-wider text-amber-300 border-b border-white/10 pb-2.5">
+            🤝 KOL & Referans Komisyon Merkezi
+          </h3>
+
+          <!-- Default Referral Percentages -->
+          <div class="space-y-1.5">
+            <label class="text-xs text-slate-300 font-semibold">Genel Oranlar (%): KOL ETH / KOL OBS / Alıcı Bonus</label>
+            <div class="grid grid-cols-3 gap-1.5">
+              <input id="inputDefEthPct" type="number" step="0.5" placeholder="ETH % (5)" class="field-input" />
+              <input id="inputDefObsPct" type="number" step="0.5" placeholder="OBS % (5)" class="field-input" />
+              <input id="inputDefBuyerPct" type="number" step="0.5" placeholder="Alıcı % (2)" class="field-input" />
+            </div>
+            <button onclick="updateReferralConfig()" class="w-full py-2 rounded-xl text-xs font-bold bg-obsidian-850 text-amber-300 border border-amber-500/35 hover:bg-amber-400 hover:text-black transition-colors cursor-pointer">
+              Genel Yüzdeleri Güncelle
+            </button>
+          </div>
+
+          <!-- VIP KOL Custom Rate -->
+          <div class="space-y-1.5 pt-1 border-t border-white/10">
+            <label class="text-xs text-slate-300 font-semibold">VIP KOL Özel Yüzde Tanımla (setCustomKolRates)</label>
+            <input id="inputVipKolAddr" type="text" placeholder="KOL Cüzdan Adresi (0x...)" class="field-input" />
+            <div class="grid grid-cols-2 gap-2">
+              <input id="inputVipEthPct" type="number" step="0.5" placeholder="Özel ETH % (10)" class="field-input" />
+              <input id="inputVipObsPct" type="number" step="0.5" placeholder="Özel OBS % (10)" class="field-input" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="setCustomKolRate(true)" class="btn-gold py-2 rounded-xl text-xs cursor-pointer">VIP Oran Aktif Et</button>
+              <button onclick="setCustomKolRate(false)" class="py-2 rounded-xl text-xs font-semibold bg-obsidian-850 text-slate-300 border border-white/15 hover:border-rose-400 cursor-pointer">VIP İptal Et</button>
+            </div>
+          </div>
+
+          <!-- Post-Presale Manual KOL Token Allocation -->
+          <div class="space-y-1.5 pt-1 border-t border-white/10">
+            <label class="text-xs text-slate-300 font-semibold">Ön Satış Sonu KOL $OBS Tahsisi (Grant / Revoke)</label>
+            <input id="inputAllocKolAddr" type="text" placeholder="KOL Cüzdan Adresi (0x...)" class="field-input" />
+            <input id="inputAllocObsAmount" type="number" placeholder="Miktar ($OBS Örn: 500000)" class="field-input" />
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="manageKolAllocation(true)" class="btn-emerald py-2 rounded-xl text-xs cursor-pointer">+ Tahsis Ekle</button>
+              <button onclick="manageKolAllocation(false)" class="py-2 rounded-xl text-xs font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/30 hover:bg-rose-500 hover:text-white cursor-pointer">- Tahsis İptal</button>
+            </div>
+          </div>
+
+          <!-- KOL Stats Lookup -->
+          <div class="space-y-1.5 pt-1 border-t border-white/10">
+            <label class="text-xs text-slate-300 font-semibold">KOL Performans & Hak Ediş Sorgula</label>
+            <div class="flex gap-2">
+              <input id="inputLookupKolAddr" type="text" placeholder="Sorgulanacak KOL 0x..." class="field-input" />
+              <button onclick="lookupKolStats()" class="px-3.5 rounded-xl text-xs font-bold bg-obsidian-800 text-amber-300 border border-amber-400/40 hover:bg-amber-400 hover:text-black shrink-0 cursor-pointer">Sorgula</button>
+            </div>
+            <div id="kolLookupResult" class="hidden bg-obsidian-950 p-2.5 rounded-xl border border-amber-500/20 text-[11px] font-mono space-y-1 text-slate-300"></div>
+          </div>
+        </div>
+
+        <!-- CARD C: TIMING, VESTING & EMERGENCY CONTROLS -->
+        <div class="obsidian-card rounded-3xl p-5 space-y-4">
+          <h3 class="text-sm font-extrabold uppercase tracking-wider text-amber-300 border-b border-white/10 pb-2.5">
+            ⚙️ Süre, Vesting & Finalize Kontrolü
+          </h3>
+
+          <!-- Vesting Config -->
+          <div class="space-y-1.5">
+            <label class="text-xs text-slate-300 font-semibold">Listeleme Koruması: TGE % Açılış & Vesting (Gün)</label>
+            <div class="grid grid-cols-2 gap-2">
+              <input id="inputTgePct" type="number" min="10" max="100" placeholder="TGE % (100)" class="field-input" />
+              <input id="inputVestingDays" type="number" min="0" max="180" placeholder="Süre Gün (0)" class="field-input" />
+            </div>
+            <button onclick="updateVestingConfig()" class="w-full py-2 rounded-xl text-xs font-bold bg-obsidian-850 text-amber-300 border border-amber-500/35 hover:bg-amber-400 hover:text-black transition-colors cursor-pointer">
+              Vesting Ayarını Kaydet
+            </button>
+          </div>
+
+          <!-- Timing Thresholds & Extend -->
+          <div class="space-y-1.5 pt-1 border-t border-white/10">
+            <label class="text-xs text-slate-300 font-semibold">Süre Uzatma (Gün) & Erken Kapatma</label>
+            <div class="flex gap-2">
+              <input id="inputExtendDays" type="number" min="1" max="60" placeholder="Eklenecek Gün" class="field-input" />
+              <button onclick="extendPresaleDays()" class="px-3.5 rounded-xl text-xs font-bold bg-obsidian-800 text-amber-300 border border-amber-400/40 hover:bg-amber-400 hover:text-black shrink-0 cursor-pointer">+ Uzat</button>
+            </div>
+            <button onclick="endPresaleEarlyAction()" class="w-full py-2 rounded-xl text-xs font-semibold bg-obsidian-850 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500 hover:text-black transition-colors cursor-pointer">
+              ⏱️ Soft Cap Dolduysa Süreyi Şimdi Bitir (endPresaleEarly)
+            </button>
+          </div>
+
+          <!-- Pause / Resume & Excess Tokens -->
+          <div class="space-y-1.5 pt-1 border-t border-white/10">
+            <label class="text-xs text-slate-300 font-semibold">Acil Duraklatma & Fazla Token Çekimi</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="togglePausePresale(true)" class="py-2 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-400/40 hover:bg-amber-400 hover:text-black cursor-pointer">⏸️ Duraklat</button>
+              <button onclick="togglePausePresale(false)" class="py-2 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 hover:bg-emerald-400 hover:text-black cursor-pointer">▶️ Devam Et</button>
+            </div>
+            <div class="flex gap-2 pt-1">
+              <input id="inputExcessObs" type="number" placeholder="Çekilecek Fazla $OBS" class="field-input" />
+              <button onclick="withdrawExcessObs()" class="px-3.5 rounded-xl text-xs font-bold bg-obsidian-800 text-slate-200 border border-white/15 hover:border-amber-400 shrink-0 cursor-pointer">Çek</button>
+            </div>
+          </div>
+
+          <!-- Finalize Presale & Ownership -->
+          <div class="space-y-2 pt-2 border-t border-white/10">
+            <div class="flex items-center gap-2 text-xs text-slate-300">
+              <input id="chkBurnUnsold" type="checkbox" checked class="accent-amber-400 w-4 h-4 cursor-pointer" />
+              <label for="chkBurnUnsold" class="cursor-pointer">Satılmayan fazla $OBS'leri yak (burnUnsold)</label>
+            </div>
+            <button onclick="finalizePresaleAction()" class="w-full btn-emerald py-3 rounded-xl text-xs sm:text-sm uppercase tracking-wide cursor-pointer">
+              🏁 Ön Satışı Tamamla & ETH Çek (Finalize)
+            </button>
+
+            <div class="flex gap-2 pt-1">
+              <input id="inputNewOwner" type="text" placeholder="Sahiplik Devri (Yeni 0x...)" class="field-input" />
+              <button onclick="transferOwnershipAction()" class="px-3 rounded-xl text-xs font-bold bg-rose-500/15 text-rose-300 border border-rose-500/30 hover:bg-rose-500 hover:text-white shrink-0 cursor-pointer">Devret</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- LIVE TRANSACTION & COMPILER CONSOLE -->
+    <section class="obsidian-card rounded-3xl p-5 space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-amber-300">Canlı İşlem & Derleyici Konsolu</h3>
+        </div>
+        <button onclick="clearLogs()" class="text-[11px] font-mono text-slate-400 hover:text-white cursor-pointer">Temizle</button>
+      </div>
+      <div id="consoleLogBox" class="bg-obsidian-950 rounded-2xl p-3.5 border border-white/10 font-mono text-xs space-y-1.5 max-h-60 overflow-y-auto">
+        <div class="text-slate-400">[Sistem] OBSIDION Kurucu Kontrol Paneli hazır. Sağ üstten kurucu cüzdanınızı bağlayın...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FLOATING TOAST NOTIFICATION -->
+  <div id="toastBox" class="fixed bottom-5 right-5 z-50 hidden max-w-sm obsidian-card-gold rounded-2xl p-4 shadow-2xl">
+    <div class="flex items-start gap-3">
+      <span id="toastIcon" class="text-xl">⚡</span>
+      <div>
+        <h4 id="toastTitle" class="text-xs sm:text-sm font-extrabold text-white">Bildirim</h4>
+        <p id="toastMessage" class="text-xs text-slate-300 mt-0.5"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==================== CONSTANTS ====================
+    const OBS_TOKEN_ADDRESS = "0xe3A58EeB751aCa0c8f158EcF93328fe94DE909F6";
+    const OLD_PRESALE_ADDRESS = "0x8DF6e6a5E45C2FE5FeB3082f7d83DeB405Ae2f32";
+    const ROBINHOOD_CHAIN_ID_DEC = 4663;
+    const ROBINHOOD_CHAIN_ID_HEX = "0x1237";
+    const REQUIRED_OBS_AMOUNT = ethers.parseUnits("48600000", 18);
+
+    // ==================== FINAL SOLIDITY 0.8.24 SOURCE CODE ====================
+    const OBSIDION_PRESALE_SOL = `// SPDX-License-Identifier: MIT
+pragma solidity 0.8.24;
+
+interface IObsidionToken {
+    function balanceOf(address account) external view returns (uint256);
+    function transfer(address to, uint256 value) external returns (bool);
+    function burn(uint256 amount) external;
+    function remainingBurnableSupply() external view returns (uint256);
+    function isTaxExempt(address account) external view returns (bool);
+    function isLimitExempt(address account) external view returns (bool);
+    function isDividendExempt(address account) external view returns (bool);
+}
+
+interface IExternalERC20 {
+    function transfer(address to, uint256 value) external returns (bool);
+}
+
+contract ObsidionPresale {
+    IObsidionToken public immutable token;
+    address public owner;
+
+    uint256 public constant INITIAL_DURATION = 60 days;
+    uint256 public constant FINALIZE_GRACE_PERIOD = 7 days;
+
+    // Dinamik Sure Kisaltma Esikleri
+    uint256 public softCapWindow = 21 days;
+    uint256 public midCapThreshold = 14 ether;
+    uint256 public midCapWindow = 2 days;
+
+    // Dinamik Fiyat, Cap, Limit ve Bonus Parametreleri
+    uint256 public rate = 2_430_000;           // 1 ETH karsiligi OBS miktari
+    uint256 public softCap = 5 ether;          // Minimum basari hedefi
+    uint256 public hardCap = 20 ether;         // Maksimum hedef
+    uint256 public minBuy = 0.00001 ether;     // ~0.03 USD mikro giris
+    uint256 public maxBuy = 2 ether;           // Kisi basi maks alim
+    uint256 public earlyBirdBonusBps = 0;      // Genel erken katilim bonusu (ornek: 1000 = +%10, varsayilan 0)
+
+    // Dinamik KOL & Referans Oranlari
+    uint256 public referralEthBps = 500;       // Varsayilan KOL ETH komisyonu (%5)
+    uint256 public referralTokenBps = 500;     // Varsayilan KOL OBS komisyonu (%5)
+    uint256 public buyerBonusBps = 200;        // Referansla gelen aliciya ekstra OBS bonusu (%2)
+
+    // Opsiyonel Listeleme Korumasi (TGE & Vesting - Varsayilan %100 aninda acik)
+    uint256 public tgeUnlockBps = 10_000;      // Ilk gun acilacak yuzde (10000 = %100, 5000 = %50)
+    uint256 public vestingDuration = 0;        // Kalan yuzdenin acilma suresi (saniye, 0 = kilit yok)
+    uint256 public finalizedAt;
+
+    struct CustomKolRate {
+        bool hasCustomRate;
+        uint256 ethBps;
+        uint256 tokenBps;
+    }
+    mapping(address => CustomKolRate) public customKolRates;
+
+    uint256 public startTime;
+    uint256 public endTime;
+
+    uint256 public totalRaised;
+    uint256 public totalTokensAllocated;
+    uint256 public totalReferralEthReserved;
+
+    bool public presaleStarted;
+    bool public paused;
+    bool public finalized;
+    bool public cancelled;
+    bool public softCapReached;
+    bool public midCapReached;
+
+    mapping(address => uint256) public contributions;
+    mapping(address => uint256) public obsAllocated;
+    mapping(address => uint256) public obsClaimedAmount;
+    mapping(address => uint256) public referralEthRewards;
+    mapping(address => uint256) public kolTokenAllocations;
+    mapping(address => uint256) public kolTokensClaimedAmount;
+    mapping(address => uint256) public kolReferredVolume;
+    mapping(address => uint256) public kolReferralCount;
+    mapping(address => bool) public hasContributed;
+    address[] public buyers;
+
+    uint256 private _locked = 1;
+
+    struct PresaleSummary {
+        uint256 totalRaised;
+        uint256 totalTokensAllocated;
+        uint256 contractTokenBalance;
+        uint256 remainingTokensAvailable;
+        uint256 rate;
+        uint256 softCap;
+        uint256 hardCap;
+        uint256 minBuy;
+        uint256 maxBuy;
+        uint256 earlyBirdBonusBps;
+        uint256 referralEthBps;
+        uint256 referralTokenBps;
+        uint256 buyerBonusBps;
+        uint256 tgeUnlockBps;
+        uint256 vestingDuration;
+        uint256 startTime;
+        uint256 endTime;
+        uint256 timeRemaining;
+        uint256 buyersCount;
+        bool presaleStarted;
+        bool paused;
+        bool finalized;
+        bool cancelled;
+        bool refundOpen;
+        bool canFinalize;
     }
 
-    .logo-wrap {
-      width: 84px;
-      height: 84px;
-      margin: 0 auto 22px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #1e1b29, #09090d);
-      border: 1.5px solid rgba(251, 191, 36, 0.45);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 35px rgba(251, 191, 36, 0.22);
-      animation: pulseGlow 3.2s infinite ease-in-out;
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event PresaleStarted(uint256 startTime, uint256 endTime);
+    event PresalePaused(bool isPaused);
+    event PresaleCancelled(uint256 timestamp);
+    event Contributed(address indexed buyer, address indexed referrer, uint256 ethAmount, uint256 obsAmount, uint256 activeRate);
+    event EndTimeUpdated(uint256 newEndTime, uint256 totalRaisedAtTrigger);
+    event PresaleFinalized(uint256 totalEthRaised, uint256 totalObsSold, uint256 unsoldBurned, uint256 unsoldReturned);
+    event TokensClaimed(address indexed buyer, uint256 obsAmount);
+    event RefundClaimed(address indexed buyer, uint256 ethAmount);
+    event KolRewardClaimed(address indexed kol, uint256 ethAmount, uint256 obsAmount);
+    event KolAllocationGranted(address indexed kol, uint256 obsAmount);
+    event KolAllocationRevoked(address indexed kol, uint256 obsAmount);
+    event CustomKolRatesUpdated(address indexed kol, bool enabled, uint256 ethBps, uint256 tokenBps);
+    event RateUpdated(uint256 newRate);
+    event CapsUpdated(uint256 newSoftCap, uint256 newHardCap);
+    event LimitsUpdated(uint256 newMinBuy, uint256 newMaxBuy);
+    event EarlyBirdBonusUpdated(uint256 newBonusBps);
+    event ReferralConfigUpdated(uint256 newEthBps, uint256 newTokenBps, uint256 newBuyerBonusBps);
+    event TimingThresholdsUpdated(uint256 softWindow, uint256 midThreshold, uint256 midWindow);
+    event VestingConfigUpdated(uint256 tgeBps, uint256 durationSeconds);
+    event ExcessTokensWithdrawn(uint256 amount);
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Sadece kurucu cagirabilir");
+        _;
     }
 
-    @keyframes pulseGlow {
-      0%, 100% { box-shadow: 0 0 28px rgba(251, 191, 36, 0.2); transform: translateY(0); }
-      50% { box-shadow: 0 0 46px rgba(251, 191, 36, 0.38); transform: translateY(-3px); }
+    modifier nonReentrant() {
+        require(_locked == 1, "Tekrarli islem engellendi");
+        _locked = 2;
+        _;
+        _locked = 1;
     }
 
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 16px;
-      border-radius: 999px;
-      background: rgba(251, 191, 36, 0.1);
-      border: 1px solid rgba(251, 191, 36, 0.32);
-      color: var(--gold-1);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 18px;
+    constructor(address _tokenAddress) {
+        require(_tokenAddress != address(0), "Gecersiz token adresi");
+        token = IObsidionToken(_tokenAddress);
+        owner = msg.sender;
     }
 
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--gold-2);
-      box-shadow: 0 0 10px var(--gold-2);
-      animation: blink 1.4s infinite;
+    receive() external payable {
+        _buy(address(0));
     }
 
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.35; }
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "Gecersiz yeni kurucu adresi");
+        emit OwnershipTransferred(owner, newOwner);
+        owner = newOwner;
     }
 
-    .brand {
-      font-family: 'Cinzel', serif;
-      font-size: 15px;
-      letter-spacing: 0.28em;
-      color: var(--gold-2);
-      margin-bottom: 10px;
-      font-weight: 700;
+    function startPresale() external onlyOwner {
+        require(!presaleStarted && !cancelled, "On satis baslatilamaz");
+        require(token.balanceOf(address(this)) > 0, "Once kontrata OBS yukleyin");
+        require(
+            token.isTaxExempt(address(this)) &&
+            token.isLimitExempt(address(this)) &&
+            token.isDividendExempt(address(this)),
+            "Once Token uzerinden setSystemExempt(presale, true) yapin"
+        );
+
+        presaleStarted = true;
+        startTime = block.timestamp;
+        endTime = block.timestamp + INITIAL_DURATION;
+
+        emit PresaleStarted(startTime, endTime);
     }
 
-    h1 {
-      font-size: clamp(24px, 5vw, 32px);
-      font-weight:
+    function setPaused(bool _paused) external onlyOwner {
+        require(presaleStarted && !finalized && !cancelled, "On satis aktif degil");
+        paused = _paused;
+        emit PresalePaused(_paused);
+    }
+
+    function withdrawTokensBeforeStart() external onlyOwner nonReentrant {
+        require(!presaleStarted, "On satis basladiktan sonra geri cekilemez");
+        uint256 bal = token.balanceOf(address(this));
+        require(bal > 0, "Cekilecek OBS yok");
+        require(token.transfer(owner, bal), "OBS transferi basarisiz");
+    }
+
+    function cancelPresale() external onlyOwner {
+        require(presaleStarted && !finalized && !cancelled, "On satis iptal edilemez");
+        cancelled = true;
+        emit PresaleCancelled(block.timestamp);
+    }
+
+    function buyTokens() external payable nonReentrant {
+        _buy(address(0));
+    }
+
+    function buyTokensWithRef(address referrer) external payable nonReentrant {
+        _buy(referrer);
+    }
+
+    function getActiveKolRates(address _kol) public view returns (uint256 ethBps, uint256 tokenBps) {
+        CustomKolRate memory custom = customKolRates[_kol];
+        if (custom.hasCustomRate) {
+            return (custom.ethBps, custom.tokenBps);
+        }
+        return (referralEthBps, referralTokenBps);
+    }
+
+    function _buy(address referrer) internal {
+        require(presaleStarted, "On satis henuz baslatilmadi");
+        require(!paused, "On satis gecici olarak duraklatildi");
+        require(!finalized && !cancelled, "On satis kapali");
+        require(block.timestamp < endTime, "On satis suresi doldu");
+        require(msg.value > 0, "ETH miktari sifir olamaz");
+        require(totalRaised + msg.value <= hardCap, "Hard Cap asiliyor");
+        require(
+            msg.value >= minBuy || totalRaised + msg.value == hardCap,
+            "Minimum alim limitinin altinda"
+        );
+        require(contributions[msg.sender] + msg.value <= maxBuy, "Kisi basi maksimum limit asildi");
+
+        uint256 baseTokens = msg.value * rate;
+        require(baseTokens > 0, "Token miktari sifir");
+
+        uint256 earlyTokens = earlyBirdBonusBps > 0 ? (baseTokens * earlyBirdBonusBps) / 10_000 : 0;
+
+        address validRef = address(0);
+        uint256 refBuyerBonus = 0;
+        uint256 kolTokens = 0;
+
+        if (referrer != address(0) && referrer != msg.sender) {
+            validRef = referrer;
+            kolReferredVolume[referrer] += msg.value;
+            kolReferralCount[referrer] += 1;
+
+            (uint256 activeEthBps, uint256 activeTokenBps) = getActiveKolRates(referrer);
+
+            if (activeEthBps > 0) {
+                uint256 refCut = (msg.value * activeEthBps) / 10_000;
+                if (refCut > 0) {
+                    referralEthRewards[referrer] += refCut;
+                    totalReferralEthReserved += refCut;
+                }
+            }
+            if (activeTokenBps > 0) {
+                kolTokens = (baseTokens * activeTokenBps) / 10_000;
+            }
+            if (buyerBonusBps > 0) {
+                refBuyerBonus = (baseTokens * buyerBonusBps) / 10_000;
+            }
+        }
+
+        uint256 totalUserTokens = baseTokens + earlyTokens + refBuyerBonus;
+        uint256 totalNewTokensNeeded = totalUserTokens + kolTokens;
+
+        require(
+            token.balanceOf(address(this)) >= totalTokensAllocated + totalNewTokensNeeded,
+            "Kontratta yeterli OBS yok"
+        );
+
+        if (!hasContributed[msg.sender]) {
+            hasContributed[msg.sender] = true;
+            buyers.push(msg.sender);
+        }
+
+        contributions[msg.sender] += msg.value;
+        obsAllocated[msg.sender] += totalUserTokens;
+        if (kolTokens > 0) {
+            kolTokenAllocations[referrer] += kolTokens;
+        }
+        totalRaised += msg.value;
+        totalTokensAllocated += totalNewTokensNeeded;
+
+        if (!softCapReached && totalRaised >= softCap) {
+            softCapReached = true;
+            uint256 shortenedEnd = block.timestamp + softCapWindow;
+            if (shortenedEnd < endTime) {
+                endTime = shortenedEnd;
+                emit EndTimeUpdated(endTime, totalRaised);
+            }
+        }
+
+        if (!midCapReached && totalRaised >= midCapThreshold) {
+            midCapReached = true;
+            uint256 fastEnd = block.timestamp + midCapWindow;
+            if (fastEnd < endTime) {
+                endTime = fastEnd;
+                emit EndTimeUpdated(endTime, totalRaised);
+            }
+        }
+
+        if (totalRaised == hardCap && block.timestamp < endTime) {
+            endTime = block.timestamp;
+            emit EndTimeUpdated(endTime, totalRaised);
+        }
+
+        emit Contributed(msg.sender, validRef, msg.value, totalUserTokens, rate);
+    }
+
+    function setRate(uint256 _newRate) external onlyOwner {
+        require(_newRate > 0, "Oran sifir olamaz");
+        rate = _newRate;
+        emit RateUpdated(_newRate);
+    }
+
+    function setCaps(uint256 _newSoftCapWei, uint256 _newHardCapWei) external onlyOwner {
+        require(_newSoftCapWei > 0 && _newHardCapWei >= _newSoftCapWei, "Gecersiz Cap araligi");
+        require(_newHardCapWei >= totalRaised, "Hard Cap toplanan tutardan kucuk olamaz");
+        if (softCapReached) {
+            require(_newSoftCapWei == softCap, "Soft Cap asildiktan sonra degistirilemez");
+        }
+        softCap = _newSoftCapWei;
+        hardCap = _newHardCapWei;
+        emit CapsUpdated(_newSoftCapWei, _newHardCapWei);
+    }
+
+    function setLimits(uint256 _newMinBuyWei, uint256 _newMaxBuyWei) external onlyOwner {
+        require(_newMinBuyWei > 0 && _newMaxBuyWei >= _newMinBuyWei, "Gecersiz limit araligi");
+        minBuy = _newMinBuyWei;
+        maxBuy = _newMaxBuyWei;
+        emit LimitsUpdated(_newMinBuyWei, _newMaxBuyWei);
+    }
+
+    function setEarlyBirdBonus(uint256 _newBonusBps) external onlyOwner {
+        require(_newBonusBps <= 3000, "Maksimum erken katilim bonusu %30 olabilir");
+        earlyBirdBonusBps = _newBonusBps;
+        emit EarlyBirdBonusUpdated(_newBonusBps);
+    }
+
+    function setReferralConfig(
+        uint256 _newEthBps,
+        uint256 _newTokenBps,
+        uint256 _newBuyerBonusBps
+    ) external onlyOwner {
+        require(_newEthBps <= 2500 && _newTokenBps <= 2500, "Maksimum KOL komisyonu %25 olabilir");
+        require(_newBuyerBonusBps <= 1500, "Maksimum alici bonusu %15 olabilir");
+        referralEthBps = _newEthBps;
+        referralTokenBps = _newTokenBps;
+        buyerBonusBps = _newBuyerBonusBps;
+        emit ReferralConfigUpdated(_newEthBps, _newTokenBps, _newBuyerBonusBps);
+    }
+
+    function setCustomKolRates(
+        address _kol,
+        bool _enabled,
+        uint256 _customEthBps,
+        uint256 _customTokenBps
+    ) external onlyOwner {
+        require(_kol != address(0), "Gecersiz KOL adresi");
+        require(_customEthBps <= 2500 && _customTokenBps <= 2500, "Maksimum komisyon %25 olabilir");
+        customKolRates[_kol] = CustomKolRate({
+            hasCustomRate: _enabled,
+            ethBps: _customEthBps,
+            tokenBps: _customTokenBps
+        });
+        emit CustomKolRatesUpdated(_kol, _enabled, _customEthBps, _customTokenBps);
+    }
+
+    function grantKolAllocation(address _kol, uint256 _obsAmount) external onlyOwner {
+        require(!finalized && !cancelled, "On satis kapali");
+        require(_kol != address(0) && _obsAmount > 0, "Gecersiz parametre");
+        require(
+            token.balanceOf(address(this)) >= totalTokensAllocated + _obsAmount,
+            "Kontratta yeterli bosta OBS yok"
+        );
+
+        kolTokenAllocations[_kol] += _obsAmount;
+        totalTokensAllocated += _obsAmount;
+        emit KolAllocationGranted(_kol, _obsAmount);
+    }
+
+    function revokeKolAllocation(address _kol, uint256 _obsAmount) external onlyOwner {
+        require(!finalized, "Finalize sonrasi iptal edilemez");
+        require(kolTokenAllocations[_kol] >= _obsAmount && _obsAmount > 0, "Yetersiz tahsis bakiyesi");
+
+        kolTokenAllocations[_kol] -= _obsAmount;
+        totalTokensAllocated -= _obsAmount;
+        emit KolAllocationRevoked(_kol, _obsAmount);
+    }
+
+    function setTimingThresholds(
+        uint256 _softCapWindowSec,
+        uint256 _midCapThresholdWei,
+        uint256 _midCapWindowSec
+    ) external onlyOwner {
+        require(_softCapWindowSec >= 1 hours && _midCapWindowSec >= 1 hours, "Minimum 1 saat olmali");
+        softCapWindow = _softCapWindowSec;
+        midCapThreshold = _midCapThresholdWei;
+        midCapWindow = _midCapWindowSec;
+        emit TimingThresholdsUpdated(_softCapWindowSec, _midCapThresholdWei, _midCapWindowSec);
+    }
+
+    function setVestingConfig(uint256 _tgeUnlockBps, uint256 _vestingDurationSec) external onlyOwner {
+        require(!finalized, "Finalize sonrasi degistirilemez");
+        require(_tgeUnlockBps >= 1000 && _tgeUnlockBps <= 10_000, "TGE %10 ile %100 arasi olmali");
+        require(_vestingDurationSec <= 180 days, "Maksimum 180 gun vesting olabilir");
+        tgeUnlockBps = _tgeUnlockBps;
+        vestingDuration = _vestingDurationSec;
+        emit VestingConfigUpdated(_tgeUnlockBps, _vestingDurationSec);
+    }
+
+    function extendEndTime(uint256 _additionalSeconds) external onlyOwner {
+        require(presaleStarted && !finalized && !cancelled, "On satis aktif degil");
+        require(_additionalSeconds > 0 && _additionalSeconds <= 60 days, "Maksimum 60 gun uzatilabilir");
+        uint256 base = block.timestamp > endTime ? block.timestamp : endTime;
+        endTime = base + _additionalSeconds;
+        emit EndTimeUpdated(endTime, totalRaised);
+    }
+
+    function endPresaleEarly() external onlyOwner {
+        require(presaleStarted && !finalized && !cancelled, "On satis aktif degil");
+        require(totalRaised >= softCap, "Erken kapatmak icin en az Soft Cap dolmali");
+        if (block.timestamp < endTime) {
+            endTime = block.timestamp;
+            emit EndTimeUpdated(endTime, totalRaised);
+        }
+    }
+
+    function withdrawExcessTokens(uint256 _amount) external onlyOwner nonReentrant {
+        uint256 bal = token.balanceOf(address(this));
+        require(bal > totalTokensAllocated, "Cekilebilir fazla OBS yok");
+        uint256 maxWithdrawable = bal - totalTokensAllocated;
+        require(_amount <= maxWithdrawable, "Alicilara veya KOL'lara ayrilan OBS cekilemez");
+        require(token.transfer(owner, _amount), "OBS transferi basarisiz");
+        emit ExcessTokensWithdrawn(_amount);
+    }
+
+    function canFinalize() public view returns (bool) {
+        if (!presaleStarted || finalized || cancelled) return false;
+        if (totalRaised < softCap) return false;
+        if (block.timestamp > endTime + FINALIZE_GRACE_PERIOD) return false;
+        return true;
+    }
+
+    function finalizePresale(bool burnUnsold) external onlyOwner nonReentrant {
+        require(canFinalize(), "Yayinlama kosullari saglanmadi");
+
+        finalized = true;
+        finalizedAt = block.timestamp;
+        paused = false;
+
+        uint256 totalBal = address(this).balance;
+        uint256 ethToOwner = totalBal > totalReferralEthReserved ? totalBal - totalReferralEthReserved : 0;
+
+        uint256 allocatedTokens = totalTokensAllocated;
+        uint256 contractTokens = token.balanceOf(address(this));
+        uint256 unsoldTokens = contractTokens > allocatedTokens ? contractTokens - allocatedTokens : 0;
+
+        if (ethToOwner > 0) {
+            (bool ethSent, ) = payable(owner).call{value: ethToOwner}("");
+            require(ethSent, "ETH transferi basarisiz");
+        }
+
+        uint256 burnedAmount = 0;
+        uint256 returnedAmount = 0;
+
+        if (unsoldTokens > 0) {
+            if (burnUnsold) {
+                uint256 burnable = token.remainingBurnableSupply();
+                burnedAmount = unsoldTokens <= burnable ? unsoldTokens : burnable;
+                returnedAmount = unsoldTokens - burnedAmount;
+                if (burnedAmount > 0) {
+                    token.burn(burnedAmount);
+                }
+                if (returnedAmount > 0) {
+                    require(token.transfer(owner, returnedAmount), "Artan OBS iadesi basarisiz");
+                }
+            } else {
+                returnedAmount = unsoldTokens;
+                require(token.transfer(owner, returnedAmount), "Satilmayan OBS iadesi basarisiz");
+            }
+        }
+
+        emit PresaleFinalized(totalRaised, allocatedTokens, burnedAmount, returnedAmount);
+    }
+
+    function _unlockedAmount(uint256 totalAllocation) internal view returns (uint256) {
+        if (!finalized || totalAllocation == 0) return 0;
+        if (tgeUnlockBps == 10_000 || vestingDuration == 0) return totalAllocation;
+
+        uint256 tgePart = (totalAllocation * tgeUnlockBps) / 10_000;
+        uint256 vestedPart = totalAllocation - tgePart;
+        uint256 elapsed = block.timestamp - finalizedAt;
+
+        if (elapsed >= vestingDuration) {
+            return totalAllocation;
+        }
+        return tgePart + ((vestedPart * elapsed) / vestingDuration);
+    }
+
+    function claimTokens() external nonReentrant {
+        require(finalized, "On satis henuz yayinlanmadi");
+        uint256 claimable = claimableTokensOf(msg.sender);
+        require(claimable > 0, "Su an cekilebilir token yok");
+
+        obsClaimedAmount[msg.sender] += claimable;
+        require(token.transfer(msg.sender, claimable), "OBS transferi basarisiz");
+        emit TokensClaimed(msg.sender, claimable);
+    }
+
+    function claimKolRewards() external nonReentrant {
+        require(finalized, "On satis basariyla tamamlanmadan KOL odulu cekilemez");
+
+        uint256 ethReward = referralEthRewards[msg.sender];
+        uint256 unlockedObs = _unlockedAmount(kolTokenAllocations[msg.sender]);
+        uint256 tokenReward = unlockedObs > kolTokensClaimedAmount[msg.sender]
+            ? unlockedObs - kolTokensClaimedAmount[msg.sender]
+            : 0;
+
+        require(ethReward > 0 || tokenReward > 0, "Su an cekilecek KOL odulu yok");
+
+        if (ethReward > 0) {
+            referralEthRewards[msg.sender] = 0;
+            if (totalReferralEthReserved >= ethReward) {
+                totalReferralEthReserved -= ethReward;
+            }
+            (bool sent, ) = payable(msg.sender).call{value: ethReward}("");
+            require(sent, "KOL ETH transferi basarisiz");
+        }
+
+        if (tokenReward > 0) {
+            kolTokensClaimedAmount[msg.sender] += tokenReward;
+            require(token.transfer(msg.sender, tokenReward), "KOL OBS transferi basarisiz");
+        }
+
+        emit KolRewardClaimed(msg.sender, ethReward, tokenReward);
+    }
+
+    function isRefundOpen() public view returns (bool) {
+        if (!presaleStarted || finalized) return false;
+        if (cancelled) return true;
+        if (block.timestamp < endTime) return false;
+        if (totalRaised < softCap) return true;
+        if (block.timestamp > endTime + FINALIZE_GRACE_PERIOD) return true;
+        return false;
+    }
+
+    function claimRefund() external nonReentrant {
+        require(isRefundOpen(), "Iade kosullari olusmadi");
+
+        uint256 ethSpent = contributions[msg.sender];
+        require(ethSpent > 0, "Iade edilecek bakiye yok");
+
+        contributions[msg.sender] = 0;
+        obsAllocated[msg.sender] = 0;
+
+        (bool sent, ) = payable(msg.sender).call{value: ethSpent}("");
+        require(sent, "ETH iadesi basarisiz");
+
+        emit RefundClaimed(msg.sender, ethSpent);
+    }
+
+    function withdrawTokensOnFailure() external onlyOwner nonReentrant {
+        require(isRefundOpen(), "On satis henuz basarisiz sonuclanmadi");
+        uint256 bal = token.balanceOf(address(this));
+        require(bal > 0, "Cekilecek OBS yok");
+        require(token.transfer(owner, bal), "OBS cekimi basarisiz");
+    }
+
+    function rescueForeignToken(address foreignToken, uint256 amount) external onlyOwner {
+        require(foreignToken != address(token), "OBS token bu fonksiyonla cekilemez");
+        require(IExternalERC20(foreignToken).transfer(owner, amount), "Kurtarma basarisiz");
+    }
+
+    function timeRemaining() public view returns (uint256) {
+        if (!presaleStarted || cancelled || block.timestamp >= endTime) return 0;
+        return endTime - block.timestamp;
+    }
+
+    function buyersCount() external view returns (uint256) {
+        return buyers.length;
+    }
+
+    function getBuyers() external view returns (address[] memory) {
+        return buyers;
+    }
+
+    function claimableTokensOf(address user) public view returns (uint256) {
+        uint256 unlocked = _unlockedAmount(obsAllocated[user]);
+        if (unlocked <= obsClaimedAmount[user]) return 0;
+        return unlocked - obsClaimedAmount[user];
+    }
+
+    function claimableKolRewardsOf(address kol) external view returns (uint256 ethReward, uint256 obsReward) {
+        ethReward = referralEthRewards[kol];
+        uint256 unlocked = _unlockedAmount(kolTokenAllocations[kol]);
+        obsReward = unlocked > kolTokensClaimedAmount[kol] ? unlocked - kolTokensClaimedAmount[kol] : 0;
+    }
+
+    function getPresaleSummary() external view returns (PresaleSummary memory s) {
+        uint256 bal = token.balanceOf(address(this));
+        s.totalRaised = totalRaised;
+        s.totalTokensAllocated = totalTokensAllocated;
+        s.contractTokenBalance = bal;
+        s.remainingTokensAvailable = bal > totalTokensAllocated ? bal - totalTokensAllocated : 0;
+        s.rate = rate;
+        s.softCap = softCap;
+        s.hardCap = hardCap;
+        s.minBuy = minBuy;
+        s.maxBuy = maxBuy;
+        s.earlyBirdBonusBps = earlyBirdBonusBps;
+        s.referralEthBps = referralEthBps;
+        s.referralTokenBps = referralTokenBps;
+        s.buyerBonusBps = buyerBonusBps;
+        s.tgeUnlockBps = tgeUnlockBps;
+        s.vestingDuration = vestingDuration;
+        s.startTime = startTime;
+        s.endTime = endTime;
+        s.timeRemaining = timeRemaining();
+        s.buyersCount = buyers.length;
+        s.presaleStarted = presaleStarted;
+        s.paused = paused;
+        s.finalized = finalized;
+        s.cancelled = cancelled;
+        s.refundOpen = isRefundOpen();
+        s.canFinalize = canFinalize();
+    }
+}`;
+
+    // ==================== INTERACTION ABIs ====================
+    const TOKEN_ABI = [
+      "function balanceOf(address account) external view returns (uint256)",
+      "function transfer(address to, uint256 value) external returns (bool)",
+      "function setSystemExempt(address account, bool exempt) external",
+      "function isTaxExempt(address account) external view returns (bool)",
+      "function isLimitExempt(address account) external view returns (bool)",
+      "function isDividendExempt(address account) external view returns (bool)"
+    ];
+
+    const PRESALE_CONTROL_ABI = [
+      "function cancelled() external view returns (bool)",
+      "function cancelPresale() external",
+      "function withdrawTokensOnFailure() external",
+      "function withdrawTokensBeforeStart() external",
+      "function startPresale() external",
+      "function setPaused(bool _paused) external",
+      "function setRate(uint256 _newRate) external",
+      "function setCaps(uint256 _newSoftCapWei, uint256 _newHardCapWei) external",
+      "function setLimits(uint256 _newMinBuyWei, uint256 _newMaxBuyWei) external",
+      "function setEarlyBirdBonus(uint256 _newBonusBps) external",
+      "function setReferralConfig(uint256 _newEthBps, uint256 _newTokenBps, uint256 _newBuyerBonusBps) external",
+      "function setCustomKolRates(address _kol, bool _enabled, uint256 _customEthBps, uint256 _customTokenBps) external",
+      "function grantKolAllocation(address _kol, uint256 _obsAmount) external",
+      "function revokeKolAllocation(address _kol, uint256 _obsAmount) external",
+      "function setVestingConfig(uint256 _tgeUnlockBps, uint256 _vestingDurationSec) external",
+      "function extendEndTime(uint256 _additionalSeconds) external",
+      "function endPresaleEarly() external",
+      "function withdrawExcessTokens(uint256 _amount) external",
+      "function finalizePresale(bool burnUnsold) external",
+      "function transferOwnership(address newOwner) external",
+      "function kolReferredVolume(address) external view returns (uint256)",
+      "function kolReferralCount(address) external view returns (uint256)",
+      "function getActiveKolRates(address _kol) external view returns (uint256 ethBps, uint256 tokenBps)",
+      "function claimableKolRewardsOf(address kol) external view returns (uint256 ethReward, uint256 obsReward)",
+      "function getPresaleSummary() external view returns (tuple(uint256 totalRaised, uint256 totalTokensAllocated, uint256 contractTokenBalance, uint256 remainingTokensAvailable, uint256 rate, uint256 softCap, uint256 hardCap, uint256 minBuy, uint256 maxBuy, uint256 earlyBirdBonusBps, uint256 referralEthBps, uint256 referralTokenBps, uint256 buyerBonusBps, uint256 tgeUnlockBps, uint256 vestingDuration, uint256 startTime, uint256 endTime, uint256 timeRemaining, uint256 buyersCount, bool presaleStarted, bool paused, bool finalized, bool cancelled, bool refundOpen, bool canFinalize))"
+    ];
+
+    // ==================== RUNTIME STATE ====================
+    let provider = null;
+    let signer = null;
+    let userAddress = null;
+    let compiledArtifact = null;
+    let activePresaleAddress = localStorage.getItem("obs_active_presale_address") || "";
+
+    // ==================== INITIALIZATION ====================
+    window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("solidityCodeBlock").textContent = OBSIDION_PRESALE_SOL;
+      if (activePresaleAddress && ethers.isAddress(activePresaleAddress)) {
+        document.getElementById("activePresaleAddressInput").value = activePresaleAddress;
+        updateExplorerLink(activePresaleAddress);
+      }
+      initSolidityCompilerWorker();
+    });
+
+    // ==================== IN-BROWSER SOLIDITY 0.8.24 COMPILER ====================
+    function initSolidityCompilerWorker() {
+      logConsole("Solidity v0.8.24+commit.e11b9ed9 derleyicisi arka planda yükleniyor...", "info");
+
+      const workerScript = `
+        importScripts("https://binaries.soliditylang.org/bin/soljson-v0.8.24+commit.e11b9ed9.js");
+        self.onmessage = function(e) {
+          try {
+            const compileFn = Module.cwrap("solidity_compile", "string", ["string", "number"]);
+            const standardInput = JSON.stringify({
+              language: "Solidity",
+              sources: {
+                "ObsidionPresale.sol": { content: e.data.source }
+              },
+              settings: {
+                optimizer: { enabled: true, runs: 200 },
+                evmVersion: "paris",
+                outputSelection: {
+                  "*": {
+                    "*": ["abi", "evm.bytecode.object"]
+                  }
+                }
+              }
+            });
+            const rawOutput = compileFn(standardInput, 0);
+            self.postMessage({ ok: true, result: JSON.parse(rawOutput) });
+          } catch (err) {
+            self.postMessage({ ok: false, error: err.message || String(err) });
+          }
+        };
+      `;
+
+      try {
+        const blob = new Blob([workerScript], { type: "application/javascript" });
+        const worker = new Worker(URL.createObjectURL(blob));
+
+        worker.onmessage = function(e) {
+          const spinner = document.getElementById("compilerSpinner");
+          const statusText = document.getElementById("compilerStatusText");
+
+          if (!e.data.ok) {
+            spinner.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
+            statusText.className = "text-rose-400 font-bold";
+            statusText.textContent = "Derleyici Hatası";
+            logConsole("Derleyici hatası: " + e.data.error, "error");
+            return;
+          }
+
+          const out = e.data.result;
+          if (out.errors) {
+            const fatal = out.errors.filter(err => err.severity === "error");
+            if (fatal.length > 0) {
+              spinner.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
+              statusText.className = "text-rose-400 font-bold";
+              statusText.textContent = "Derleme Hatası";
+              logConsole(fatal[0].formattedMessage, "error");
+              return;
+            }
+          }
+
+          const target = out.contracts["ObsidionPresale.sol"]["ObsidionPresale"];
+          compiledArtifact = {
+            abi: target.abi,
+            bytecode: "0x" + target.evm.bytecode.object
+          };
+
+          spinner.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
+          statusText.className = "text-emerald-300 font-bold";
+          statusText.textContent = "Solidity 0.8.24 Derleyici Hazır";
+          document.getElementById("btnDeployNew").disabled = false;
+
+          logConsole("✅ Solidity 0.8.24 derlemesi tamamlandı! Bytecode & ABI hazır.", "success");
+        };
+
+        worker.onerror = function(err) {
+          logConsole("Derleyici Worker hatası: " + err.message, "error");
+        };
+
+        worker.postMessage({ source: OBSIDION_PRESALE_SOL });
+      } catch (err) {
+        logConsole("Derleyici başlatılamadı: " + err.message, "error");
+      }
+    }
+
+    // ==================== WALLET & ROBINHOOD CHAIN (4663) ====================
+    async function connectWallet() {
+      if (!window.ethereum) {
+        showToast("❌", "Cüzdan Bulunamadı", "MetaMask veya Rabby cüzdan eklentisi yüklü değil.");
+        return;
+      }
+      try {
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+        await switchOrAddRobinhoodChain();
+
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = await provider.getSigner();
+        userAddress = await signer.getAddress();
+
+        document.getElementById("connectBtnText").textContent = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+        document.getElementById("walletBalancesBox").classList.remove("hidden");
+        document.getElementById("networkDot").className = "w-2 h-2 rounded-full bg-emerald-400 animate-ping";
+        document.getElementById("networkLabel").textContent = "Robinhood L2 (4663)";
+
+        logConsole(`🟢 Kurucu cüzdan bağlandı: ${userAddress}`, "success");
+        showToast("🟢", "Cüzdan Bağlandı", `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`);
+        await refreshAllStates();
+
+        window.ethereum.on("accountsChanged", () => window.location.reload());
+        window.ethereum.on("chainChanged", () => window.location.reload());
+      } catch (err) {
+        logConsole("Bağlantı hatası: " + (err.reason || err.message), "error");
+      }
+    }
+
+    async function switchOrAddRobinhoodChain() {
+      if (!window.ethereum) return;
+      const currentChain = await window.ethereum.request({ method: "eth_chainId" });
+      if (currentChain.toLowerCase() === ROBINHOOD_CHAIN_ID_HEX.toLowerCase()) return;
+
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: ROBINHOOD_CHAIN_ID_HEX }]
+        });
+      } catch (switchErr) {
+        if (switchErr.code === 4902) {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [{
+              chainId: ROBINHOOD_CHAIN_ID_HEX,
+              chainName: "Robinhood Chain",
+              nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
+              rpcUrls: ["https://rpc.testnet.chain.robinhood.com", "https://rpc.robinhoodchain.com"],
+              blockExplorerUrls: ["https://robinhoodchain.blockscout.com"]
+            }]
+          });
+        } else {
+          throw switchErr;
+        }
+      }
+    }
+
+    // ==================== REFRESH ALL ON-CHAIN DATA ====================
+    async function refreshAllStates() {
+      if (!provider || !userAddress) return;
+      try {
+        const token = new ethers.Contract(OBS_TOKEN_ADDRESS, TOKEN_ABI, provider);
+
+        // Owner Balances
+        const [ethBal, obsBal] = await Promise.all([
+          provider.getBalance(userAddress),
+          token.balanceOf(userAddress)
+        ]);
+        document.getElementById("ownerEthBalance").textContent = Number(ethers.formatEther(ethBal)).toFixed(4);
+        document.getElementById("ownerObsBalance").textContent = Number(ethers.formatUnits(obsBal, 18)).toLocaleString("tr-TR", { maximumFractionDigits: 0 });
+
+        // Old Cancelled Presale Status
+        const oldPresale = new ethers.Contract(OLD_PRESALE_ADDRESS, PRESALE_CONTROL_ABI, provider);
+        const [oldCancelled, oldObs] = await Promise.all([
+          oldPresale.cancelled(),
+          token.balanceOf(OLD_PRESALE_ADDRESS)
+        ]);
+        const oldCanEl = document.getElementById("oldPresaleCancelled");
+        oldCanEl.textContent = oldCancelled ? "✅ EVET (İptal Edildi)" : "HAYIR";
+        oldCanEl.className = oldCancelled ? "font-bold text-emerald-400 mt-0.5 block" : "font-bold text-rose-400 mt-0.5 block";
+        document.getElementById("oldPresaleObsBal").textContent = `${Number(ethers.formatUnits(oldObs, 18)).toLocaleString("tr-TR", { maximumFractionDigits: 0 })} $OBS`;
+
+        // Active New Presale Status
+        if (activePresaleAddress && ethers.isAddress(activePresaleAddress)) {
+          const presale = new ethers.Contract(activePresaleAddress, PRESALE_CONTROL_ABI, provider);
+          const [taxEx, limitEx, divEx, summary] = await Promise.all([
+            token.isTaxExempt(activePresaleAddress),
+            token.isLimitExempt(activePresaleAddress),
+            token.isDividendExempt(activePresaleAddress),
+            presale.getPresaleSummary()
+          ]);
+
+          const allExempt = taxEx && limitEx && divEx;
+          const exEl = document.getElementById("checklistExemptStatus");
+          exEl.textContent = allExempt ? "✅ Muaf" : "❌ Eksik (3A)";
+          exEl.className = allExempt ? "text-emerald-400" : "text-rose-400";
+
+          const contractObsNum = Number(ethers.formatUnits(summary.contractTokenBalance, 18));
+          document.getElementById("checklistObsStatus").textContent = `${contractObsNum.toLocaleString("tr-TR", { maximumFractionDigits: 0 })} $OBS`;
+
+          // Metrics Grid
+          document.getElementById("metricTotalRaised").textContent = `${Number(ethers.formatEther(summary.totalRaised)).toFixed(5)} ETH`;
+          document.getElementById("metricBuyersCount").textContent = `${summary.buyersCount.toString()} Yatırımcı`;
+
+          const allocNum = Number(ethers.formatUnits(summary.totalTokensAllocated, 18));
+          const remNum = Number(ethers.formatUnits(summary.remainingTokensAvailable, 18));
+          document.getElementById("metricAllocatedObs").textContent = allocNum.toLocaleString("tr-TR", { maximumFractionDigits: 0 });
+          document.getElementById("metricRemainingObs").textContent = `Kalan: ${remNum.toLocaleString("tr-TR", { maximumFractionDigits: 0 })}`;
+
+          document.getElementById("metricCurrentRate").textContent = Number(summary.rate).toLocaleString("tr-TR");
+          document.getElementById("metricCaps").textContent = `${ethers.formatEther(summary.softCap)} / ${ethers.formatEther(summary.hardCap)} ETH`;
+          document.getElementById("metricEarlyBonus").textContent = `Erken Bonus: %${(Number(summary.earlyBirdBonusBps) / 100).toFixed(1)}`;
+          document.getElementById("metricLimits").textContent = `${ethers.formatEther(summary.minBuy)} / ${ethers.formatEther(summary.maxBuy)}`;
+
+          document.getElementById("metricRefRates").textContent = `%${(Number(summary.referralEthBps)/100).toFixed(1)} ETH / %${(Number(summary.referralTokenBps)/100).toFixed(1)} OBS`;
+          const vestDays = Math.round(Number(summary.vestingDuration) / 86400);
+          document.getElementById("metricVestingInfo").textContent = `TGE: %${(Number(summary.tgeUnlockBps)/100).toFixed(0)} (${vestDays}g)`;
+
+          // Badges
+          const stateEl = document.getElementById("badgePresaleState");
+          if (summary.finalized) {
+            stateEl.textContent = "Durum: TAMAMLANDI (Finalized)";
+            stateEl.className = "px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/40";
+          } else if (summary.cancelled) {
+            stateEl.textContent = "Durum: İPTAL EDİLDİ";
+            stateEl.className = "px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-400/40";
+          } else if (summary.presaleStarted) {
+            stateEl.textContent = "Durum: 🟢 YAYINDA";
+            stateEl.className = "px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/40";
+          } else {
+            stateEl.textContent = "Durum: Başlatılmadı";
+          }
+
+          const pauseEl = document.getElementById("badgePauseState");
+          pauseEl.textContent = summary.paused ? "Akış: ⏸️ DURAKLATILDI" : "Akış: ▶️ AKTİF";
+          pauseEl.className = summary.paused
+            ? "px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-400/40"
+            : "px-3 py-1.5 rounded-xl bg-obsidian-850 text-emerald-300 border border-emerald-500/30";
+
+          const remSec = Number(summary.timeRemaining);
+          const d = Math.floor(remSec / 86400);
+          const h = Math.floor((remSec % 86400) / 3600);
+          document.getElementById("badgeTimeLeft").textContent = `Kalan Süre: ${d}g ${h}s`;
+        }
+      } catch (err) {
+        logConsole("Veri yenileme uyarısı: " + (err.reason || err.message), "error");
+      }
+    }
+
+    // ==================== STEP 1: OLD CONTRACT RECOVERY ====================
+    async function cancelOldPresale() {
+      if (!requireWallet()) return;
+      await sendTx(
+        () => new ethers.Contract(OLD_PRESALE_ADDRESS, PRESALE_CONTROL_ABI, signer).cancelPresale(),
+        "Eski ön satış iptal ediliyor...",
+        "Eski ön satış iptal edildi!"
+      );
+    }
+
+    async function withdrawOldFailure() {
+      if (!requireWallet()) return;
+      await sendTx(
+        () => new ethers.Contract(OLD_PRESALE_ADDRESS, PRESALE_CONTROL_ABI, signer).withdrawTokensOnFailure(),
+        "Eski kontrattan 48.600.000 $OBS geri çekiliyor...",
+        "48.600.000 $OBS kurucu cüzdanınıza aktarıldı!"
+      );
+    }
+
+    async function withdrawOldBeforeStart() {
+      if (!requireWallet()) return;
+      await sendTx(
+        () => new ethers.Contract(OLD_PRESALE_ADDRESS, PRESALE_CONTROL_ABI, signer).withdrawTokensBeforeStart(),
+        "Başlamamış kontrattan $OBS çekiliyor...",
+        "Tokenlar geri çekildi!"
+      );
+    }
+
+    // ==================== STEP 2: DEPLOY NEW PRESALE ====================
+    async function deployNewPresaleContract() {
+      if (!requireWallet()) return;
+      if (!compiledArtifact) {
+        showToast("⏳", "Derleyici Hazırlanıyor", "Lütfen Solidity 0.8.24 motorunun hazır olmasını bekleyin.");
+        return;
+      }
+
+      try {
+        logConsole("🚀 Yeni ObsidionPresale kontratı Robinhood Chain ağına deploy ediliyor...", "info");
+        const factory = new ethers.ContractFactory(compiledArtifact.abi, compiledArtifact.bytecode, signer);
+        const contract = await factory.deploy(OBS_TOKEN_ADDRESS);
+
+        const tx = contract.deploymentTransaction();
+        logConsole(`Deploy işlemi gönderildi: ${tx.hash} — Blok onayı bekleniyor...`, "info");
+
+        await contract.waitForDeployment();
+        const deployedAddr = await contract.getAddress();
+
+        activePresaleAddress = deployedAddr;
+        localStorage.setItem("obs_active_presale_address", deployedAddr);
+        document.getElementById("activePresaleAddressInput").value = deployedAddr;
+        updateExplorerLink(deployedAddr);
+
+        logConsole(`🎉 YENİ ÖN SATIŞ KONTRATI YAYINLANDI: ${deployedAddr}`, "success");
+        showToast("🎉", "Deploy Başarılı!", `Yeni Adres: ${deployedAddr.slice(0, 10)}...`);
+        await refreshAllStates();
+      } catch (err) {
+        logConsole("Deploy Hatası: " + (err.reason || err.message), "error");
+        showToast("❌", "Deploy Başarısız", err.reason || err.message);
+      }
+    }
+
+    function onActiveAddressChange(val) {
+      const clean = val.trim();
+      if (ethers.isAddress(clean)) {
+        activePresaleAddress = clean;
+        localStorage.setItem("obs_active_presale_address", clean);
+        updateExplorerLink(clean);
+        refreshAllStates();
+      }
+    }
+
+    function updateExplorerLink(addr) {
+      const el = document.getElementById("newPresaleExplorerLink");
+      el.href = `https://robinhoodchain.blockscout.com/address/${addr}`;
+      el.classList.remove("hidden");
+    }
+
+    // ==================== STEP 3: LAUNCH CHECKLIST ====================
+    async function grantSystemExempt() {
+      if (!requireWallet() || !requireActivePresale()) return;
+      await sendTx(
+        () => new ethers.Contract(OBS_TOKEN_ADDRESS, TOKEN_ABI, signer).setSystemExempt(activePresaleAddress, true),
+        `3A: Yeni kontrata sistem muafiyeti tanımlanıyor (${activePresaleAddress})...`,
+        "3A Tamamlandı: Muafiyet tanımlandı!"
+      );
+    }
+
+    async function transferPresaleTokens() {
+      if (!requireWallet() || !requireActivePresale()) return;
+      await sendTx(
+        () => new ethers.Contract(OBS_TOKEN_ADDRESS, TOKEN_ABI, signer).transfer(activePresaleAddress, REQUIRED_OBS_AMOUNT),
+        "3B: Yeni ön satış kontratına 48.600.000 $OBS gönderiliyor...",
+        "3B Tamamlandı: 48.600.000 $OBS yüklendi!"
+      );
+    }
+
+    async function startNewPresale() {
+      if (!requireWallet() || !requireActivePresale()) return;
+      await sendTx(
+        () => new ethers.Contract(activePresaleAddress, PRESALE_CONTROL_ABI, signer).startPresale(),
+        "3C: Yeni ön satış başlatılıyor (startPresale)...",
+        "🚀 YENİ ÖN SATIŞ YAYINDA! Minimum giriş 0.00001 ETH (~$0.03)."
+      );
+    }
+
+    // ==================== STEP 4: LIVE DASHBOARD CONTROLS ====================
+    function getPresaleWriter() {
+      return new ethers.Contract(activePresaleAddress, PRESALE_CONTROL_ABI, signer);
+    }
+
+    async function updateRate() {
+      if (!requireWallet() || !requireActivePresale()) return;
+      const rateVal = document.getElementById("inputNewRate").value.trim();
+      if (!rateVal || Number(rateVal) <= 0) return showToast("⚠️", "Geçersiz Oran", "Pozitif bir tam sayı girin.");
+      await sendTx(
+        () => getPresaleWriter().setRate(BigInt(rateVal)),
+        `Oran güncelleniyor: 1 ETH = ${rateVal} $OBS...`,
+        "Fiyat oranı başarıyla güncellendi!"
+      );
+    }
+
+    async function updateCaps() {
+      if (!requireWallet() || !requireActivePresale()) return;
+      const softVal = document.getElementById("inputSoftCap").value.trim();
+      const hardVal = document.getElementById("inputHardCap").value.trim();
+      if (!softVal || !hardVal) return showToast("⚠️", "Eksik Alan", "Soft Cap ve Hard Cap ETH değerlerini girin.");
+      await sendTx(
+        () => getPresaleWriter().setCaps(ethers.parseEther(softVal), ethers.parseEther(hardVal)),
+        `Hedefler güncelleniyor: Soft ${softVal} ETH / Hard ${hardVal} ETH...`,
+        "Soft & Hard Cap hedefleri güncellendi!"
+      );
+    }
+
+    async function updateLimits() {
+      if (!requireWallet() || !requireActivePresale()) return;
+      const minVal = document.getElementById("inputMinBuy").value.trim();
+      const maxVal = document.getElementById("inputMaxBuy").value.trim();
+      if (!minVal || !maxVal) return showToast("⚠️", "Eksik Alan", "Min ve Max ETH limitlerini girin.");
+      await sendTx(
+        () => getPresaleWriter().setLimits(ethers.parseEther(minVal), ethers.parseEther(maxVal)),
+        `Alım limitleri güncelleniyor: Min ${minVal} ETH / Max ${maxVal} ETH...`,
+        "Alım limitleri güncellendi!"
+      );
+    }
+
+    async function updateEarlyBirdBonus() {
+      if (!requireWallet() || !requireActivePresale()) return;
+      const pct = parseFloat(document.getElementById("inputEarlyBonusPct").value);
+      if (isNaN(pct) || pct < 0 || pct > 30) return showToast("⚠️", "Geçersiz Yüzde", "0 ile 30 arası bir değer girin.");
+      const bps = Math.round(pct * 100);
+      await sendTx(
+        () => getPresaleWriter().setEarlyBirdBonus(bps),
+        `Erken katılım bonusu %${pct} (${bps} bps) olarak ayarlanıyor...`,
+        `Erken katılım bonusu %${pct} yapıldı!`
+      );
+    }
+
+    async function updateReferralConfig() {
+      if (!requireWallet() || !requireActivePresale()) return;
+      const ethPct = parseFloat(document.getElementById("inputDefEthPct").value);
+      const obsPct = parseFloat(document.getElementById("inputDefObsPct").value);
+      const buyerPct = parseFloat(document.getElementById("inputDefBuyerPct").value);
+      if ([ethPct, obsPct, buyerPct].some(v => isNaN(v) || v < 0)) {
+        return showToast("⚠️", "Eksik Oran", "Tüm yüzde alanlarını doldurun.");
+      }
+      await sendTx(
+        () => getPresaleWriter().setReferralConfig(Math.round(ethPct * 100), Math.round(obsPct * 100), Math.round(buyerPct * 100)),
+        "Genel KOL ve Alıcı bonus yüzdeleri güncelleniyor...",
+        "Referans komisyon oranları güncellendi!"
+      );
+    }
+
+    async function setCustomKolRate(enabled) {
+      if (!requireWallet() || !requireActivePresale()) return;
+      const kol = document.getElementById("inputVipKolAddr").value.trim();
+      if (!ethers.isAddress(kol)) return showToast("⚠️", "Geçersiz Adres", "Geçerli bir KOL cüzdan adresi girin.");
+      const ethPct = parseFloat(document.getElementById("inputVipEthPct").value) || 0;
+      const obsPct = parseFloat(document.getElementById("inputVipObsPct").value) || 0;
+      await sendTx(
+        () => getPresaleWriter().setCustomKolRates(kol, enabled, Math.round(ethPct * 100), Math.round(obsPct * 100)),
+        enabled ? `VIP KOL (${kol}) için %${ethPct} ETH + %${obsPct} OBS tanımlanıyor...` : `VIP KOL özel oranı kaldırılıyor...`,
+        enabled ? "VIP KOL özel yüzdesi aktif edildi!" : "VIP KOL özel oranı iptal edildi!"
+      );
+    }
+
+    async function manageKolAllocation(isGrant) {
+      if (!requireWallet() || !requireActivePresale()) return;
+      const kol = document.getElementById("inputAllocKolAddr").value.trim();
+      const amountStr = document.getElementById("inputAllocObsAmount").value.trim();
+      if (!ethers.isAddress(kol) || !amountStr || Number(amountStr) <= 0) {
+        return showToast("⚠️", "Geçersiz Giriş", "KOL adresi ve $OBS miktarını kontrol edin.");
+      }
+      const amountWei = ethers.parseUnits(amountStr, 18);
+      if (isGrant) {
+        await sendTx(
+          () => getPresaleWriter().grantKolAllocation(kol, amountWei),
+          `${kol} adresine ${amountStr} $OBS tahsis tanımlanıyor...`,
+          "Ön satış sonu KOL tahsisi tanımlandı!"
+        );
+      } else {
+        await sendTx(
+          () => getPresaleWriter().revokeKolAllocation(kol, amountWei),
+          `${kol} adresinden ${amountStr} $OBS tahsisi iptal ediliyor...`,
+          "KOL tahsisi iptal edildi!"
+        );
+      }
+    }
+
+    async function lookupKolStats() {
+      if (!requireWallet() || !requireActivePresale()) return;
+      const kol = document.getElementById("inputLookupKolAddr").value.trim();
+      if (!ethers.isAddress(kol)) return showToast("⚠️", "Geçersiz Adres", "Geçerli bir 0x adresi girin.");
+      try {
+        const p = new ethers.Contract(activePresaleAddress, PRESALE_CONTROL_ABI, provider);
+        const [vol, count, rates, rewards] = await Promise.all([
+          p.kolReferredVolume(kol),
+          p.kolReferralCount(kol),
+          p.getActiveKolRates(kol),
+          p.claimableKolRewardsOf(kol)
+        ]);
+        const box = document.getElementById("kolLookupResult");
+        box.classList.remove("hidden");
+        box.innerHTML = `
+          <div>Getirilen Hacim: <strong class="text-white">${ethers.formatEther(vol)} ETH</strong> (${count.toString()} İşlem)</div>
+          <div>Aktif Yüzde: <strong class="text-amber-300">%${Number(rates.ethBps)/100} ETH / %${Number(rates.tokenBps)/100} $OBS</strong></div>
+          <div>Biriken Ödül (Finalize Sonrası): <strong class="text-emerald-400">${ethers.formatEther(rewards.ethReward)} ETH + ${Number(ethers.formatUnits(rewards.obsReward, 18)).toLocaleString("tr-TR")} $OBS</strong></div>
+        `;
+      } catch (err) {
+        logConsole("KOL sorgu hatası: " + (err.reason || err.message), "error");
+      }
+    }
+
+    async function updateVestingConfig() {
+      if (!requireWallet() || !requireActivePresale()) return;
+      const tgePct = parseFloat(document.getElementById("inputTgePct").value);
+      const days = parseInt(document.getElementById("inputVestingDays").value || "0", 10);
+      if (isNaN(tgePct) || tgePct < 10 || tgePct > 100) return showToast("⚠️", "Geçersiz TGE %", "TGE açılışı %10 ile %100 arası olmalı.");
+      await sendTx(
+        () => getPresaleWriter().setVestingConfig(Math.round(tgePct * 100), days * 86400),
+        `Vesting ayarlanıyor: TGE %${tgePct}, Süre ${days} gün...`,
+        "Listeleme TGE / Vesting ayarı kaydedildi!"
+      );
+    }
+
+    async function extendPresaleDays() {
+      if (!requireWallet() || !requireActivePresale()) return;
+      const days = parseInt(document.getElementById("inputExtendDays").value, 10);
+      if (!days || days < 1 || days > 60) return showToast("⚠️", "Geçersiz Süre", "1 ile 60 gün arası girin.");
+      await sendTx(
+        () => getPresaleWriter().extendEndTime(days * 86400),
+        `Ön satış süresi +${days} gün uzatılıyor...`,
+        `Ön satış süresi ${days} gün uzatıldı!`
+      );
+    }
+
+    async function endPresaleEarlyAction() {
+      if (!requireWallet() || !requireActivePresale()) return;
+      await sendTx(
+        () => getPresaleWriter().endPresaleEarly(),
+        "Soft Cap dolduğu için ön satış süresi şimdi sonlandırılıyor...",
+        "Ön satış süresi sonlandırıldı! Şimdi Finalize edebilirsiniz."
+      );
+    }
+
+    async function togglePausePresale(shouldPause) {
+      if (!requireWallet() || !requireActivePresale()) return;
+      await sendTx(
+        () => getPresaleWriter().setPaused(shouldPause),
+        shouldPause ? "Ön satış geçici olarak duraklatılıyor..." : "Ön satış tekrar devam ettiriliyor...",
+        shouldPause ? "Ön satış duraklatıldı!" : "Ön satış tekrar aktif!"
+      );
+    }
+
+    async function withdrawExcessObs() {
+      if (!requireWallet() || !requireActivePresale()) return;
+      const amt = document.getElementById("inputExcessObs").value.trim();
+      if (!amt || Number(amt) <= 0) return showToast("⚠️", "Geçersiz Miktar", "Çekilecek fazla $OBS miktarını girin.");
+      await sendTx(
+        () => getPresaleWriter().withdrawExcessTokens(ethers.parseUnits(amt, 18)),
+        `Boşta duran ${amt} $OBS kurucu cüzdanına çekiliyor...`,
+        `${amt} $OBS başarıyla geri çekildi!`
+      );
+    }
+
+    async function finalizePresaleAction() {
+      if (!requireWallet() || !requireActivePresale()) return;
+      const burnUnsold = document.getElementById("chkBurnUnsold").checked;
+      await sendTx(
+        () => getPresaleWriter().finalizePresale(burnUnsold),
+        `Ön satış tamamlanıyor (burnUnsold: ${burnUnsold})... ETH'ler cüzdanınıza aktarılacak.`,
+        "🏁 ÖN SATIŞ TAMAMLANDI! ETH'ler cüzdanınıza gönderildi ve token dağıtımı açıldı."
+      );
+    }
+
+    async function transferOwnershipAction() {
+      if (!requireWallet() || !requireActivePresale()) return;
+      const newOwner = document.getElementById("inputNewOwner").value.trim();
+      if (!ethers.isAddress(newOwner)) return showToast("⚠️", "Geçersiz Adres", "Geçerli bir yeni kurucu adresi girin.");
+      await sendTx(
+        () => getPresaleWriter().transferOwnership(newOwner),
+        `Kurucu yetkisi ${newOwner} adresine devrediliyor...`,
+        "Sahiplik devri tamamlandı!"
+      );
+    }
+
+    // ==================== GENERIC TX EXECUTOR & HELPERS ====================
+    async function sendTx(txFn, pendingMsg, successMsg) {
+      try {
+        logConsole(pendingMsg, "info");
+        const tx = await txFn();
+        logConsole(`İşlem ağa iletildi: ${tx.hash} — Onay bekleniyor...`, "info");
+        await tx.wait();
+        logConsole(`✅ ${successMsg}`, "success");
+        showToast("✅", "İşlem Başarılı", successMsg);
+        await refreshAllStates();
+      } catch (err) {
+        const msg = err.reason || err.shortMessage || err.message || "Bilinmeyen hata";
+        logConsole(`❌ Hata: ${msg}`, "error");
+        showToast("❌", "İşlem Reddedildi", msg);
+      }
+    }
+
+    function requireWallet() {
+      if (!signer || !userAddress) {
+        connectWallet();
+        return false;
+      }
+      return true;
+    }
+
+    function requireActivePresale() {
+      if (!activePresaleAddress || !ethers.isAddress(activePresaleAddress)) {
+        showToast("⚠️", "Kontrat Adresi Eksik", "Önce 2. adımdan yeni kontratı deploy edin veya adresini yapıştırın.");
+        return false;
+      }
+      return true;
+    }
+
+    function copyActiveAddress() {
+      const val = document.getElementById("activePresaleAddressInput").value.trim();
+      if (!val) return showToast("⚠️", "Adres Yok", "Henüz kopyalanacak bir kontrat adresi yok.");
+      copyText(val, "Aktif ön satış adresi panoya kopyalandı!");
+    }
+
+    function copySoliditySource() {
+      copyText(OBSIDION_PRESALE_SOL, "ObsidionPresale.sol kaynak kodu panoya kopyalandı!");
+    }
+
+    function copyArtifactJson(type) {
+      if (!compiledArtifact) return showToast("⏳", "Hazır Değil", "Derleyici henüz tamamlanmadı.");
+      const data = type === "abi" ? JSON.stringify(compiledArtifact.abi, null, 2) : compiledArtifact.bytecode;
+      copyText(data, `${type.toUpperCase()} panoya kopyalandı!`);
+    }
+
+    function copyText(text, successMsg) {
+      const el = document.createElement("textarea");
+      el.value = text;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+      logConsole("📋 " + successMsg, "success");
+      showToast("📋", "Kopyalandı", successMsg);
+    }
+
+    function toggleSourceCode() {
+      document.getElementById("sourceCodeContainer").classList.toggle("hidden");
+    }
+
+    function logConsole(msg, type = "info") {
+      const box = document.getElementById("consoleLogBox");
+      const time = new Date().toLocaleTimeString("tr-TR");
+      const line = document.createElement("div");
+      if (type === "success") line.className = "text-emerald-400 font-semibold";
+      else if (type === "error") line.className = "text-rose-400 font-semibold";
+      else line.className = "text-amber-200";
+      line.textContent = `[${time}] ${msg}`;
+      box.appendChild(line);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function clearLogs() {
+      document.getElementById("consoleLogBox").innerHTML = "";
+    }
+
+    let toastTimer;
+    function showToast(icon, title, msg) {
+      const box = document.getElementById("toastBox");
+      document.getElementById("toastIcon").textContent = icon;
+      document.getElementById("toastTitle").textContent = title;
+      document.getElementById("toastMessage").textContent = msg;
+      box.classList.remove("hidden");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => box.classList.add("hidden"), 4500);
+    }
+  </script>
+</body>
+</html>
